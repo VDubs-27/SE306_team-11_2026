@@ -65,7 +65,7 @@ jobs:
           rows = list(csv.DictReader(open("ck-report/class.csv")))
           failures = []
           for r in rows:
-              if int(r["dit"]) > 3:
+              if int(r["dit"]) > 0:
                   failures.append(f"{r['class']}: DIT {r['dit']} (target 3 or less)")
               if int(r["noc"]) > 10:
                   failures.append(f"{r['class']}: NOC {r['noc']} (target 10 or less)")
