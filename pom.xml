@@ -10,8 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <JUnit.version>5.10.1</JUnit.version>
         <javafx.version>21.0.2</javafx.version>
     </properties>
@@ -69,7 +68,35 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
+                <!-- Pass 1 (blocking): everything except live-server tests -->
+                <configuration>
+                    <excludes>
+                        <exclude>mainframe/client/messages/**</exclude>
+                        <exclude>mainframe/client/HttpConnectionTests.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <!-- Pass 2 (non-blocking): live-server tests, reported but allowed to fail -->
+                    <execution>
+                        <id>server-tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <excludes combine.self="override"/>
+                            <includes>
+                                <include>mainframe/client/messages/**</include>
+                                <include>mainframe/client/HttpConnectionTests.java</include>
+                            </includes>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                            <reportsDirectory>${project.build.directory}/surefire-reports-server</reportsDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
