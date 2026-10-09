@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -20,5 +19,73 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build and run tests
+      - name: Build, test and Checkstyle
         run: .\mvnw.cmd -B verify
+
+  metrics:
+    runs-on: ubuntu-latest
+    env:
+      CK_COMMIT: 8a1ef91   # pinned CK version
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache CK
+        id: ck-cache
+        uses: actions/cache@v4
+        with:
+          path: ck.jar
+          key: ck-${{ env.CK_COMMIT }}
+
+      - name: Build CK
+        if: steps.ck-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/mauricioaniche/ck.git ck-src
+          cd ck-src
+          git checkout "$CK_COMMIT"
+          mvn -B -q -DskipTests package
+          cp target/ck-*-jar-with-dependencies.jar ../ck.jar
+
+      - name: Run CK on LAVS
+        run: |
+          mkdir -p ck-report
+          java -jar ck.jar src/main/java/lavs false 0 false ck-report/
+
+      - name: Check DIT and NOC targets, and summarise
+        run: |
+          python3 - <<'EOF'
+          import csv, os, sys
+
+          rows = list(csv.DictReader(open("ck-report/class.csv")))
+          failures = []
+          for r in rows:
+              if int(r["dit"]) > 3:
+                  failures.append(f"{r['class']}: DIT {r['dit']} (target 3 or less)")
+              if int(r["noc"]) > 10:
+                  failures.append(f"{r['class']}: NOC {r['noc']} (target 10 or less)")
+
+          # Report for reviewers: relative metrics, compared across classes
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as s:
+              s.write("## CK metrics\n\n| Class | CBO | WMC | Fan-in | Fan-out | DIT | NOC |\n|---|---|---|---|---|---|---|\n")
+              for r in sorted(rows, key=lambda r: -int(r["cbo"])):
+                  s.write(f"| {r['class']} | {r['cbo']} | {r['wmc']} | {r['fanin']} | {r['fanout']} | {r['dit']} | {r['noc']} |\n")
+
+          if failures:
+              print("Metric targets broken:")
+              print("\n".join(failures))
+              sys.exit(1)
+          print(f"All {len(rows)} classes within DIT and NOC targets.")
+          EOF
+
+      - name: Upload CK report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ck-report
+          path: ck-report/
