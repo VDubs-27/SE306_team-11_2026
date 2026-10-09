@@ -33,6 +33,31 @@ Use these commands (or IntelliJ's Maven panel: **Plugins → javafx → javafx:r
 rather than IntelliJ's run arrow next to `main`, which fails with
 "JavaFX runtime components are missing".
 
+## Continuous integration
+
+Every pull request runs two GitHub Actions jobs:
+
+* **build** (Windows): compiles the code, runs the tests and runs
+  Checkstyle (complexity, nesting depth, fan-out and naming rules).
+* **metrics** (Ubuntu): runs CK on the `lavs` package, fails if the
+  depth of inheritance (DIT) or number of children (NOC) targets are
+  broken, and adds a CBO, WMC, fan-in and fan-out table to the job summary.
+
+Run the same checks locally before pushing:
+
+    .\mvnw.cmd verify        (Windows)
+    ./mvnw verify            (macOS / Linux)
+
+**Live-server tests:** the provided tests in `mainframe.client.messages`
+call the shared course mainframe, so they can fail because of other
+teams' data. They run in every build but do not fail it. To run only
+those tests:
+
+    .\mvnw.cmd test -Dtest="mainframe.client.messages.*Tests"
+
+Name your own test classes `*Tests` (e.g. `CustomerServiceTests`),
+otherwise Maven will not run them.
+
 ## Project structure
 
 * `src/main/java/lavs/App.java`: application entry point.
