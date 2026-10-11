@@ -1,5 +1,6 @@
 package lavs.logic.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -69,6 +70,30 @@ class ValidatorTests {
     @Test
     void missingDateSkipsPastDateCheck() {
         Assertions.assertEquals(List.of(), new Validator().pastDate("dateOfBirth", null, TODAY, "Date of birth").errors());
+    }
+
+    @Test
+    void zeroIsNotPositive() {
+        Assertions.assertEquals(
+                List.of(new FieldError("principal", "Principal must be greater than 0.")),
+                new Validator().positive("principal", BigDecimal.ZERO, "Principal").errors());
+    }
+
+    @Test
+    void missingAmountSkipsPositiveCheck() {
+        Assertions.assertEquals(List.of(), new Validator().positive("principal", null, "Principal").errors());
+    }
+
+    @Test
+    void negativeAmountIsReported() {
+        Assertions.assertEquals(
+                List.of(new FieldError("rateAmount", "Rate must be 0 or more.")),
+                new Validator().notNegative("rateAmount", new BigDecimal("-0.01"), "Rate").errors());
+    }
+
+    @Test
+    void zeroIsNotNegative() {
+        Assertions.assertEquals(List.of(), new Validator().notNegative("rateAmount", BigDecimal.ZERO, "Rate").errors());
     }
 
     @Test

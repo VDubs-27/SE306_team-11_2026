@@ -41,3 +41,18 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Code:** `Email.Details` also requires a type.
 - **Justification:** the mainframe's add and update email messages send a type, and without one an email cannot be categorised.
 - **Introduced in:** PR #4.
+
+## 6. Co-borrower type is required
+
+- **Proposal:** Table 1's co-borrower rules cover which customer can be added, but not the co-borrower type.
+- **Code:** `Coborrower.Details` requires a type of co-borrower or guarantor.
+- **Justification:** the mainframe's add co-borrower message sends a type, and the guarantor type is needed for the Table 1 rule that a customer with no employer needs a guarantor.
+- **Introduced in:** PR #5.
+
+## 7. Loan totals and repayment schedule have their own types
+
+- **Proposal:** Section 3.1 says summaries and schedules are not modelled as entities.
+- **Code:** `Loan.Totals` holds the result of the loan summary message, and `ScheduledRepayment` holds one row of the repayment schedule.
+- **Justification:** they are read-only display types for the required loan summary and repayment schedule screens, not entities.
+  They have no identity, validation or create, update and delete operations, and exist so the UI receives typed values instead of raw mainframe strings.
+- **Introduced in:** PR #5.
