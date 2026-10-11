@@ -37,8 +37,10 @@ rather than IntelliJ's run arrow next to `main`, which fails with
 
 Every pull request runs two GitHub Actions jobs:
 
-* **build** (Windows): compiles the code, runs the tests and runs
-  Checkstyle (complexity, nesting depth, fan-out and naming rules).
+* **build** (Windows): compiles the code, runs the tests, runs
+  Checkstyle (complexity, nesting depth, fan-out and naming rules) and
+  fails if JaCoCo line or branch coverage of `lavs.logic` is below 95%.
+  The coverage report is written to `target/site/jacoco/index.html`.
 * **metrics** (Ubuntu): runs CK on the `lavs` package, fails if the
   depth of inheritance (DIT) or number of children (NOC) targets are
   broken, and adds a CBO, WMC, fan-in and fan-out table to the job summary.

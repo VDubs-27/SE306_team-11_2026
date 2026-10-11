@@ -1,6 +1,6 @@
-package lavs.model.customer;
+package lavs.logic.model.customer;
 
-import static lavs.model.Validation.isBlank;
+import static lavs.logic.model.Validation.isBlank;
 
 public record CustomerNumber(String value) {
     public CustomerNumber {

@@ -1,4 +1,4 @@
-package lavs.model.customer;
+package lavs.logic.model.customer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

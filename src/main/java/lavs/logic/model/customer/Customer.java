@@ -1,11 +1,12 @@
-package lavs.model.customer;
+package lavs.logic.model.customer;
 
-import static lavs.model.Validation.isBlank;
+import static lavs.logic.model.Validation.isBlank;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lavs.logic.model.FieldError;
+import lavs.logic.model.Validator;
 
 public record Customer(
     CustomerNumber number,
@@ -67,18 +68,19 @@ public record Customer(
         LocalDate dateOfBirth,
         String nationality
     ) {
-        public List<String> validate() {
-            List<String> errors = new ArrayList<>();
+        private static final int TITLE_MAX_LENGTH = 10;
+        private static final int NAME_MAX_LENGTH = 40;
 
-            if (isBlank(firstName)) {
-                errors.add("First name is required.");
-            }
-
-            if (isBlank(familyName)) {
-                errors.add("Family name is required.");
-            }
-
-            return errors;
+        public List<FieldError> validate(LocalDate today) {
+            return new Validator()
+                .maxLength("title", title, TITLE_MAX_LENGTH, "Title")
+                .required("firstName", firstName, "First name")
+                .maxLength("firstName", firstName, NAME_MAX_LENGTH, "First name")
+                .required("familyName", familyName, "Family name")
+                .maxLength("familyName", familyName, NAME_MAX_LENGTH, "Family name")
+                .pastDate("dateOfBirth", dateOfBirth, today, "Date of birth")
+                .maxLength("nationality", nationality, NAME_MAX_LENGTH, "Nationality")
+                .errors();
         }
     }
 }
