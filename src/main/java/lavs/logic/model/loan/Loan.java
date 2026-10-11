@@ -30,6 +30,9 @@ public record Loan(
     }
 
     public Loan withStatus(Status newStatus) {
+        if (status == null || !status.canMoveTo(newStatus)) {
+            throw new IllegalStateException("Loan cannot move from " + status + " to " + newStatus + ".");
+        }
         return new Loan(
             loanNumber, customerNumber, newStatus, principal, rateType, rateAmount, rateFrequency,
             startDate, paymentAmount, paymentFrequency, renewalDate);
@@ -41,11 +44,26 @@ public record Loan(
     }
 
     public enum Status {
-        NEW,
-        PENDING,
-        ACTIVE,
-        DEFAULTED,
-        CANCELLED;
+        NEW("New"),
+        PENDING("Pending"),
+        ACTIVE("Active"),
+        DEFAULTED("Defaulted"),
+        CANCELLED("Cancelled"),
+        UNKNOWN("");
+
+        private final String code;
+
+        Status(String code) {
+            this.code = code;
+        }
+
+        public String code() {
+            return code;
+        }
+
+        public static Status fromCode(String code) {
+            return Codes.fromCode(values(), Status::code, code, UNKNOWN);
+        }
 
         public boolean canMoveTo(Status target) {
             return this == NEW && target == PENDING;

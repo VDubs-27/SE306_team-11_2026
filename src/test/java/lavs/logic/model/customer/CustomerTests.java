@@ -1,12 +1,15 @@
 package lavs.logic.model.customer;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import lavs.logic.model.FieldError;
+import mainframe.client.messages.customer.UpdateStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -59,6 +62,52 @@ class CustomerTests {
                 () -> Assertions.assertEquals(customer("Ann", "Lee", Customer.Status.INACTIVE), inactive),
                 () -> Assertions.assertEquals(Customer.Status.ACTIVE, active.status(), "original should be unchanged")
         );
+    }
+
+    @Test
+    void withStatusRejectsUnknown() {
+        Customer active = customer("Ann", "Lee", Customer.Status.ACTIVE);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> active.withStatus(Customer.Status.UNKNOWN));
+    }
+
+    @Test
+    void withStatusRejectsNull() {
+        Customer active = customer("Ann", "Lee", Customer.Status.ACTIVE);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> active.withStatus(null));
+    }
+
+    @Nested
+    class StatusCodes {
+
+        @Test
+        void codesMatchTheMainframeConstants() {
+            Assertions.assertEquals(
+                    List.of(UpdateStatus.STATUS_ACTIVE, UpdateStatus.STATUS_INACTIVE),
+                    Arrays.stream(Customer.Status.values())
+                            .filter(status -> status != Customer.Status.UNKNOWN)
+                            .map(Customer.Status::code)
+                            .toList());
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = Customer.Status.class, mode = EnumSource.Mode.EXCLUDE, names = "UNKNOWN")
+        void everyStatusIsFoundByItsCode(Customer.Status status) {
+            Assertions.assertEquals(status, Customer.Status.fromCode(status.code()));
+        }
+
+        @Test
+        void codeLookupIgnoresCase() {
+            Assertions.assertEquals(Customer.Status.INACTIVE, Customer.Status.fromCode("INACTIVE"));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"Suspended", "UNKNOWN"})
+        void unrecognisedCodeIsUnknown(String code) {
+            Assertions.assertEquals(Customer.Status.UNKNOWN, Customer.Status.fromCode(code));
+        }
     }
 
     @Test

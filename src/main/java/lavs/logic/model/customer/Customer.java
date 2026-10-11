@@ -5,6 +5,7 @@ import static lavs.logic.model.Validation.isBlank;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import lavs.logic.model.Codes;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
 
@@ -32,6 +33,9 @@ public record Customer(
     }
 
     public Customer withStatus(Status newStatus) {
+        if (newStatus == null || newStatus == Status.UNKNOWN) {
+            throw new IllegalArgumentException("Customer status must be ACTIVE or INACTIVE.");
+        }
         return new Customer(number, title, firstName, familyName, newStatus, dateOfBirth, nationality);
     }
 
@@ -40,8 +44,23 @@ public record Customer(
     }
 
     public enum Status {
-        ACTIVE,
-        INACTIVE
+        ACTIVE("Active"),
+        INACTIVE("Inactive"),
+        UNKNOWN("");
+
+        private final String code;
+
+        Status(String code) {
+            this.code = code;
+        }
+
+        public String code() {
+            return code;
+        }
+
+        public static Status fromCode(String code) {
+            return Codes.fromCode(values(), Status::code, code, UNKNOWN);
+        }
     }
 
     public record Summary(

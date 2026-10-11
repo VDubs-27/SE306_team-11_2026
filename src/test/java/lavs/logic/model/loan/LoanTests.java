@@ -52,14 +52,31 @@ class LoanTests {
 
     @Test
     void withStatusChangesOnlyTheStatus() {
-        Loan pending = loan(Loan.Status.PENDING);
+        Loan created = loan(Loan.Status.NEW);
 
-        Loan active = pending.withStatus(Loan.Status.ACTIVE);
+        Loan pending = created.withStatus(Loan.Status.PENDING);
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals(loan(Loan.Status.ACTIVE), active),
-                () -> Assertions.assertEquals(Loan.Status.PENDING, pending.status(), "original should be unchanged")
+                () -> Assertions.assertEquals(loan(Loan.Status.PENDING), pending),
+                () -> Assertions.assertEquals(Loan.Status.NEW, created.status(), "original should be unchanged")
         );
+    }
+
+    @ParameterizedTest
+    @EnumSource(Loan.Status.class)
+    void withStatusRejectsEveryOtherTransition(Loan.Status from) {
+        for (Loan.Status to : Loan.Status.values()) {
+            if (from == Loan.Status.NEW && to == Loan.Status.PENDING) {
+                continue;
+            }
+            Assertions.assertThrows(
+                    IllegalStateException.class, () -> loan(from).withStatus(to), from + " to " + to);
+        }
+    }
+
+    @Test
+    void withStatusRejectsLoanWithNoStatus() {
+        Assertions.assertThrows(IllegalStateException.class, () -> loan(null).withStatus(Loan.Status.PENDING));
     }
 
     @Test
@@ -114,16 +131,43 @@ class LoanTests {
             }
         }
 
+        @ParameterizedTest
+        @EnumSource(Loan.Status.class)
+        void unknownCannotMoveAnywhere(Loan.Status to) {
+            Assertions.assertFalse(Loan.Status.UNKNOWN.canMoveTo(to));
+        }
+
         @Test
-        void statusesMatchTheMainframeConstants() {
+        void statusCodesMatchTheMainframeConstants() {
             Assertions.assertEquals(
                     List.of(
-                            UpdateStatus.STATUS_NEW.toUpperCase(),
-                            UpdateStatus.STATUS_PENDING.toUpperCase(),
-                            UpdateStatus.STATUS_ACTIVE.toUpperCase(),
-                            UpdateStatus.STATUS_DEFAULTED.toUpperCase(),
-                            UpdateStatus.STATUS_CANCELLED.toUpperCase()),
-                    Arrays.stream(Loan.Status.values()).map(Loan.Status::name).toList());
+                            UpdateStatus.STATUS_NEW,
+                            UpdateStatus.STATUS_PENDING,
+                            UpdateStatus.STATUS_ACTIVE,
+                            UpdateStatus.STATUS_DEFAULTED,
+                            UpdateStatus.STATUS_CANCELLED),
+                    Arrays.stream(Loan.Status.values())
+                            .filter(value -> value != Loan.Status.UNKNOWN)
+                            .map(Loan.Status::code)
+                            .toList());
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = Loan.Status.class, mode = EnumSource.Mode.EXCLUDE, names = "UNKNOWN")
+        void everyStatusIsFoundByItsCode(Loan.Status value) {
+            Assertions.assertEquals(value, Loan.Status.fromCode(value.code()));
+        }
+
+        @Test
+        void statusLookupIgnoresCase() {
+            Assertions.assertEquals(Loan.Status.PENDING, Loan.Status.fromCode("PENDING"));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"Approved", "UNKNOWN"})
+        void unrecognisedStatusIsUnknown(String code) {
+            Assertions.assertEquals(Loan.Status.UNKNOWN, Loan.Status.fromCode(code));
         }
     }
 
@@ -184,6 +228,20 @@ class LoanTests {
             Assertions.assertEquals(
                     List.of(new FieldError("renewalDate", "Renewal date must be after the start date.")),
                     details(PRINCIPAL, RATE, START, START.plusDays(daysAfterStart)).validate());
+        }
+
+        @Test
+        void missingStartDateWithValidRenewalReportsOnlyStartDate() {
+            Assertions.assertEquals(
+                    List.of(new FieldError("startDate", "Start date is required.")),
+                    details(PRINCIPAL, RATE, null, RENEWAL).validate());
+        }
+
+        @Test
+        void missingRenewalDateWithValidStartReportsOnlyRenewalDate() {
+            Assertions.assertEquals(
+                    List.of(new FieldError("renewalDate", "Renewal date is required.")),
+                    details(PRINCIPAL, RATE, START, null).validate());
         }
 
         @Test
