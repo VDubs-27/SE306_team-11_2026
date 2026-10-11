@@ -31,4 +31,8 @@ public record Customer(
     public Customer withStatus(CustomerStatus newStatus) {
         return new Customer(number, title, firstName, familyName, newStatus, dateOfBirth, nationality);
     }
+
+    public CustomerDetails details() {
+        return new CustomerDetails(title, firstName, familyName, dateOfBirth, nationality);
+    }
 }

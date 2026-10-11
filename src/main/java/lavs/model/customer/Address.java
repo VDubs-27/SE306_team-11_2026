@@ -20,4 +20,9 @@ public record Address(
         Objects.requireNonNull(customerNumber, "customerNumber");
         Objects.requireNonNull(type, "type");
     }
+
+    public AddressDetails details() {
+        return new AddressDetails(
+            customerNumber, type, otherType, line1, line2, suburb, city, postCode, country, isPrimary, isMailing);
+    }
 }

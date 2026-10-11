@@ -15,4 +15,8 @@ public record Employer(
         Objects.requireNonNull(customerNumber, "customerNumber");
         Objects.requireNonNull(type, "type");
     }
+
+    public EmployerDetails details() {
+        return new EmployerDetails(customerNumber, type, name, position, salary);
+    }
 }

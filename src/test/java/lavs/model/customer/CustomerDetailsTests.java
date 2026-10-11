@@ -7,10 +7,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class NewCustomerTests {
+class CustomerDetailsTests {
 
-    private static NewCustomer customer(String firstName, String familyName) {
-        return new NewCustomer(null, firstName, familyName, null, null);
+    private static CustomerDetails customer(String firstName, String familyName) {
+        return new CustomerDetails(null, firstName, familyName, null, null);
     }
 
     @Test

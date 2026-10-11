@@ -16,4 +16,8 @@ public record Phone(
         Objects.requireNonNull(customerNumber, "customerNumber");
         Objects.requireNonNull(type, "type");
     }
+
+    public PhoneDetails details() {
+        return new PhoneDetails(customerNumber, type, otherType, countryCode, number, isPrimary, canTxt);
+    }
 }

@@ -7,12 +7,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class NewEmailTests {
+class EmailDetailsTests {
 
     private static final CustomerNumber CUSTOMER = new CustomerNumber("C123");
 
-    private static NewEmail email(EmailType type, String otherType, String address) {
-        return new NewEmail(CUSTOMER, type, otherType, address, false);
+    private static EmailDetails email(EmailType type, String otherType, String address) {
+        return new EmailDetails(CUSTOMER, type, otherType, address, false);
     }
 
     @Test
@@ -52,7 +52,7 @@ class NewEmailTests {
 
     @Test
     void missingCustomerNumberThrows() {
-        Assertions.assertThrows(NullPointerException.class, () -> new NewEmail(
+        Assertions.assertThrows(NullPointerException.class, () -> new EmailDetails(
                 null, EmailType.PERSONAL, null, "ann@example.com", false));
     }
 }

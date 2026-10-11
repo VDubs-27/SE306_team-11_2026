@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record NewEmployer(
+public record EmployerDetails(
     CustomerNumber customerNumber,
     EmployerType type,
     String name,
     String position,
     BigDecimal salary
 ) {
-    public NewEmployer {
+    public EmployerDetails {
         Objects.requireNonNull(customerNumber, "customerNumber");
     }
 

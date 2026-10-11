@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record NewPhone(
+public record EmailDetails(
     CustomerNumber customerNumber,
-    PhoneType type,
+    EmailType type,
     String otherType,
-    String countryCode,
-    String number,
-    boolean isPrimary,
-    boolean canTxt
+    String address,
+    boolean isPrimary
 ) {
-    public NewPhone {
+    public EmailDetails {
         Objects.requireNonNull(customerNumber, "customerNumber");
     }
 
@@ -23,13 +21,13 @@ public record NewPhone(
         List<String> errors = new ArrayList<>();
 
         if (type == null) {
-            errors.add("Phone type is required.");
-        } else if (type == PhoneType.OTHER && isBlank(otherType)) {
-            errors.add("Other phone type is required.");
+            errors.add("Email type is required.");
+        } else if (type == EmailType.OTHER && isBlank(otherType)) {
+            errors.add("Other email type is required.");
         }
 
-        if (isBlank(number)) {
-            errors.add("Phone number is required.");
+        if (isBlank(address)) {
+            errors.add("Email address is required.");
         }
 
         return errors;

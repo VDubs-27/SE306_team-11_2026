@@ -56,4 +56,11 @@ class CustomerTests {
                 () -> Assertions.assertEquals(CustomerStatus.ACTIVE, active.status(), "original should be unchanged")
         );
     }
+
+    @Test
+    void detailsCopiesEveryEditableField() {
+        Assertions.assertEquals(
+                new CustomerDetails("Ms", "Ann", "Lee", DATE_OF_BIRTH, "New Zealand"),
+                customer("Ann", "Lee", CustomerStatus.ACTIVE).details());
+    }
 }

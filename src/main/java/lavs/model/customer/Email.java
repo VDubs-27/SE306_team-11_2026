@@ -14,4 +14,8 @@ public record Email(
         Objects.requireNonNull(customerNumber, "customerNumber");
         Objects.requireNonNull(type, "type");
     }
+
+    public EmailDetails details() {
+        return new EmailDetails(customerNumber, type, otherType, address, isPrimary);
+    }
 }

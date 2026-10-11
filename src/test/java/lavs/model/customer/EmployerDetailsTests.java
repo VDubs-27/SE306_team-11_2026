@@ -8,12 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class NewEmployerTests {
+class EmployerDetailsTests {
 
     private static final CustomerNumber CUSTOMER = new CustomerNumber("C123");
 
-    private static NewEmployer employer(EmployerType type, String name) {
-        return new NewEmployer(CUSTOMER, type, name, null, null);
+    private static EmployerDetails employer(EmployerType type, String name) {
+        return new EmployerDetails(CUSTOMER, type, name, null, null);
     }
 
     @Test
@@ -39,7 +39,7 @@ class NewEmployerTests {
 
     @Test
     void missingCustomerNumberThrows() {
-        Assertions.assertThrows(NullPointerException.class, () -> new NewEmployer(
+        Assertions.assertThrows(NullPointerException.class, () -> new EmployerDetails(
                 null, EmployerType.PRIMARY, "Acme Ltd", "Engineer", new BigDecimal("85000")));
     }
 }

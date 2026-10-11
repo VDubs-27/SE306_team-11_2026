@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record NewAddress(
+public record AddressDetails(
     CustomerNumber customerNumber,
     AddressType type,
     String otherType,
@@ -19,7 +19,7 @@ public record NewAddress(
     boolean isPrimary,
     boolean isMailing
 ) {
-    public NewAddress {
+    public AddressDetails {
         Objects.requireNonNull(customerNumber, "customerNumber");
     }
 

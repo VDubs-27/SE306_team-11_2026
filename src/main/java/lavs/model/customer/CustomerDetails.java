@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public record NewCustomer(
+public record CustomerDetails(
     String title,
     String firstName,
     String familyName,
