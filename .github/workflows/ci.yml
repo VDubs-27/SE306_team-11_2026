@@ -22,6 +22,58 @@ jobs:
       - name: Build, test and Checkstyle
         run: .\mvnw.cmd -B verify
 
+      # Runs even when the coverage check fails, which is when the report is most needed
+      - name: Summarise coverage
+        if: always()
+        shell: pwsh
+        run: |
+          $csv = "target/site/jacoco/jacoco.csv"
+          if (-not (Test-Path $csv)) {
+            "## JaCoCo coverage`n`nNo report: the build stopped before the verify phase." >> $env:GITHUB_STEP_SUMMARY
+            exit 0
+          }
+
+          function Pct($missed, $covered) {
+            $total = $missed + $covered
+            if ($total -eq 0) { return "n/a" }
+            return "{0:F1}%" -f (100 * $covered / $total)
+          }
+
+          $rows = Import-Csv $csv | ForEach-Object {
+            [pscustomobject]@{
+              Name          = "$($_.PACKAGE).$($_.CLASS)"
+              Logic         = $_.PACKAGE -like "lavs.logic*"
+              LineMissed    = [int]$_.LINE_MISSED
+              LineCovered   = [int]$_.LINE_COVERED
+              BranchMissed  = [int]$_.BRANCH_MISSED
+              BranchCovered = [int]$_.BRANCH_COVERED
+            }
+          }
+
+          # Totals over the same scope as the jacoco:check rule in pom.xml
+          $logic = @($rows | Where-Object Logic)
+          $line = Pct ($logic | Measure-Object LineMissed -Sum).Sum ($logic | Measure-Object LineCovered -Sum).Sum
+          $branch = Pct ($logic | Measure-Object BranchMissed -Sum).Sum ($logic | Measure-Object BranchCovered -Sum).Sum
+
+          $out = @(
+            "## JaCoCo coverage", "",
+            "**lavs.logic** (target 95%): line $line, branch $branch", "",
+            "| Class | Line | Branch |", "|---|---|---|"
+          )
+          # Least covered first, so gaps are at the top
+          $sorted = $rows | Sort-Object @{ Expression = { $t = $_.LineMissed + $_.LineCovered; if ($t) { $_.LineCovered / $t } else { 1 } } }, Name
+          foreach ($r in $sorted) {
+            $out += "| $($r.Name) | $(Pct $r.LineMissed $r.LineCovered) | $(Pct $r.BranchMissed $r.BranchCovered) |"
+          }
+          $out -join "`n" >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+
   metrics:
     runs-on: ubuntu-latest
     env:
