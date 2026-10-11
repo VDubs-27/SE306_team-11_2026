@@ -1,5 +1,7 @@
 package lavs.model.customer;
 
+import static lavs.model.Validation.isBlank;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +25,5 @@ public record NewCustomer(
         }
 
         return errors;
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

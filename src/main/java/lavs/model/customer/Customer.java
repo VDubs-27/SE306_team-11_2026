@@ -1,5 +1,7 @@
 package lavs.model.customer;
 
+import static lavs.model.Validation.isBlank;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -14,8 +16,12 @@ public record Customer(
 ) {
     public Customer {
         Objects.requireNonNull(number, "number");
-        Objects.requireNonNull(firstName, "firstName");
-        Objects.requireNonNull(familyName, "familyName");
+        if (isBlank(firstName)) {
+            throw new IllegalArgumentException("First name must not be null or blank.");
+        }
+        if (isBlank(familyName)) {
+            throw new IllegalArgumentException("Family name must not be null or blank.");
+        }
     }
 
     public String fullName() {

@@ -1,8 +1,10 @@
 package lavs.model.customer;
 
+import static lavs.model.Validation.isBlank;
+
 public record CustomerNumber(String value) {
     public CustomerNumber {
-        if (value == null || value.isBlank()) {
+        if (isBlank(value)) {
             throw new IllegalArgumentException("Customer number must not be null or blank.");
         }
     }
