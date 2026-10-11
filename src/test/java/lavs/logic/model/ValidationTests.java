@@ -1,5 +1,6 @@
 package lavs.logic.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -87,5 +88,55 @@ class ValidationTests {
     @Test
     void nullIsNotPast() {
         Assertions.assertFalse(Validation.isPastDate(null, TODAY));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {-1, 0})
+    void dateOnOrBeforeOtherIsOnOrBefore(long daysAfter) {
+        Assertions.assertTrue(Validation.isOnOrBefore(TODAY.plusDays(daysAfter), TODAY));
+    }
+
+    @Test
+    void dateAfterOtherIsNotOnOrBefore() {
+        Assertions.assertFalse(Validation.isOnOrBefore(TODAY.plusDays(1), TODAY));
+    }
+
+    @Test
+    void missingDatesAreNotOnOrBefore() {
+        Assertions.assertAll(
+                () -> Assertions.assertFalse(Validation.isOnOrBefore(null, TODAY)),
+                () -> Assertions.assertFalse(Validation.isOnOrBefore(TODAY, null))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0.01", "1", "1000000"})
+    void amountsAboveZeroArePositive(String value) {
+        Assertions.assertTrue(Validation.isPositive(new BigDecimal(value)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "0.00", "-0.01"})
+    void amountsOfZeroOrLessAreNotPositive(String value) {
+        Assertions.assertFalse(Validation.isPositive(new BigDecimal(value)));
+    }
+
+    @Test
+    void amountBelowZeroIsNegative() {
+        Assertions.assertTrue(Validation.isNegative(new BigDecimal("-0.01")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "0.00", "0.01"})
+    void amountsOfZeroOrMoreAreNotNegative(String value) {
+        Assertions.assertFalse(Validation.isNegative(new BigDecimal(value)));
+    }
+
+    @Test
+    void missingAmountIsNeitherPositiveNorNegative() {
+        Assertions.assertAll(
+                () -> Assertions.assertFalse(Validation.isPositive(null)),
+                () -> Assertions.assertFalse(Validation.isNegative(null))
+        );
     }
 }

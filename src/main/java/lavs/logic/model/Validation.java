@@ -1,5 +1,6 @@
 package lavs.logic.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public final class Validation {
@@ -25,5 +26,17 @@ public final class Validation {
 
     public static boolean isPastDate(LocalDate value, LocalDate today) {
         return value != null && value.isBefore(today);
+    }
+
+    public static boolean isOnOrBefore(LocalDate value, LocalDate other) {
+        return value != null && other != null && !value.isAfter(other);
+    }
+
+    public static boolean isPositive(BigDecimal value) {
+        return value != null && value.signum() > 0;
+    }
+
+    public static boolean isNegative(BigDecimal value) {
+        return value != null && value.signum() < 0;
     }
 }
