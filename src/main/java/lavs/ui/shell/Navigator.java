@@ -43,7 +43,7 @@ public class Navigator {
 
     /** Shows customer search below the header. */
     public void showCustomerSearch() {
-        FXMLLoader loader = load("/lavs/ui/customer/placeholder.fxml");
+        FXMLLoader loader = load("/lavs/ui/customer/customer-search.fxml");
         show(loader.getRoot());
     }
 
