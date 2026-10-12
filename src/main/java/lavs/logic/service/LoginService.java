@@ -15,7 +15,7 @@ public class LoginService {
     static final String REJECTED_MESSAGE = "The user name or password is incorrect.";
 
     private final Connection connection;
-    private String currentUser;
+    private volatile String currentUser;
 
     public LoginService(Connection connection) {
         this.connection = Objects.requireNonNull(connection, "connection");
@@ -61,7 +61,6 @@ public class LoginService {
         if (status.getErrorCode().equals(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode())) {
             return NETWORK_FAILURE_MESSAGE;
         }
-        String message = status.getErrorMessage();
-        return message == null || message.isBlank() ? REJECTED_MESSAGE : message;
+        return REJECTED_MESSAGE;
     }
 }

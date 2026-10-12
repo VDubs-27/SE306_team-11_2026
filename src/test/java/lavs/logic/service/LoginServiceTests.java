@@ -56,9 +56,89 @@ class LoginServiceTests {
         );
     }
 
+    @Test
+    void blankUserNameOnlyReportsUserName() {
+        CountingConnection counting = new CountingConnection();
+
+        LoginResult result = new LoginService(counting).login(" ", "secret");
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(List.of(
+                        new FieldError("userName", "User name is required.")), result.fieldErrors()),
+                () -> Assertions.assertEquals(0, counting.calls)
+        );
+    }
+
+    @Test
+    void blankPasswordOnlyReportsPassword() {
+        CountingConnection counting = new CountingConnection();
+
+        LoginResult result = new LoginService(counting).login("alice", "");
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(List.of(
+                        new FieldError("password", "Password is required.")), result.fieldErrors()),
+                () -> Assertions.assertEquals(0, counting.calls)
+        );
+    }
+
+    @Test
+    void credentialsArePassedToMainframe() {
+        CountingConnection counting = new CountingConnection();
+        counting.setupSuccessfulLoginResult("token", "alice", 42);
+
+        new LoginService(counting).login("alice", "secret");
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(1, counting.calls),
+                () -> Assertions.assertEquals("alice", counting.userName),
+                () -> Assertions.assertEquals("secret", counting.password)
+        );
+    }
+
+    @Test
+    void secondLoginReplacesCurrentUser() {
+        connection.setupSuccessfulLoginResult("token", "alice", 42);
+        service.login("alice", "secret");
+        connection.setupSuccessfulLoginResult("token2", "bob", 43);
+
+        service.login("bob", "secret");
+
+        Assertions.assertEquals("bob", service.getCurrentUser());
+    }
+
+    @Test
+    void failedLoginKeepsExistingSession() {
+        connection.setupSuccessfulLoginResult("token", "alice", 42);
+        service.login("alice", "secret");
+        connection.setupFailedLoginResult(3, "Incorrect password");
+
+        LoginResult result = service.login("bob", "wrong");
+
+        Assertions.assertAll(
+                () -> Assertions.assertFalse(result.successful()),
+                () -> Assertions.assertEquals("alice", service.getCurrentUser())
+        );
+    }
+
+    @Test
+    void canLogInAgainAfterLogout() {
+        connection.setupSuccessfulLoginResult("token", "alice", 42);
+        service.login("alice", "secret");
+        service.logout();
+
+        LoginResult result = service.login("alice", "secret");
+
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(result.successful()),
+                () -> Assertions.assertTrue(service.isLoggedIn())
+        );
+    }
+
     @ParameterizedTest
     @CsvSource(nullValues = "NULL", value = {
-        "3, Invalid credentials, Invalid credentials",
+        "3, Unknown user name 'alice', The user name or password is incorrect.",
+        "3, Incorrect password, The user name or password is incorrect.",
         "3, '', The user name or password is incorrect.",
         "3, NULL, The user name or password is incorrect.",
         "10, Unavailable, Could not reach the mainframe. Check the connection and try again."
@@ -124,10 +204,14 @@ class LoginServiceTests {
     private static final class CountingConnection extends StubConnection {
         private int calls;
         private int logouts;
+        private String userName;
+        private String password;
 
         @Override
         public Status Login(String username, String password) throws IOException {
             calls++;
+            this.userName = username;
+            this.password = password;
             return super.Login(username, password);
         }
 
