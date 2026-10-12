@@ -12,6 +12,9 @@ public class App extends Application {
         StackPane root = new StackPane();
         Scene scene = new Scene(root, 1280, 800);
 
+        scene.getStylesheets().add(
+                getClass().getResource("/lavs/ui/app.css").toExternalForm());
+
         primaryStage.setTitle("LAVS");
         primaryStage.setScene(scene);
         primaryStage.show();
