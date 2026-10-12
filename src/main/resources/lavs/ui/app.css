@@ -38,6 +38,9 @@
     -fx-font-family: "System";
     -fx-font-size: 14px;
     -fx-text-fill: -text;
+}
+
+.app-root {
     -fx-background-color: -page-bg;
 }
 
@@ -75,18 +78,37 @@
 }
 .app-header .app-name { -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; }
 .app-header .app-subtitle { -fx-text-fill: #cfd0ea; -fx-font-size: 12px; }
-.app-header .separator .line { -fx-border-color: #6b6ca6; }
+.app-header .separator .line {
+    -fx-border-color: #6b6ca6;
+    -fx-border-width: 0 0 0 1;
+    -fx-padding: 0;
+}
 
-.app-header .menu-button {
+.app-header .account-button {
     -fx-background-color: -brand-blue-dark;
     -fx-background-radius: 999;
     -fx-border-color: #6b6ca6;
     -fx-border-radius: 999;
-    -fx-padding: 4 12 4 6;
+    -fx-padding: 5 16 5 5;
+    -fx-graphic-text-gap: 10;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
     -fx-cursor: hand;
 }
-.app-header .menu-button > .label { -fx-text-fill: white; }
-.app-header .menu-button > .arrow-button > .arrow { -fx-background-color: white; }
+/* After clicking: stay normal, no default blue focus ring */
+.app-header .account-button:focused {
+    -fx-background-color: -brand-blue-dark;
+}
+/* Mouse over: lighter fill and brighter outline */
+.app-header .account-button:hover {
+    -fx-background-color: #45468a;
+    -fx-border-color: #9a9bd0;
+}
+/* While pressed: darker, so the click registers */
+.app-header .account-button:armed {
+    -fx-background-color: #2a2b5c;
+}
+}
 
 /* ===================== Avatars ===================== */
 .avatar {
@@ -373,3 +395,56 @@
     -fx-font-size: 13px;
     -fx-background-radius: 6;
 }
+
+/* ===================== Dropdown menus (MenuButton, ComboBox popups) ===================== */
+/* Popups render in their own window, so these use plain hex values
+   rather than the .root colour tokens. */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 12;
+    -fx-border-color: #d6d7e6;
+    -fx-border-insets: 0;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(31, 33, 48, 0.20), 14, 0, 0, 2);
+}
+.context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+}
+.context-menu .menu-item .label {
+    -fx-text-fill: #1f2130;
+}
+.context-menu .menu-item:hover {
+    -fx-background-color: #e9e9f4;
+}
+.context-menu .menu-item:hover .label {
+    -fx-text-fill: #393A7B;
+}
+
+/* ComboBox dropdown lists use the same look */
+.combo-box-popup > .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e2ea;
+    -fx-border-radius: 12;
+    -fx-padding: 6;
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-text-fill: #1f2130;
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover,
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
+    -fx-background-color: #e9e9f4;
+    -fx-text-fill: #393A7B;
+}
+
+/* Small avatar for the account button */
+.avatar-small {
+    -fx-min-width: 30;

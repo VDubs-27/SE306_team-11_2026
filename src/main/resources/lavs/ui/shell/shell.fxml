@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.shell.ShellController" styleClass="app-root">
+    <top>
+        <HBox styleClass="app-header">
+            <ImageView fitHeight="40" preserveRatio="true">
+                <Image url="@../images/countrywide-logo.jpg"/>
+            </ImageView>
+            <Separator orientation="VERTICAL" maxHeight="28"/>
+            <VBox alignment="CENTER_LEFT">
+                <Label text="LAVS" styleClass="app-name"/>
+                <Label text="Loan Application and Verification System" styleClass="app-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="accountButton" text="Bob Ross" styleClass="account-button"
+                    onAction="#handleAccountMenu">
+                <graphic>
+                    <Label fx:id="accountInitials" text="BR"
+                           styleClass="avatar, avatar-small, avatar-user"/>
+                </graphic>
+            </Button>
+        </HBox>
+    </top>
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+</BorderPane>
