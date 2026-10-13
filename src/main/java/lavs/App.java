@@ -1,22 +1,31 @@
 package lavs;
 
+import java.util.Objects;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import lavs.ui.shell.Navigator;
 
 public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        StackPane root = new StackPane();
-        Scene scene = new Scene(root, 1280, 800);
+        // Temporary root: the navigator replaces it straight away
+        Scene scene = new Scene(new StackPane(), 1280, 800);
 
-        scene.getStylesheets().add(
-                getClass().getResource("/lavs/ui/app.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(
+                getClass().getResource("/lavs/ui/app.css"),
+                "Stylesheet /lavs/ui/app.css not found").toExternalForm());
 
         primaryStage.setTitle("LAVS");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(scene);   // must come before the navigator uses the scene
+
+        Navigator navigator = new Navigator(primaryStage);
+        navigator.showShell();           // later: navigator.showLogin() once login exists
+        navigator.showCustomerSearch();
+
         primaryStage.show();
     }
 
