@@ -67,6 +67,14 @@
     -fx-spacing: 16;
 }
 
+.card-flush {
+    -fx-padding: 0;
+    -fx-spacing: 0;
+}
+.card-section {
+    -fx-padding: 14 20 14 20;
+}
+
 /* ===================== Header (shell) ===================== */
 .app-header {
     -fx-background-color: -brand-blue;
@@ -307,32 +315,71 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 0;
+    -fx-table-cell-border-color: transparent;   /* removes the column lines */
 }
-.table-view .column-header-background { -fx-background-color: #f5f5f9; }
+.table-view:focused {
+    -fx-background-color: transparent;
+}
+
+/* Header bar: taller, with darker lines above and below */
+.table-view .column-header-background {
+    -fx-background-color: #f1f1f6;
+}
 .table-view .column-header,
 .table-view .filler {
     -fx-background-color: transparent;
-    -fx-border-color: transparent transparent -line-soft transparent;
-    -fx-padding: 8 12 8 12;
+    -fx-border-color: #c9cad8 transparent #c9cad8 transparent;
+    -fx-border-width: 1 0 1 0;
+    -fx-padding: 0 12 0 12;
 }
 .table-view .column-header .label {
     -fx-text-fill: -text-muted;
     -fx-font-size: 13px;
+    -fx-font-weight: bold;
     -fx-alignment: center-left;
+    -fx-padding: 12 0 12 0;
 }
+
+/* Rows: one line between each row, nothing between columns */
 .table-row-cell {
     -fx-background-color: white;
-    -fx-border-color: transparent transparent -line-soft transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent transparent #ececf2 transparent;
     -fx-cell-size: 52px;
 }
 .table-row-cell:hover { -fx-background-color: -page-bg; }
-.table-row-cell:selected { -fx-background-color: -brand-blue-tint; }
+.table-row-cell:selected,
+.table-view:focused .table-row-cell:selected {
+    -fx-background-color: -brand-blue-tint;
+}
+.table-row-cell:empty {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
 .table-cell {
+    -fx-border-color: transparent;
     -fx-padding: 0 12 0 12;
     -fx-alignment: center-left;
     -fx-text-fill: -text;
 }
 .table-row-cell:selected .table-cell { -fx-text-fill: -text; }
+
+/* Row arrow */
+.row-chevron {
+    -fx-text-fill: -text-soft;
+    -fx-font-size: 20px;
+    -fx-padding: 0 8 2 0;
+}
+
+.table-view,
+.table-view:focused {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+.table-view .column-header-background {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
 
 /* ===================== Tabs (pill style) ===================== */
 .tab-pane > .tab-header-area { -fx-padding: 12 12 0 12; }
@@ -445,6 +492,21 @@
     -fx-text-fill: #393A7B;
 }
 
-/* Small avatar for the account button */
-.avatar-small {
-    -fx-min-width: 30;
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 10;
+}
+.table-view .scroll-bar .thumb {
+    -fx-background-color: #c9cad8;
+    -fx-background-radius: 999;
+}
+.table-view .scroll-bar .increment-button,
+.table-view .scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+.table-view .scroll-bar .increment-arrow,
+.table-view .scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
