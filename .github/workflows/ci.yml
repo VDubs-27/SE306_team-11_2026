@@ -147,6 +147,10 @@ jobs:
                   s.write(f"| {r['class']} | {r['cbo']} | {r['wmc']} | {r['fanin']} | {r['fanout']} "
                           f"| {r['team_dit']} | {r['dit']} | {r['noc']} |\n")
 
+          print("DIT per class (team classes only, CK value in brackets):")
+          for r in sorted(rows, key=lambda r: (-r["team_dit"], r["class"])):
+              print(f"{r['class']}: DIT {r['team_dit']} (CK {r['dit']})")
+          
           if failures:
               print("Metric targets broken:")
               print("\n".join(failures))
