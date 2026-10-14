@@ -58,7 +58,8 @@ final class SampleProfiles {
                 new Address(3, JOHN, Address.Type.OTHER, "Holiday home", "8 Marine Parade", null,
                         null, "Mount Maunganui", "3116", "New Zealand", false, false));
         List<Phone> phones = List.of(
-                new Phone(1, JOHN, Phone.Type.MOBILE, null, "64", "21 555 0182", true, true));
+                new Phone(1, JOHN, Phone.Type.MOBILE, null, "64", "21 555 0182", true, true),
+                new Phone(2, JOHN, Phone.Type.HOME, null, "64", "9 555 4321", false, false));
         List<Email> emails = List.of(
                 new Email(1, JOHN, Email.Type.PERSONAL, null, "john.smith@example.co.nz", true));
         List<Employer> employers = List.of(

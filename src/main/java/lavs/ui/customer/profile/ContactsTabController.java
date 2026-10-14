@@ -20,11 +20,11 @@ public class ContactsTabController {
 
     void show(List<Phone> phones, List<Email> emails) {
         RecordTiles.fill(phoneList, phones.stream()
-                .map(phone -> RecordTiles.tile(typeName(phone), number(phone), null,
+                .map(phone -> RecordTiles.captionTile(typeName(phone), number(phone),
                         badges(phone), () -> handleEditPhone(phone)))
                 .toList(), "No phone numbers recorded.");
         RecordTiles.fill(emailList, emails.stream()
-                .map(email -> RecordTiles.tile(typeName(email), email.address(), null,
+                .map(email -> RecordTiles.captionTile(typeName(email), email.address(),
                         email.isPrimary() ? List.of(RecordTiles.primaryBadge()) : List.of(),
                         () -> handleEditEmail(email)))
                 .toList(), "No email addresses recorded.");
@@ -73,7 +73,7 @@ public class ContactsTabController {
             badges.add(RecordTiles.primaryBadge());
         }
         if (phone.canTxt()) {
-            badges.add(RecordTiles.badge("Can text", "badge-neutral"));
+            badges.add(RecordTiles.badge("Can text", "badge-mailing"));
         }
         return badges;
     }

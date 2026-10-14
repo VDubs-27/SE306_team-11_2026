@@ -306,6 +306,11 @@
 .record-tile .tile-type { -fx-text-fill: -text-muted; -fx-font-weight: bold; -fx-min-width: 140; }
 .record-tile .tile-line1 { -fx-font-weight: bold; }
 .record-tile .tile-line2 { -fx-text-fill: -text-muted; }
+.record-tile .tile-caption { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
+.record-tile .tile-value { -fx-font-size: 15px; -fx-text-fill: -text; }
+.record-tile-compact { -fx-padding: 10 14 10 14; -fx-spacing: 10; }
+/* Smaller Edit/View buttons inside rows */
+.record-tile .button-secondary { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
 
 /* Small heading above a group of tiles, e.g. "Phone numbers" */
 .section-heading { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -text; }

@@ -31,7 +31,20 @@ final class RecordTiles {
         if (line2 != null && !line2.isBlank()) {
             lines.getChildren().add(styled(new Label(line2), "tile-line2"));
         }
+        return tile(badges, actionText, onAction, typeLabel, lines);
+    }
 
+    /** A compact row for narrow columns: a small caption above the value, e.g. "Mobile" over the number. */
+    static HBox captionTile(String caption, String value, List<Label> badges, Runnable onEdit) {
+        VBox text = new VBox(2, styled(new Label(caption), "tile-caption"), styled(new Label(value), "tile-value"));
+        text.setAlignment(Pos.CENTER_LEFT);
+        HBox tile = tile(badges, "Edit", onEdit, text);
+        tile.getStyleClass().add("record-tile-compact");
+        return tile;
+    }
+
+    /** The parts every row shares: the given content, then badges and a button on the right. */
+    private static HBox tile(List<Label> badges, String actionText, Runnable onAction, Node... content) {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -42,7 +55,8 @@ final class RecordTiles {
         Button action = styled(new Button(actionText), "button-secondary");
         action.setOnAction(event -> onAction.run());
 
-        HBox tile = new HBox(typeLabel, lines, spacer, badgeRow, action);
+        HBox tile = new HBox(content);
+        tile.getChildren().addAll(spacer, badgeRow, action);
         tile.getStyleClass().add("record-tile");
         return tile;
     }
