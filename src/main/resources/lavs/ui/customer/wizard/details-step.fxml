@@ -32,7 +32,7 @@
                 <Label fx:id="firstNameError" styleClass="field-error-message" wrapText="true"/>
             </VBox>
             <VBox styleClass="field" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                <Label text="Surname"/>
+                <Label text="Family name"/>
                 <TextField fx:id="familyNameField"/>
                 <Label fx:id="familyNameError" styleClass="field-error-message" wrapText="true"/>
             </VBox>

@@ -8,11 +8,8 @@
            fx:controller="lavs.ui.customer.wizard.NewCustomerWizardController">
     <fx:define>
         <fx:include fx:id="details" source="details-step.fxml"/>
+        <fx:include fx:id="addresses" source="addresses-step.fxml"/>
         <!-- Placeholders until each step is built -->
-        <VBox fx:id="addressesStep" styleClass="card">
-            <Label text="Addresses" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
         <VBox fx:id="contactsStep" styleClass="card">
             <Label text="Contact details" styleClass="section-heading"/>
             <Label text="Coming soon." styleClass="text-muted"/>

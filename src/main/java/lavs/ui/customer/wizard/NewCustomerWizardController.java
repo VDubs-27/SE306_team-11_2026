@@ -26,7 +26,8 @@ public class NewCustomerWizardController implements NavigatorAware {
     @FXML private WizardController wizardController;
     @FXML private Node details;
     @FXML private DetailsStepController detailsController;
-    @FXML private Node addressesStep;
+    @FXML private Node addresses;
+    @FXML private AddressesStepController addressesController;
     @FXML private Node contactsStep;
     @FXML private Node employmentStep;
     @FXML private Node reviewStep;
@@ -41,6 +42,7 @@ public class NewCustomerWizardController implements NavigatorAware {
 
     @FXML
     private void initialize() {
+        addressesController.use(draft);
         wizardController.setTitle("New customer");
         wizardController.setSubtitle(NOT_SAVED);
         wizardController.setIcon(newCustomerIcon());
@@ -49,7 +51,7 @@ public class NewCustomerWizardController implements NavigatorAware {
         wizardController.setOnFinish(this::handleSave);
         wizardController.setSteps(List.of(
                 new WizardStep("Details", details, this::checkDetails, null),
-                new WizardStep("Addresses", addressesStep),
+                new WizardStep("Addresses", addresses, addressesController::check, null),
                 new WizardStep("Contacts", contactsStep),
                 new WizardStep("Employment", employmentStep),
                 new WizardStep("Review & save", reviewStep)));
