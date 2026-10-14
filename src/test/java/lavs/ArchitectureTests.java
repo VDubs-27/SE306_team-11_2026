@@ -23,4 +23,14 @@ class ArchitectureTests {
 
         rule.check(LAVS_CLASSES);
     }
+
+    @Test
+    void uiDoesNotUseTheAdapter() {
+        ArchRule rule = noClasses()
+                .that().resideInAPackage("lavs.ui..")
+                .should().dependOnClassesThat().resideInAPackage("lavs.logic.adapter..")
+                .because("the UI talks to services, and services call MainframeAdapter");
+
+        rule.check(LAVS_CLASSES);
+    }
 }
