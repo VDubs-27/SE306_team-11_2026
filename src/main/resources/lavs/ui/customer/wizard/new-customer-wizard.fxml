@@ -7,11 +7,8 @@
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="lavs.ui.customer.wizard.NewCustomerWizardController">
     <fx:define>
+        <fx:include fx:id="details" source="details-step.fxml"/>
         <!-- Placeholders until each step is built -->
-        <VBox fx:id="detailsStep" styleClass="card">
-            <Label text="Customer details" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
         <VBox fx:id="addressesStep" styleClass="card">
             <Label text="Addresses" styleClass="section-heading"/>
             <Label text="Coming soon." styleClass="text-muted"/>
