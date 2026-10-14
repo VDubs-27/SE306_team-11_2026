@@ -2,12 +2,7 @@ package lavs.ui.common;
 
 import java.util.function.BooleanSupplier;
 
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 
 /**
  * Shows a form (an address, phone, email or employer) in a pop-up with Cancel and Save, and Remove
@@ -19,6 +14,9 @@ public final class FormDialog {
     /** What the user chose. */
     public enum Result { SAVED, REMOVED, CANCELLED }
 
+    private static final String SAVE = "save";
+    private static final String REMOVE = "remove";
+
     private FormDialog() {
     }
 
@@ -27,39 +25,17 @@ public final class FormDialog {
      * false to keep the pop-up open. canRemove adds a Remove button for an existing record.
      */
     public static Result show(Node owner, String title, Node form, BooleanSupplier check, boolean canRemove) {
-        ButtonType save = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType remove = new ButtonType("Remove", ButtonBar.ButtonData.LEFT);
-
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("LAVS");
-        dialog.initOwner(owner.getScene().getWindow());
-        DialogPane pane = dialog.getDialogPane();
-        pane.getStylesheets().setAll(owner.getScene().getStylesheets());
-        pane.getStyleClass().add("form-dialog");
-        pane.setHeaderText(title);
-        pane.setContent(form);
-        pane.getButtonTypes().setAll(canRemove ? new ButtonType[] {remove, cancel, save} : new ButtonType[] {cancel, save});
-
-        pane.lookupButton(save).getStyleClass().add("button-primary");
-        pane.lookupButton(cancel).getStyleClass().add("button-secondary");
-        pane.lookupButton(save).addEventFilter(ActionEvent.ACTION, event -> {
-            if (!check.getAsBoolean()) {
-                event.consume();
-                // Grow to fit the error messages that just appeared
-                pane.getScene().getWindow().sizeToScene();
-            }
-        });
+        Modal modal = new Modal(owner, title).content(form);
         if (canRemove) {
-            pane.lookupButton(remove).getStyleClass().addAll("button-secondary", "button-danger");
+            modal.button(REMOVE, "Remove", Modal.Kind.DANGER);
         }
+        modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
+                .button(SAVE, "Save", Modal.Kind.PRIMARY, check);
 
-        ButtonType chosen = dialog.showAndWait().orElse(cancel);
-        // Let go of the form so it can be shown again in the next pop-up
-        pane.setContent(null);
-        if (chosen == save) {
+        String chosen = modal.showAndWait();
+        if (SAVE.equals(chosen)) {
             return Result.SAVED;
         }
-        return chosen == remove ? Result.REMOVED : Result.CANCELLED;
+        return REMOVE.equals(chosen) ? Result.REMOVED : Result.CANCELLED;
     }
 }
