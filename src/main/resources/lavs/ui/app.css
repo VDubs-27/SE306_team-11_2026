@@ -243,6 +243,11 @@
     -fx-padding: 0;
 }
 .hyperlink:hover { -fx-underline: true; }
+/* A link that reads as an action next to a value, e.g. "Change status" */
+.link-strong { -fx-underline: true; -fx-font-weight: bold; -fx-font-size: 13px; }
+
+/* Smaller pill button, e.g. Edit beside a section heading */
+.button-small { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
 
 /* ===================== Badges and chips ===================== */
 .badge {
@@ -466,9 +471,13 @@
 }
 
 /* Read-only label/value pairs (customer profile Details tab) */
-.detail { -fx-spacing: 4; }
+.detail {
+    -fx-spacing: 4;
+    -fx-padding: 0 0 12 0;
+    -fx-border-color: transparent transparent -line-soft transparent;
+}
 .detail-label { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
-.detail-value { -fx-font-size: 15px; }
+.detail-value { -fx-font-size: 15px; -fx-font-weight: bold; }
 
 /* Count pill shown after the tab name */
 .tab-pane .tab .tab-label { -fx-content-display: right; -fx-graphic-text-gap: 8; }

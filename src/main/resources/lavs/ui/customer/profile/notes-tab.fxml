@@ -8,4 +8,8 @@
     <Label text="Notes" styleClass="section-heading"/>
     <VBox fx:id="noteList" spacing="12"/>
     <Button text="+  Add note" styleClass="button-add" onAction="#handleAddNote"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Notes are shared with everyone who opens this customer, newest first. Keep them factual and record who you spoke to."/>
+    </HBox>
 </VBox>

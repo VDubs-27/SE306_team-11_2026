@@ -12,25 +12,30 @@ import lavs.logic.model.customer.Customer;
 public class DetailsTabController {
 
     @FXML private Label titleValue;
-    @FXML private Label customerNumberValue;
     @FXML private Label firstNameValue;
     @FXML private Label familyNameValue;
     @FXML private Label dateOfBirthValue;
     @FXML private Label nationalityValue;
-    @FXML private Label statusValue;
+    @FXML private Label statusBadge;
 
     void show(Customer customer) {
         titleValue.setText(orNotRecorded(customer.title()));
-        customerNumberValue.setText(customer.number().value());
         firstNameValue.setText(customer.firstName());
         familyNameValue.setText(customer.familyName());
         dateOfBirthValue.setText(date(customer.dateOfBirth()));
         nationalityValue.setText(orNotRecorded(customer.nationality()));
-        statusValue.setText(orNotRecorded(customer.status().code()));
+        statusBadge.setText(orNotRecorded(customer.status().code()));
+        statusBadge.getStyleClass().add(
+                customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
     }
 
     @FXML
     private void handleEditDetails() {
         // Later: open the edit details form
+    }
+
+    @FXML
+    private void handleChangeStatus() {
+        // Later: confirm and switch the customer between Active and Inactive
     }
 }
