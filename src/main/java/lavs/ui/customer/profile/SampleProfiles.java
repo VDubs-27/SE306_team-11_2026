@@ -97,7 +97,11 @@ final class SampleProfiles {
                 new NoteRow(9, "Contact", "Ana Tui", LocalDate.of(2026, 8, 30),
                         "Left a voicemail about the missing payslip. Will try again Monday."),
                 new NoteRow(8, "Application", "Bob Ross", LocalDate.of(2026, 8, 14),
-                        "Pre-approval discussed. Customer to bring three recent payslips."),
+                        "Pre-approval discussed in branch. Customer is looking at properties in Papamoa and "
+                                + "Mount Maunganui in the $500,000 to $650,000 range and expects a deposit of "
+                                + "about 20% from savings and KiwiSaver. Asked them to bring three recent payslips, "
+                                + "their KiwiSaver withdrawal estimate and bank statements for the last three months "
+                                + "so we can confirm the deposit before the application goes to the credit team."),
                 new NoteRow(7, "General", "Peter Smith", LocalDate.of(2026, 7, 2),
                         "Customer asked about fixed versus floating rates. Sent the rate sheet."),
                 new NoteRow(6, "Contact", "Peter Smith", LocalDate.of(2026, 5, 21),

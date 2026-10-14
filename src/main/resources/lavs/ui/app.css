@@ -316,8 +316,9 @@
 .record-tile .tile-value { -fx-font-size: 15px; -fx-text-fill: -text; }
 .record-tile-compact { -fx-padding: 10 14 10 14; -fx-spacing: 10; }
 /* Note cards: labelled details along the top, a thin line, then the note itself */
-.note-card { -fx-spacing: 10; -fx-alignment: top-left; }
+.note-card { -fx-padding: 10 16 10 16; -fx-spacing: 8; -fx-alignment: top-left; }
 .note-divider { -fx-min-height: 1; -fx-max-height: 1; -fx-background-color: -line-soft; }
+/* Limited to three lines in NotesTabController.limitLines */
 .note-text { -fx-text-fill: -text; -fx-font-size: 15px; }
 
 /* Prev / page / Next under a paged list in a profile tab */

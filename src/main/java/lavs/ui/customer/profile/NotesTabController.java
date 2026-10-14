@@ -5,6 +5,7 @@ import static lavs.logic.model.Validation.isBlank;
 import java.util.List;
 import java.util.function.LongFunction;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -13,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import lavs.logic.model.Page;
 
@@ -22,6 +24,9 @@ public class NotesTabController {
     /** Widths for the Author and Added fields, so they line up from card to card like columns. */
     private static final double AUTHOR_WIDTH = 180;
     private static final double ADDED_WIDTH = 120;
+    /** Longer notes are cut off with "..."; the full text opens from Edit. */
+    private static final int MAX_TEXT_LINES = 3;
+    private static final double LINE_SLACK = 0.3;
 
     @FXML private VBox noteList;
     @FXML private PagerController pagerController;
@@ -80,10 +85,34 @@ public class NotesTabController {
         Label text = new Label(ProfileFormat.orNotRecorded(note.text()));
         text.getStyleClass().add("note-text");
         text.setWrapText(true);
+        limitLines(text);
 
         VBox card = new VBox(top, divider, text);
         card.getStyleClass().addAll("record-tile", "note-card");
         return card;
+    }
+
+    /**
+     * Wraps the text onto at most three lines, ending in "..." when there's more. The TabPane sizes
+     * its tabs without knowing their width, which would leave wrapped text squashed to one line, so
+     * the label's minimum height is set from its real wrapped height at the width it was given.
+     */
+    private static void limitLines(Label label) {
+        label.setAlignment(Pos.TOP_LEFT);
+        Text measure = new Text();
+        label.minHeightProperty().bind(Bindings.createDoubleBinding(() -> {
+            measure.setFont(label.getFont());
+            measure.setWrappingWidth(0);
+            measure.setText("X");
+            double lineHeight = measure.getLayoutBounds().getHeight();
+            measure.setText("X" + "\nX".repeat(MAX_TEXT_LINES - 1));
+            double maxHeight = measure.getLayoutBounds().getHeight();
+            measure.setText(label.getText());
+            measure.setWrappingWidth(label.getWidth());
+            // A Label spaces its lines slightly wider than Text, so allow a little extra
+            return Math.min(measure.getLayoutBounds().getHeight(), maxHeight) + lineHeight * LINE_SLACK;
+        }, label.widthProperty(), label.fontProperty(), label.textProperty()));
+        label.maxHeightProperty().bind(label.minHeightProperty());
     }
 
     /** A small caption with its value under it, e.g. "Author" over "Bob Ross". */
