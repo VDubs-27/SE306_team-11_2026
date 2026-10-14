@@ -19,6 +19,12 @@ final class RecordTiles {
 
     /** A row: type on the left, two lines of detail, then any badges and an Edit button. */
     static HBox tile(String type, String line1, String line2, List<Label> badges, Runnable onEdit) {
+        return tile(type, line1, line2, badges, "Edit", onEdit);
+    }
+
+    /** As above, with a different label on the button, e.g. "View". */
+    static HBox tile(String type, String line1, String line2, List<Label> badges,
+            String actionText, Runnable onAction) {
         Label typeLabel = styled(new Label(type), "tile-type");
         VBox lines = new VBox(2, styled(new Label(line1), "tile-line1"));
         lines.setAlignment(Pos.CENTER_LEFT);
@@ -33,10 +39,10 @@ final class RecordTiles {
         badgeRow.setAlignment(Pos.CENTER_RIGHT);
         badgeRow.getChildren().setAll(badges);
 
-        Button edit = styled(new Button("Edit"), "button-secondary");
-        edit.setOnAction(event -> onEdit.run());
+        Button action = styled(new Button(actionText), "button-secondary");
+        action.setOnAction(event -> onAction.run());
 
-        HBox tile = new HBox(typeLabel, lines, spacer, badgeRow, edit);
+        HBox tile = new HBox(typeLabel, lines, spacer, badgeRow, action);
         tile.getStyleClass().add("record-tile");
         return tile;
     }
