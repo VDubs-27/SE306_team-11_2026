@@ -8,7 +8,7 @@
       spacing="12">
     <Label text="Documents" styleClass="section-heading"/>
     <VBox fx:id="documentList" spacing="12"/>
-    <fx:include fx:id="pager" source="pager.fxml"/>
+    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
     <Button text="+  Add document" styleClass="button-add" onAction="#handleAddDocument"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>

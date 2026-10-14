@@ -10,6 +10,9 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Employer;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Employment tab: the customer's employers.
@@ -24,7 +27,7 @@ public class EmploymentTabController {
     long show(LongFunction<Page<Employer>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(employerList, items.stream()
                 .map(employer -> RecordTiles.tile(employer.type().code(),
-                        ProfileFormat.orNotRecorded(employer.name()), role(employer),
+                        DisplayFormat.orNotRecorded(employer.name()), role(employer),
                         List.of(), () -> handleEditEmployer(employer)))
                 .toList(), "No employers recorded."));
     }
@@ -40,7 +43,7 @@ public class EmploymentTabController {
 
     /** e.g. "Project Manager · $98,000 a year", leaving out whichever part is missing. */
     private static String role(Employer employer) {
-        String salary = employer.salary() == null ? null : ProfileFormat.money(employer.salary()) + " a year";
+        String salary = employer.salary() == null ? null : DisplayFormat.money(employer.salary()) + " a year";
         if (isBlank(employer.position())) {
             return salary;
         }

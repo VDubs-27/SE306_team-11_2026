@@ -13,6 +13,8 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Phone;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Contacts tab: the customer's phone numbers and email addresses.

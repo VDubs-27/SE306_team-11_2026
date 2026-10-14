@@ -8,7 +8,7 @@
       spacing="12">
     <Label text="Employment" styleClass="section-heading"/>
     <VBox fx:id="employerList" spacing="12"/>
-    <fx:include fx:id="pager" source="pager.fxml"/>
+    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
     <Button text="+  Add employer" styleClass="button-add" onAction="#handleAddEmployer"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>

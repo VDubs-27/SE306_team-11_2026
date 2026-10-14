@@ -13,6 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
 import lavs.logic.model.Page;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Documents tab: the files recorded for the customer, such as a payslip or licence, a page at a time.
@@ -42,7 +45,7 @@ public class DocumentsTabController {
 
     /** e.g. "PDF · 184 KB". */
     private static String details(DocumentRow document) {
-        return format(document) + " · " + ProfileFormat.fileSize(document.size());
+        return format(document) + " · " + DisplayFormat.fileSize(document.size());
     }
 
     /** The file's extension in capitals, or the end of its file type when the name has none. */
@@ -52,7 +55,7 @@ public class DocumentsTabController {
         if (dot >= 0 && dot < name.length() - 1) {
             return name.substring(dot + 1).toUpperCase(Locale.ROOT);
         }
-        String fileType = ProfileFormat.orNotRecorded(document.fileType());
+        String fileType = DisplayFormat.orNotRecorded(document.fileType());
         return fileType.substring(fileType.indexOf('/') + 1).toUpperCase(Locale.ROOT);
     }
 

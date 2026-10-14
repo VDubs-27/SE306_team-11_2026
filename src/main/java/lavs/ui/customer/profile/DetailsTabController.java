@@ -1,7 +1,7 @@
 package lavs.ui.customer.profile;
 
-import static lavs.ui.customer.profile.ProfileFormat.date;
-import static lavs.ui.customer.profile.ProfileFormat.orNotRecorded;
+import static lavs.ui.common.DisplayFormat.date;
+import static lavs.ui.common.DisplayFormat.orNotRecorded;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
