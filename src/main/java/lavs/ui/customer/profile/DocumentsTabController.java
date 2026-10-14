@@ -20,27 +20,12 @@ public class DocumentsTabController {
     @FXML private VBox documentList;
     @FXML private PagerController pagerController;
 
-    private LongFunction<Page<DocumentRow>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
-
-    @FXML
-    private void initialize() {
-        pagerController.setOnPageRequested(this::showPage);
-    }
-
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<DocumentRow>> loadPage) {
-        this.loadPage = loadPage;
-        return showPage(1).total();
-    }
-
-    private Page<DocumentRow> showPage(long pageNumber) {
-        Page<DocumentRow> page = loadPage.apply(pageNumber);
-        RecordTiles.fill(documentList, page.items().stream()
+        return pagerController.show(loadPage, items -> RecordTiles.fill(documentList, items.stream()
                 .map(document -> RecordTiles.iconTile(fileIcon(), document.fileName(), details(document),
                         badges(document), () -> handleEditDocument(document)))
-                .toList(), "No documents recorded.");
-        pagerController.show(page);
-        return page;
+                .toList(), "No documents recorded."));
     }
 
     @FXML

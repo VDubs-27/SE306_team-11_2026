@@ -17,28 +17,13 @@ public class EmploymentTabController {
     @FXML private VBox employerList;
     @FXML private PagerController pagerController;
 
-    private LongFunction<Page<Employer>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
-
-    @FXML
-    private void initialize() {
-        pagerController.setOnPageRequested(this::showPage);
-    }
-
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Employer>> loadPage) {
-        this.loadPage = loadPage;
-        return showPage(1).total();
-    }
-
-    private Page<Employer> showPage(long pageNumber) {
-        Page<Employer> page = loadPage.apply(pageNumber);
-        RecordTiles.fill(employerList, page.items().stream()
+        return pagerController.show(loadPage, items -> RecordTiles.fill(employerList, items.stream()
                 .map(employer -> RecordTiles.tile(employer.type().code(),
                         ProfileFormat.orNotRecorded(employer.name()), role(employer),
                         List.of(), () -> handleEditEmployer(employer)))
-                .toList(), "No employers recorded.");
-        pagerController.show(page);
-        return page;
+                .toList(), "No employers recorded."));
     }
 
     @FXML

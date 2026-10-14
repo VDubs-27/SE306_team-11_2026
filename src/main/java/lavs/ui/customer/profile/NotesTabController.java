@@ -2,7 +2,6 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
-import java.util.List;
 import java.util.function.LongFunction;
 
 import javafx.beans.binding.Bindings;
@@ -31,24 +30,10 @@ public class NotesTabController {
     @FXML private VBox noteList;
     @FXML private PagerController pagerController;
 
-    private LongFunction<Page<NoteRow>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
-
-    @FXML
-    private void initialize() {
-        pagerController.setOnPageRequested(this::showPage);
-    }
-
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<NoteRow>> loadPage) {
-        this.loadPage = loadPage;
-        return showPage(1).total();
-    }
-
-    private Page<NoteRow> showPage(long pageNumber) {
-        Page<NoteRow> page = loadPage.apply(pageNumber);
-        RecordTiles.fill(noteList, page.items().stream().map(this::card).toList(), "No notes recorded.");
-        pagerController.show(page);
-        return page;
+        return pagerController.show(loadPage, items -> RecordTiles.fill(noteList,
+                items.stream().map(this::card).toList(), "No notes recorded."));
     }
 
     @FXML

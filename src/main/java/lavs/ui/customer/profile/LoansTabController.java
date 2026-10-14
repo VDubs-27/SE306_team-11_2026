@@ -1,6 +1,5 @@
 package lavs.ui.customer.profile;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.function.LongFunction;
 
@@ -28,8 +27,6 @@ public class LoansTabController {
     @FXML private TableColumn<Loan, Void> arrowColumn;
     @FXML private Label emptyState;
     @FXML private PagerController pagerController;
-
-    private LongFunction<Page<Loan>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
 
     @FXML
     private void initialize() {
@@ -64,20 +61,11 @@ public class LoansTabController {
 
         ProfileTables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
         ProfileTables.fitInsideBox(loansTable);
-        pagerController.setOnPageRequested(this::showPage);
     }
 
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Loan>> loadPage) {
-        this.loadPage = loadPage;
-        return showPage(1).total();
-    }
-
-    private Page<Loan> showPage(long pageNumber) {
-        Page<Loan> page = loadPage.apply(pageNumber);
-        ProfileTables.show(loansTable, tableBox, emptyState, page.items());
-        pagerController.show(page);
-        return page;
+        return pagerController.show(loadPage, items -> ProfileTables.show(loansTable, tableBox, emptyState, items));
     }
 
     private void handleOpenLoan(Loan loan) {
