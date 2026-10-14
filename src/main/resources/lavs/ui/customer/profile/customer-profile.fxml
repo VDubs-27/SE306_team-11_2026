@@ -44,7 +44,7 @@
                         <fx:include fx:id="contacts" source="contacts-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="employmentTab" text="Employment">
-                        <VBox fx:id="employmentContent" spacing="12"/>
+                        <fx:include fx:id="employment" source="employment-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="loansTab" text="Loans">
                         <VBox fx:id="loansContent" spacing="12"/>
