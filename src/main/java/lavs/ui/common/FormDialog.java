@@ -46,6 +46,8 @@ public final class FormDialog {
         pane.lookupButton(save).addEventFilter(ActionEvent.ACTION, event -> {
             if (!check.getAsBoolean()) {
                 event.consume();
+                // Grow to fit the error messages that just appeared
+                pane.getScene().getWindow().sizeToScene();
             }
         });
         if (canRemove) {

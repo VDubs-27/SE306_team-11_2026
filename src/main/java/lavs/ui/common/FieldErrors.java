@@ -11,6 +11,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.layout.Region;
 
 import lavs.logic.model.FieldError;
 
@@ -30,6 +31,9 @@ public final class FieldErrors {
     public FieldErrors add(String field, Control input, Label message) {
         inputs.put(field, input);
         messages.put(field, message);
+        // Let a long message wrap onto more lines instead of being cut off in a narrow column
+        message.setWrapText(true);
+        message.setMinHeight(Region.USE_PREF_SIZE);
         hide(message);
         if (input instanceof TextInputControl text) {
             text.textProperty().addListener((obs, oldText, newText) -> clear(field));
