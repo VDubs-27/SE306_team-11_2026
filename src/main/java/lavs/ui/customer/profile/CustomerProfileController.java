@@ -77,8 +77,8 @@ public class CustomerProfileController implements NavigatorAware {
         addressesController.show(profile.addresses());
         contactsController.show(profile.phones(), profile.emails());
         employmentController.show(profile.employers());
-        loansController.show(profile.loans());
-        documentsController.show(profile.documents());
+        loansController.show(page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE));
+        documentsController.show(page -> SampleProfiles.pageOf(profile.documents(), page, PAGE_SIZE));
         notesController.show(page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE));
         setCount(addressesTab, profile.addresses().size());
         setCount(contactsTab, profile.phones().size() + profile.emails().size());

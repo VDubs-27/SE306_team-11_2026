@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 
 import lavs.logic.model.Page;
@@ -49,10 +50,17 @@ public class PagerController {
         changePage(currentPage + 1);
     }
 
-    /** Loads the page, then scrolls back to the top so the new items start in view. */
+    /**
+     * Loads the page, then resizes and scrolls to suit it. A TabPane doesn't notice when the
+     * open tab's content changes size, so it is asked to lay out again; the page then scrolls
+     * back to the top so the new items start in view.
+     */
     private void changePage(long page) {
         onPageRequested.accept(page);
         for (Parent parent = pager.getParent(); parent != null; parent = parent.getParent()) {
+            if (parent instanceof TabPane tabPane) {
+                tabPane.requestLayout();
+            }
             if (parent instanceof ScrollPane scrollPane) {
                 scrollPane.setVvalue(0);
                 return;

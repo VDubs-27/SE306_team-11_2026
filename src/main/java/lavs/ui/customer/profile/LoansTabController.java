@@ -2,6 +2,7 @@ package lavs.ui.customer.profile;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.LongFunction;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,9 +13,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
 
-/** The Loans tab: a table of the customer's loans. */
+/** The Loans tab: a table of the customer's loans, a page at a time. */
 public class LoansTabController {
 
     @FXML private StackPane tableBox;
@@ -25,6 +27,9 @@ public class LoansTabController {
     @FXML private TableColumn<Loan, Loan.Status> statusColumn;
     @FXML private TableColumn<Loan, Void> arrowColumn;
     @FXML private Label emptyState;
+    @FXML private PagerController pagerController;
+
+    private LongFunction<Page<Loan>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
 
     @FXML
     private void initialize() {
@@ -59,10 +64,19 @@ public class LoansTabController {
 
         ProfileTables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
         ProfileTables.fitInsideBox(loansTable);
+        pagerController.setOnPageRequested(this::showPage);
     }
 
-    void show(List<Loan> loans) {
-        ProfileTables.show(loansTable, tableBox, emptyState, loans);
+    /** Shows the first page; loadPage fetches any page by number when the user moves between them. */
+    void show(LongFunction<Page<Loan>> loadPage) {
+        this.loadPage = loadPage;
+        showPage(1);
+    }
+
+    private void showPage(long pageNumber) {
+        Page<Loan> page = loadPage.apply(pageNumber);
+        ProfileTables.show(loansTable, tableBox, emptyState, page.items());
+        pagerController.show(page);
     }
 
     private void handleOpenLoan(Loan loan) {

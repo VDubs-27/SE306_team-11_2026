@@ -4,6 +4,7 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.LongFunction;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,16 +12,34 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
-/** The Documents tab: the files recorded for the customer, such as a payslip or licence. */
+import lavs.logic.model.Page;
+
+/** The Documents tab: the files recorded for the customer, such as a payslip or licence, a page at a time. */
 public class DocumentsTabController {
 
     @FXML private VBox documentList;
+    @FXML private PagerController pagerController;
 
-    void show(List<DocumentRow> documents) {
-        RecordTiles.fill(documentList, documents.stream()
+    private LongFunction<Page<DocumentRow>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
+
+    @FXML
+    private void initialize() {
+        pagerController.setOnPageRequested(this::showPage);
+    }
+
+    /** Shows the first page; loadPage fetches any page by number when the user moves between them. */
+    void show(LongFunction<Page<DocumentRow>> loadPage) {
+        this.loadPage = loadPage;
+        showPage(1);
+    }
+
+    private void showPage(long pageNumber) {
+        Page<DocumentRow> page = loadPage.apply(pageNumber);
+        RecordTiles.fill(documentList, page.items().stream()
                 .map(document -> RecordTiles.iconTile(fileIcon(), document.fileName(), details(document),
                         badges(document), () -> handleEditDocument(document)))
                 .toList(), "No documents recorded.");
+        pagerController.show(page);
     }
 
     @FXML

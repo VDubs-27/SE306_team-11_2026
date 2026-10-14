@@ -51,6 +51,15 @@ final class SampleProfiles {
         return new Page<>(items.subList(from, to), page, size, items.size());
     }
 
+    /** A simpler sample loan for John, so the Loans tab has enough to page through. */
+    private static Loan loan(String suffix, Loan.Status status, String principal, String repayment,
+            Loan.PaymentFrequency frequency, int startYear) {
+        return new Loan(new LoanNumber(JOHN.value() + "-" + suffix), JOHN, status, new BigDecimal(principal),
+                Loan.RateType.FLOATING, new BigDecimal("7.25"), Loan.RateFrequency.YEARLY,
+                LocalDate.of(startYear, 3, 1), new BigDecimal(repayment), frequency,
+                LocalDate.of(startYear + 5, 3, 1));
+    }
+
     private static Customer customer(String number, String title, String firstName,
             String familyName, LocalDate dateOfBirth) {
         return new Customer(new CustomerNumber(number), title, firstName, familyName,
@@ -81,10 +90,19 @@ final class SampleProfiles {
                 new Loan(new LoanNumber("01-0013-5810482-002"), JOHN, Loan.Status.ACTIVE,
                         new BigDecimal("120000"), Loan.RateType.FLOATING, new BigDecimal("7.25"),
                         Loan.RateFrequency.YEARLY, LocalDate.of(2021, 6, 1), new BigDecimal("1050"),
-                        Loan.PaymentFrequency.MONTHLY, LocalDate.of(2027, 6, 1)));
+                        Loan.PaymentFrequency.MONTHLY, LocalDate.of(2027, 6, 1)),
+                loan("003", Loan.Status.ACTIVE, "35000", "412.50", Loan.PaymentFrequency.MONTHLY, 2023),
+                loan("004", Loan.Status.CANCELLED, "60000", "650.00", Loan.PaymentFrequency.MONTHLY, 2020),
+                loan("005", Loan.Status.ACTIVE, "18500", "98.40", Loan.PaymentFrequency.WEEKLY, 2024),
+                loan("006", Loan.Status.DEFAULTED, "12000", "240.00", Loan.PaymentFrequency.FORTNIGHTLY, 2019));
         List<DocumentRow> documents = List.of(
                 new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
-                new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291));
+                new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291),
+                new DocumentRow(3, "Proof of income", "Payslip-August-2026.pdf", "application/pdf", 181_248),
+                new DocumentRow(4, "Proof of address", "Power-bill-July-2026.pdf", "application/pdf", 342_016),
+                new DocumentRow(5, "Bank statement", "Statement-Q2-2026.pdf", "application/pdf", 604_160),
+                new DocumentRow(6, "KiwiSaver", "KiwiSaver-withdrawal-estimate.pdf", "application/pdf", 96_256),
+                new DocumentRow(7, "Identification", "Passport.png", "image/png", 2_411_725));
         // Newest first, as the Notes tab shows them
         List<NoteRow> notes = List.of(
                 new NoteRow(12, "Application", "Bob Ross", LocalDate.of(2026, 10, 12),

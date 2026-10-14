@@ -22,6 +22,7 @@
             </columnResizePolicy>
         </TableView>
     </StackPane>
+    <fx:include fx:id="pager" source="pager.fxml"/>
     <Label fx:id="emptyState" text="No loans yet." styleClass="text-muted"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
