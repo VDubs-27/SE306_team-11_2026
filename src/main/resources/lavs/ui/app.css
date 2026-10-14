@@ -306,6 +306,9 @@
 .record-tile .tile-line1 { -fx-font-weight: bold; }
 .record-tile .tile-line2 { -fx-text-fill: -text-muted; }
 
+/* Small heading above a group of tiles, e.g. "Phone numbers" */
+.section-heading { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -text; }
+
 .empty-state {
     -fx-text-fill: -text-soft;
     -fx-padding: 24;

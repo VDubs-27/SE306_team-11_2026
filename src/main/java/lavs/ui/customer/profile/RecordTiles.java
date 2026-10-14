@@ -21,6 +21,7 @@ final class RecordTiles {
     static HBox tile(String type, String line1, String line2, List<Label> badges, Runnable onEdit) {
         Label typeLabel = styled(new Label(type), "tile-type");
         VBox lines = new VBox(2, styled(new Label(line1), "tile-line1"));
+        lines.setAlignment(Pos.CENTER_LEFT);
         if (line2 != null && !line2.isBlank()) {
             lines.getChildren().add(styled(new Label(line2), "tile-line2"));
         }
@@ -38,6 +39,20 @@ final class RecordTiles {
         HBox tile = new HBox(typeLabel, lines, spacer, badgeRow, edit);
         tile.getStyleClass().add("record-tile");
         return tile;
+    }
+
+    /** Shows the tiles in a list, or a short message when there are none. */
+    static void fill(VBox list, List<HBox> tiles, String emptyMessage) {
+        if (tiles.isEmpty()) {
+            list.getChildren().setAll(styled(new Label(emptyMessage), "text-muted"));
+        } else {
+            list.getChildren().setAll(tiles);
+        }
+    }
+
+    /** The badge marking a customer's main address, phone or email. */
+    static Label primaryBadge() {
+        return badge("✓ Primary", "badge-primary");
     }
 
     /** A small pill such as "Primary" or "Mailing". */

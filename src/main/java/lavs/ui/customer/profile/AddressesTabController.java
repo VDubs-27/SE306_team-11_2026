@@ -22,16 +22,10 @@ public class AddressesTabController {
     @FXML private VBox addressList;
 
     void show(List<Address> addresses) {
-        if (addresses.isEmpty()) {
-            Label empty = new Label("No addresses recorded.");
-            empty.getStyleClass().add("text-muted");
-            addressList.getChildren().setAll(empty);
-            return;
-        }
-        addressList.getChildren().setAll(addresses.stream()
+        RecordTiles.fill(addressList, addresses.stream()
                 .map(address -> RecordTiles.tile(typeName(address), street(address), locality(address),
                         badges(address), () -> handleEditAddress(address)))
-                .toList());
+                .toList(), "No addresses recorded.");
     }
 
     @FXML
@@ -65,7 +59,7 @@ public class AddressesTabController {
     private static List<Label> badges(Address address) {
         List<Label> badges = new ArrayList<>();
         if (address.isPrimary()) {
-            badges.add(RecordTiles.badge("✓ Primary", "badge-primary"));
+            badges.add(RecordTiles.primaryBadge());
         }
         if (address.isMailing()) {
             Label mailing = RecordTiles.badge("Mailing", "badge-mailing");

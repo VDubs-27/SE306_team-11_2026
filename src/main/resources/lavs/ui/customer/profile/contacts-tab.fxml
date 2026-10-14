@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.ContactsTabController"
+      spacing="12">
+    <Label text="Phone numbers" styleClass="section-heading"/>
+    <VBox fx:id="phoneList" spacing="12"/>
+    <Button text="+  Add phone" styleClass="button-add" onAction="#handleAddPhone"/>
+
+    <Label text="Email addresses" styleClass="section-heading">
+        <VBox.margin>
+            <Insets top="12"/>
+        </VBox.margin>
+    </Label>
+    <VBox fx:id="emailList" spacing="12"/>
+    <Button text="+  Add email" styleClass="button-add" onAction="#handleAddEmail"/>
+</VBox>
