@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import lavs.logic.model.customer.Customer;
+
 /**
  * How values are written on screen: dates, money, file sizes and missing values.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
@@ -59,5 +61,15 @@ public final class DisplayFormat {
             return Math.round(bytes / (double) KILOBYTE) + " KB";
         }
         return new DecimalFormat("0.#", SYMBOLS).format(bytes / (double) (KILOBYTE * KILOBYTE)) + " MB";
+    }
+
+    /** A customer's initials for an avatar, e.g. "JS" for John Smith. */
+    public static String initials(Customer customer) {
+        return customer.firstName().substring(0, 1) + customer.familyName().substring(0, 1);
+    }
+
+    /** e.g. "Mr John Smith", or just "John Smith" when there's no title. */
+    public static String fullNameWithTitle(Customer customer) {
+        return isBlank(customer.title()) ? customer.fullName() : customer.title() + " " + customer.fullName();
     }
 }
