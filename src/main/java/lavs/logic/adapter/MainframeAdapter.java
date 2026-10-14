@@ -2,6 +2,7 @@ package lavs.logic.adapter;
 
 import java.io.IOException;
 import java.util.Objects;
+import lavs.logic.model.constants.Constants;
 import mainframe.client.Connection;
 import mainframe.client.Message;
 import mainframe.client.Status;
@@ -26,6 +27,10 @@ public class MainframeAdapter {
 
     public void logout() {
         connection.Logout();
+    }
+
+    public Constants loadConstants() {
+        return new ConstantsReader(this).read();
     }
 
     <T extends Message> T send(T message) {

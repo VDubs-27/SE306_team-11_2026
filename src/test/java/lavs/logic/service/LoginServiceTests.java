@@ -2,8 +2,12 @@ package lavs.logic.service;
 
 import java.io.IOException;
 import java.util.List;
+import lavs.logic.adapter.ConstantsConnection;
 import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.model.FieldError;
+import lavs.logic.model.constants.ConstantCategory;
+import lavs.logic.model.constants.Constants;
+import lavs.logic.model.loan.Loan;
 import mainframe.client.Status;
 import mainframe.client.StubConnection;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +19,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class LoginServiceTests {
 
-    private final StubConnection connection = new StubConnection();
+    private final ConstantsConnection connection = new ConstantsConnection()
+            .category("LoanRateType", "Fixed", "Floating");
     private final LoginService service = new LoginService(new MainframeAdapter(connection));
 
     @Test
@@ -199,11 +204,69 @@ class LoginServiceTests {
     }
 
     @Test
+    void successfulLoginLoadsConstants() {
+        connection.setupSuccessfulLoginResult("token", "alice", 42);
+
+        service.login("alice", "secret");
+
+        Assertions.assertEquals(List.of(Loan.RateType.FIXED, Loan.RateType.FLOATING),
+                service.getConstants().options(ConstantCategory.RATE_TYPE));
+    }
+
+    @Test
+    void noConstantsBeforeLogin() {
+        Assertions.assertSame(Constants.EMPTY, service.getConstants());
+    }
+
+    @Test
+    void failedLoginDoesNotLoadConstants() {
+        connection.setupFailedLoginResult(3, "Incorrect password");
+
+        service.login("alice", "wrong");
+
+        Assertions.assertAll(
+                () -> Assertions.assertSame(Constants.EMPTY, service.getConstants()),
+                () -> Assertions.assertTrue(connection.constantRequests().isEmpty())
+        );
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "3, Invalid transaction number, '" + LoginService.CONSTANTS_FAILED_MESSAGE + "'",
+        "10, Unavailable, Could not reach the mainframe. Check the connection and try again."
+    })
+    void constantsFailureFailsLoginAndLogsOut(int errorCode, String serverMessage, String expected) {
+        CountingConnection counting = new CountingConnection();
+        counting.setupSuccessfulLoginResult("token", "alice", 42);
+        counting.category("LoanRateType", "Fixed").failItemList(errorCode, serverMessage);
+        LoginService failing = new LoginService(new MainframeAdapter(counting));
+
+        LoginResult result = failing.login("alice", "secret");
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(expected, result.errorMessage()),
+                () -> Assertions.assertFalse(failing.isLoggedIn()),
+                () -> Assertions.assertSame(Constants.EMPTY, failing.getConstants()),
+                () -> Assertions.assertEquals(1, counting.logouts)
+        );
+    }
+
+    @Test
+    void logoutClearsConstants() {
+        connection.setupSuccessfulLoginResult("token", "alice", 42);
+        service.login("alice", "secret");
+
+        service.logout();
+
+        Assertions.assertSame(Constants.EMPTY, service.getConstants());
+    }
+
+    @Test
     void requiresAdapter() {
         Assertions.assertThrows(NullPointerException.class, () -> new LoginService(null));
     }
 
-    private static final class CountingConnection extends StubConnection {
+    private static final class CountingConnection extends ConstantsConnection {
         private int calls;
         private int logouts;
         private String userName;
