@@ -1,5 +1,9 @@
 package lavs.ui.customer.wizard;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 
 /**
@@ -10,6 +14,7 @@ import lavs.logic.model.customer.Customer;
 final class NewCustomerDraft {
 
     private Customer.Details details;
+    private final List<Address.Details> addresses = new ArrayList<>();
 
     /** The customer's personal details, once the Details step has passed its check; null before. */
     Customer.Details details() {
@@ -18,5 +23,10 @@ final class NewCustomerDraft {
 
     void setDetails(Customer.Details details) {
         this.details = details;
+    }
+
+    /** The addresses added so far, in the order they were added. The Addresses step edits this list. */
+    List<Address.Details> addresses() {
+        return addresses;
     }
 }

@@ -25,7 +25,7 @@
             <Label fx:id="firstNameValue" styleClass="detail-value"/>
         </VBox>
         <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <Label text="Surname" styleClass="detail-label"/>
+            <Label text="Family name" styleClass="detail-label"/>
             <Label fx:id="familyNameValue" styleClass="detail-value"/>
         </VBox>
         <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="1">
