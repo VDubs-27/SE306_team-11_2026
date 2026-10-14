@@ -40,7 +40,7 @@ final class SampleProfiles {
         if (customer.number().equals(JOHN)) {
             return johnSmith(customer);
         }
-        return new CustomerProfile(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        return new CustomerProfile(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
     private static Customer customer(String number, String title, String firstName,
@@ -70,6 +70,10 @@ final class SampleProfiles {
         List<DocumentRow> documents = List.of(
                 new DocumentRow(1, "Proof of Identity", "PassportPhoto.png"),
                 new DocumentRow(2, "Proof of Address", "PowerBill.pdf"));
-        return new CustomerProfile(customer, addresses, phones, emails, employers, loans, documents);
+        List<NoteRow> notes = List.of(
+                new NoteRow(1, "Initial account setup", "Peter Smith", LocalDate.of(2025, 7, 1)),
+                new NoteRow(2, "Loan query", "Peter Smith", LocalDate.of(2025, 7, 3)),
+                new NoteRow(3, "Change of address", "Maramā Lee", LocalDate.of(2025, 9, 12)));
+        return new CustomerProfile(customer, addresses, phones, emails, employers, loans, documents, notes);
     }
 }

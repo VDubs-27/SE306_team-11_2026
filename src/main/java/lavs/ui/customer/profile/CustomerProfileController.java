@@ -31,12 +31,14 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private Tab employmentTab;
     @FXML private Tab loansTab;
     @FXML private Tab documentsTab;
+    @FXML private Tab notesTab;
     @FXML private DetailsTabController detailsController;
     @FXML private AddressesTabController addressesController;
     @FXML private ContactsTabController contactsController;
     @FXML private EmploymentTabController employmentController;
     @FXML private LoansTabController loansController;
     @FXML private DocumentsTabController documentsController;
+    @FXML private NotesTabController notesController;
 
     private Navigator navigator;
 
@@ -61,11 +63,13 @@ public class CustomerProfileController implements NavigatorAware {
         employmentController.show(profile.employers());
         loansController.show(profile.loans());
         documentsController.show(profile.documents());
+        notesController.show(profile.notes());
         setCount(addressesTab, profile.addresses().size());
         setCount(contactsTab, profile.phones().size() + profile.emails().size());
         setCount(employmentTab, profile.employers().size());
         setCount(loansTab, profile.loans().size());
         setCount(documentsTab, profile.documents().size());
+        setCount(notesTab, profile.notes().size());
     }
 
     @FXML

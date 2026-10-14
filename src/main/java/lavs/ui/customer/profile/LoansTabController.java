@@ -5,22 +5,15 @@ import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 
 import lavs.logic.model.loan.Loan;
 
 /** The Loans tab: a table of the customer's loans. */
 public class LoansTabController {
-
-    /** Row height from .table-row-cell in app.css. */
-    private static final double ROW_HEIGHT = 52;
-    /** Column header row plus the table's 1px border top and bottom, with a pixel spare. */
-    private static final double HEADER_HEIGHT = 46;
 
     @FXML private TableView<Loan.Summary> loansTable;
     @FXML private TableColumn<Loan.Summary, String> loanNumberColumn;
@@ -61,43 +54,11 @@ public class LoansTabController {
             }
         });
 
-        arrowColumn.setCellFactory(column -> new TableCell<>() {
-            private final Label chevron = new Label("›");
-
-            {
-                chevron.getStyleClass().add("row-chevron");
-                setAlignment(Pos.CENTER_RIGHT);
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : chevron);
-            }
-        });
-
-        loansTable.setRowFactory(table -> {
-            TableRow<Loan.Summary> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (!row.isEmpty()) {
-                    handleOpenLoan(row.getItem());
-                }
-            });
-            return row;
-        });
-        loansTable.setFixedCellSize(ROW_HEIGHT);
+        ProfileTables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
     }
 
     void show(List<Loan.Summary> loans) {
-        loansTable.getItems().setAll(loans);
-        // Just tall enough for the rows, so short lists don't leave a block of empty table
-        loansTable.setPrefHeight(HEADER_HEIGHT + loans.size() * ROW_HEIGHT);
-
-        boolean hasLoans = !loans.isEmpty();
-        loansTable.setVisible(hasLoans);
-        loansTable.setManaged(hasLoans);
-        emptyState.setVisible(!hasLoans);
-        emptyState.setManaged(!hasLoans);
+        ProfileTables.show(loansTable, emptyState, loans);
     }
 
     private void handleOpenLoan(Loan.Summary loan) {

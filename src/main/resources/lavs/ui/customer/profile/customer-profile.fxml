@@ -52,8 +52,8 @@
                     <Tab fx:id="documentsTab" text="Documents">
                         <fx:include fx:id="documents" source="documents-tab.fxml"/>
                     </Tab>
-                    <Tab text="Notes">
-                        <VBox spacing="12"/>
+                    <Tab fx:id="notesTab" text="Notes">
+                        <fx:include fx:id="notes" source="notes-tab.fxml"/>
                     </Tab>
                 </TabPane>
             </VBox>

@@ -17,5 +17,6 @@ public record CustomerProfile(
         List<Email> emails,
         List<Employer> employers,
         List<Loan.Summary> loans,
-        List<DocumentRow> documents) {
+        List<DocumentRow> documents,
+        List<NoteRow> notes) {
 }
