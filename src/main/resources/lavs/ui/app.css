@@ -257,6 +257,8 @@
 .badge-outline  { -fx-background-color: white; -fx-border-color: -brand-blue; -fx-text-fill: -brand-blue; }
 .badge-active   { -fx-background-color: -success-tint; -fx-border-color: -success-border; -fx-text-fill: -success-text; }
 .badge-neutral  { -fx-background-color: -subtle-bg; -fx-text-fill: #3a3d52; }
+.badge .badge-icon { -fx-fill: transparent; -fx-stroke-width: 1.2; }
+.badge-mailing .badge-icon { -fx-stroke: -brand-blue; }
 
 .chip-met {
     -fx-background-color: -success-tint;
@@ -300,7 +302,7 @@
     -fx-spacing: 16;
     -fx-alignment: center-left;
 }
-.record-tile .tile-type { -fx-text-fill: -text-muted; -fx-min-width: 140; }
+.record-tile .tile-type { -fx-text-fill: -text-muted; -fx-font-weight: bold; -fx-min-width: 140; }
 .record-tile .tile-line1 { -fx-font-weight: bold; }
 .record-tile .tile-line2 { -fx-text-fill: -text-muted; }
 

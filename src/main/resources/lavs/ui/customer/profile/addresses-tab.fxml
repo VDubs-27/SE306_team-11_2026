@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.AddressesTabController"
+      spacing="12">
+    <VBox fx:id="addressList" spacing="12"/>
+    <Button text="+  Add address" styleClass="button-add" onAction="#handleAddAddress"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Loan documents go to the mailing address. A customer needs a mailing address and at least one phone or email before a new loan can start."/>
+    </HBox>
+</VBox>

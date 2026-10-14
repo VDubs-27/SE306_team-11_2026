@@ -38,7 +38,7 @@
                         <fx:include fx:id="details" source="details-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="addressesTab" text="Addresses">
-                        <VBox fx:id="addressesContent" spacing="12"/>
+                        <fx:include fx:id="addresses" source="addresses-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="contactsTab" text="Contacts">
                         <VBox fx:id="contactsContent" spacing="12"/>
