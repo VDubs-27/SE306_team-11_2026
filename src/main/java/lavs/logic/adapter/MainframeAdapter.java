@@ -5,10 +5,11 @@ import java.util.Objects;
 import mainframe.client.Connection;
 import mainframe.client.Message;
 import mainframe.client.Status;
+import mainframe.client.StatusMessage;
 
 public class MainframeAdapter {
     private static final String NETWORK_FAILURE_TEXT =
-            "Could not reach the mainframe. Try again later.";
+            "Could not reach the mainframe. Check the connection and try again.";
     private static final String REJECTED_TEXT = "The mainframe rejected the request.";
 
     private final Connection connection;
@@ -22,7 +23,7 @@ public class MainframeAdapter {
         try {
             status = message.send(connection);
         } catch (IOException e) {
-            throw new MainframeException(MainframeException.NETWORK_FAILURE, NETWORK_FAILURE_TEXT, e);
+            throw new MainframeException(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode(), NETWORK_FAILURE_TEXT, e);
         }
         if (!status.getWasSuccessful()) {
             throw new MainframeException(status.getErrorCode(), describe(status));
@@ -31,7 +32,8 @@ public class MainframeAdapter {
     }
 
     private static String describe(Status status) {
-        if (status.getErrorCode() == MainframeException.NETWORK_FAILURE) {
+        int code = status.getErrorCode();
+        if (code == StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode()) {
             return NETWORK_FAILURE_TEXT;
         }
         String message = status.getErrorMessage();

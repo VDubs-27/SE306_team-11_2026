@@ -1,8 +1,8 @@
 package lavs.logic.adapter;
 
+import mainframe.client.StatusMessage;
+
 public class MainframeException extends RuntimeException {
-    public static final int SERVER_ERROR = 3;
-    public static final int NETWORK_FAILURE = 10;
 
     private final int errorCode;
 
@@ -21,10 +21,10 @@ public class MainframeException extends RuntimeException {
     }
 
     public boolean isNetworkFailure() {
-        return errorCode == NETWORK_FAILURE;
+        return errorCode == StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode();
     }
 
     public boolean isServerError() {
-        return errorCode == SERVER_ERROR;
+        return errorCode == StatusMessage.SERVER_FAILURE.getCode();
     }
 }
