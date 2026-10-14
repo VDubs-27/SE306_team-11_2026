@@ -6,6 +6,7 @@ import java.util.List;
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.customer.Email;
+import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 
 /**
@@ -19,6 +20,8 @@ final class NewCustomerDraft {
     private final List<Address.Details> addresses = new ArrayList<>();
     private final List<Phone.Details> phones = new ArrayList<>();
     private final List<Email.Details> emails = new ArrayList<>();
+    private final List<Employer.Details> employers = new ArrayList<>();
+    private boolean employed = true;
 
     /** The customer's personal details, once the Details step has passed its check; null before. */
     Customer.Details details() {
@@ -42,5 +45,19 @@ final class NewCustomerDraft {
     /** The email addresses added so far. The Contacts step edits this list. */
     List<Email.Details> emails() {
         return emails;
+    }
+
+    /** The employers added so far. The Employment step edits this list. */
+    List<Employer.Details> employers() {
+        return employers;
+    }
+
+    /** False when the customer isn't employed; their employer list is then ignored. */
+    boolean isEmployed() {
+        return employed;
+    }
+
+    void setEmployed(boolean employed) {
+        this.employed = employed;
     }
 }

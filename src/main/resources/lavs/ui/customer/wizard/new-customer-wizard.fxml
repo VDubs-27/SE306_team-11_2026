@@ -10,11 +10,8 @@
         <fx:include fx:id="details" source="details-step.fxml"/>
         <fx:include fx:id="addresses" source="addresses-step.fxml"/>
         <fx:include fx:id="contacts" source="contacts-step.fxml"/>
+        <fx:include fx:id="employment" source="employment-step.fxml"/>
         <!-- Placeholders until each step is built -->
-        <VBox fx:id="employmentStep" styleClass="card">
-            <Label text="Employment" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
         <VBox fx:id="reviewStep" styleClass="card">
             <Label text="Ready to save" styleClass="section-heading"/>
             <Label text="Coming soon." styleClass="text-muted"/>
