@@ -16,7 +16,7 @@ public record CustomerProfile(
         List<Phone> phones,
         List<Email> emails,
         List<Employer> employers,
-        List<Loan.Summary> loans,
+        List<Loan> loans,
         List<DocumentRow> documents,
         List<NoteRow> notes) {
 }

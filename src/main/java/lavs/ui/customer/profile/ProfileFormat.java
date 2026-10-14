@@ -42,6 +42,11 @@ final class ProfileFormat {
         return new DecimalFormat(pattern, SYMBOLS).format(amount);
     }
 
+    /** Always with cents, e.g. "$1,050.00", for amounts like repayments; a dash when there's no amount. */
+    static String moneyWithCents(BigDecimal amount) {
+        return amount == null ? NOT_RECORDED : new DecimalFormat("$#,##0.00", SYMBOLS).format(amount);
+    }
+
     /** e.g. "184 KB" or "1.2 MB". */
     static String fileSize(long bytes) {
         if (bytes < KILOBYTE) {

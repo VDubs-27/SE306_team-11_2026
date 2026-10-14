@@ -65,9 +65,15 @@ final class SampleProfiles {
         List<Employer> employers = List.of(
                 new Employer(1, JOHN, Employer.Type.PRIMARY, "Harbour Engineering Ltd",
                         "Project Manager", new BigDecimal("98000")));
-        List<Loan.Summary> loans = List.of(
-                new Loan.Summary(new LoanNumber("L-10023"), JOHN, Loan.Status.ACTIVE,
-                        new BigDecimal("450000"), LocalDate.of(2021, 6, 1)));
+        List<Loan> loans = List.of(
+                new Loan(new LoanNumber("01-0013-5810482-001"), JOHN, Loan.Status.PENDING,
+                        new BigDecimal("450000"), Loan.RateType.FIXED, new BigDecimal("6.29"),
+                        Loan.RateFrequency.YEARLY, LocalDate.of(2026, 11, 1), new BigDecimal("1312.14"),
+                        Loan.PaymentFrequency.FORTNIGHTLY, LocalDate.of(2028, 11, 1)),
+                new Loan(new LoanNumber("01-0013-5810482-002"), JOHN, Loan.Status.ACTIVE,
+                        new BigDecimal("120000"), Loan.RateType.FLOATING, new BigDecimal("7.25"),
+                        Loan.RateFrequency.YEARLY, LocalDate.of(2021, 6, 1), new BigDecimal("1050"),
+                        Loan.PaymentFrequency.MONTHLY, LocalDate.of(2027, 6, 1)));
         List<DocumentRow> documents = List.of(
                 new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
                 new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291));

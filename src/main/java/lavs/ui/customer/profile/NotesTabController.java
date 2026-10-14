@@ -36,7 +36,7 @@ public class NotesTabController {
     }
 
     void show(List<NoteRow> notes) {
-        ProfileTables.show(notesTable, emptyState, notes.stream().sorted(NEWEST_FIRST).toList());
+        ProfileTables.show(notesTable, notesTable, emptyState, notes.stream().sorted(NEWEST_FIRST).toList());
     }
 
     @FXML
