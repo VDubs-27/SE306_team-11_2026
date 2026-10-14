@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
+import lavs.logic.model.customer.Customer;
 import lavs.ui.common.Dialogs;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -23,12 +24,14 @@ public class NewCustomerWizardController implements NavigatorAware {
 
     @FXML private Node wizard;
     @FXML private WizardController wizardController;
-    @FXML private Node detailsStep;
+    @FXML private Node details;
+    @FXML private DetailsStepController detailsController;
     @FXML private Node addressesStep;
     @FXML private Node contactsStep;
     @FXML private Node employmentStep;
     @FXML private Node reviewStep;
 
+    private final NewCustomerDraft draft = new NewCustomerDraft();
     private Navigator navigator;
 
     @Override
@@ -45,16 +48,26 @@ public class NewCustomerWizardController implements NavigatorAware {
         wizardController.setOnCancel(this::handleCancel);
         wizardController.setOnFinish(this::handleSave);
         wizardController.setSteps(List.of(
-                new WizardStep("Details", detailsStep),
+                new WizardStep("Details", details, this::checkDetails, null),
                 new WizardStep("Addresses", addressesStep),
                 new WizardStep("Contacts", contactsStep),
                 new WizardStep("Employment", employmentStep),
                 new WizardStep("Review & save", reviewStep)));
     }
 
+    /** Checks the details and, once they pass, puts the customer's name in the header. */
+    private boolean checkDetails() {
+        if (!detailsController.check(draft)) {
+            return false;
+        }
+        Customer.Details entered = draft.details();
+        wizardController.setSubtitle(entered.firstName() + " " + entered.familyName() + " · not yet saved to the mainframe");
+        return true;
+    }
+
+    /** Leaves straight away if nothing has been entered; otherwise asks first. */
     private void handleCancel() {
-        // Later: only ask when something has been entered
-        if (Dialogs.confirm(wizard, "Discard this new customer?",
+        if (!detailsController.hasInput() || Dialogs.confirm(wizard, "Discard this new customer?",
                 "Nothing has been saved to the mainframe yet, so anything entered will be lost.", "Discard")) {
             navigator.back();
         }

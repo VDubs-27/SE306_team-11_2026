@@ -74,6 +74,8 @@
 .card-section {
     -fx-padding: 14 20 14 20;
 }
+/* A line under a card's heading row */
+.card-divider { -fx-border-color: transparent transparent -line-soft transparent; }
 
 /* ===================== Header (shell) ===================== */
 .app-header {
@@ -184,7 +186,8 @@
     -fx-background-color: -error-red, -error-tint;
     -fx-background-insets: 0, 2;
 }
-.field-error-message {
+.field-error-message,
+.field > .label.field-error-message {
     -fx-text-fill: -error-red-text;
     -fx-font-size: 13px;
 }
@@ -605,36 +608,122 @@
     -fx-text-fill: #393A7B;
 }
 
-/* Slim scrollbars: a rounded grey thumb, no track and no arrow buttons.
-   Used by tables and by scrolling pages such as the customer profile. */
-.table-view .scroll-bar:vertical,
-.page-scroll > .scroll-bar:vertical {
+/* Slim scrollbars everywhere (pages, tables, drop-down lists, pop-ups):
+   a rounded grey thumb, no track and no arrow buttons. */
+.scroll-bar {
     -fx-background-color: transparent;
-    -fx-pref-width: 10;
-}
-.table-view .scroll-bar .thumb,
-.page-scroll > .scroll-bar .thumb {
-    -fx-background-color: #c9cad8;
-    -fx-background-radius: 999;
-}
-.page-scroll > .scroll-bar .thumb:hover,
-.page-scroll > .scroll-bar .thumb:pressed {
-    -fx-background-color: #a9abc0;
-}
-.table-view .scroll-bar .increment-button,
-.table-view .scroll-bar .decrement-button,
-.page-scroll > .scroll-bar .increment-button,
-.page-scroll > .scroll-bar .decrement-button {
-    -fx-pref-height: 0;
+    -fx-background-insets: 0;
     -fx-padding: 0;
 }
-.table-view .scroll-bar .increment-arrow,
-.table-view .scroll-bar .decrement-arrow,
-.page-scroll > .scroll-bar .increment-arrow,
-.page-scroll > .scroll-bar .decrement-arrow {
+.scroll-bar:vertical { -fx-pref-width: 10; }
+.scroll-bar:horizontal { -fx-pref-height: 10; }
+.scroll-bar .track,
+.scroll-bar .track-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #c9cad8;
+    -fx-background-insets: 0;
+    -fx-background-radius: 999;
+}
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #a9abc0;
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+    -fx-padding: 0;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
     -fx-shape: "";
     -fx-padding: 0;
 }
+.corner { -fx-background-color: transparent; }
 /* Keep the page's thumb off the window edge */
 .page-scroll > .scroll-bar:vertical { -fx-padding: 4 2 4 0; }
-.page-scroll > .corner { -fx-background-color: transparent; }
+/* Keep a drop-down list's thumb inside its rounded corners */
+.combo-box-popup .scroll-bar:vertical { -fx-padding: 2 0 2 4; }
+
+/* ===================== Date picker ===================== */
+/* The icon in the field: an outlined calendar instead of the default grid.
+   The inner rectangle runs the other way round, which leaves it as a hole. */
+.date-picker > .arrow-button > .arrow {
+    -fx-shape: "M1 3H15V15H1Z M2.5 6.5V13.5H13.5V6.5Z M4 1H5.5V4H4Z M10.5 1H12V4H10.5Z";
+    -fx-scale-shape: true;
+    -fx-background-color: -text-soft;
+    -fx-padding: 8;
+}
+
+/* The calendar that drops down */
+.date-picker-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -line;
+    -fx-border-radius: 12;
+    -fx-padding: 8;
+    -fx-spacing: 4;
+    -fx-effect: dropshadow(gaussian, rgba(31, 33, 48, 0.12), 16, 0, 0, 4);
+}
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 4 4 8 4;
+}
+.date-picker-popup > * > .spinner > .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -text;
+}
+.date-picker-popup > * > .spinner > .button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-padding: 4 8 4 8;
+    -fx-cursor: hand;
+}
+.date-picker-popup > * > .spinner > .button:hover { -fx-background-color: -subtle-bg; }
+.date-picker-popup > * > .spinner > .button > .left-arrow,
+.date-picker-popup > * > .spinner > .button > .right-arrow {
+    -fx-background-color: -brand-blue;
+}
+.date-picker-popup > .calendar-grid {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-hgap: 2;
+    -fx-vgap: 2;
+}
+.date-picker-popup > * > .day-name-cell {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 0 6 0;
+}
+.date-picker-popup > * > .date-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-border-color: transparent;
+    -fx-border-radius: 999;
+    -fx-text-fill: -text;
+    -fx-alignment: center;
+    -fx-padding: 6;
+    -fx-min-width: 38;
+}
+.date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: -brand-blue-tint;
+    -fx-cursor: hand;
+}
+.date-picker-popup > * > .previous-month,
+.date-picker-popup > * > .next-month {
+    -fx-text-fill: #a9abc0;
+}
+.date-picker-popup > * > .today {
+    -fx-border-color: -brand-blue;
+    -fx-border-width: 1.5;
+}
+.date-picker-popup > * > .selected,
+.date-picker-popup > * > .selected:hover {
+    -fx-background-color: -brand-blue;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}

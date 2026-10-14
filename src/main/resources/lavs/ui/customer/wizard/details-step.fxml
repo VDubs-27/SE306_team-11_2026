@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.wizard.DetailsStepController"
+      styleClass="card, card-flush">
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Customer details" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="All fields are required unless marked optional" styleClass="text-muted, text-small"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="16">
+        <GridPane hgap="16" vgap="14">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.3"/>
+                <ColumnConstraints percentWidth="33.3"/>
+                <ColumnConstraints percentWidth="33.3"/>
+            </columnConstraints>
+
+            <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="Title (optional)"/>
+                <ComboBox fx:id="titleBox" promptText="Select" maxWidth="Infinity"/>
+                <Label fx:id="titleError" styleClass="field-error-message" wrapText="true"/>
+            </VBox>
+            <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="First name"/>
+                <TextField fx:id="firstNameField"/>
+                <Label fx:id="firstNameError" styleClass="field-error-message" wrapText="true"/>
+            </VBox>
+            <VBox styleClass="field" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <Label text="Surname"/>
+                <TextField fx:id="familyNameField"/>
+                <Label fx:id="familyNameError" styleClass="field-error-message" wrapText="true"/>
+            </VBox>
+
+            <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label text="Date of birth (optional)"/>
+                <DatePicker fx:id="dateOfBirthPicker" maxWidth="Infinity"/>
+                <Label fx:id="dateOfBirthError" styleClass="field-error-message" wrapText="true"/>
+            </VBox>
+            <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label text="Nationality (optional)"/>
+                <ComboBox fx:id="nationalityBox" promptText="Select" maxWidth="Infinity"/>
+                <Label fx:id="nationalityError" styleClass="field-error-message" wrapText="true"/>
+            </VBox>
+        </GridPane>
+
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Check each detail with the customer. Titles and nationalities come from the mainframe's category lists."/>
+        </HBox>
+    </VBox>
+</VBox>
