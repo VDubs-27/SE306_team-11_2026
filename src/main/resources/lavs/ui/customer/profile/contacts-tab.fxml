@@ -6,6 +6,11 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.customer.profile.ContactsTabController"
       spacing="16">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing -->
+        <fx:include fx:id="phoneForm" source="/lavs/ui/customer/forms/phone-form.fxml"/>
+        <fx:include fx:id="emailForm" source="/lavs/ui/customer/forms/email-form.fxml"/>
+    </fx:define>
     <!-- Phones on the left, emails on the right -->
     <GridPane hgap="20">
         <columnConstraints>
