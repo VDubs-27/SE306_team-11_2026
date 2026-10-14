@@ -4,11 +4,13 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.LongFunction;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Phone;
 
@@ -17,17 +19,44 @@ public class ContactsTabController {
 
     @FXML private VBox phoneList;
     @FXML private VBox emailList;
+    @FXML private PagerController phonePagerController;
+    @FXML private PagerController emailPagerController;
 
-    void show(List<Phone> phones, List<Email> emails) {
-        RecordTiles.fill(phoneList, phones.stream()
+    private LongFunction<Page<Phone>> loadPhones = page -> new Page<>(List.of(), 1, 1, 0);
+    private LongFunction<Page<Email>> loadEmails = page -> new Page<>(List.of(), 1, 1, 0);
+
+    @FXML
+    private void initialize() {
+        phonePagerController.setOnPageRequested(this::showPhones);
+        emailPagerController.setOnPageRequested(this::showEmails);
+    }
+
+    /** Shows the first page of each list and returns how many contacts there are altogether, for the tab's count. */
+    long show(LongFunction<Page<Phone>> loadPhones, LongFunction<Page<Email>> loadEmails) {
+        this.loadPhones = loadPhones;
+        this.loadEmails = loadEmails;
+        return showPhones(1).total() + showEmails(1).total();
+    }
+
+    private Page<Phone> showPhones(long pageNumber) {
+        Page<Phone> page = loadPhones.apply(pageNumber);
+        RecordTiles.fill(phoneList, page.items().stream()
                 .map(phone -> RecordTiles.captionTile(typeName(phone), number(phone),
                         badges(phone), () -> handleEditPhone(phone)))
                 .toList(), "No phone numbers recorded.");
-        RecordTiles.fill(emailList, emails.stream()
+        phonePagerController.show(page);
+        return page;
+    }
+
+    private Page<Email> showEmails(long pageNumber) {
+        Page<Email> page = loadEmails.apply(pageNumber);
+        RecordTiles.fill(emailList, page.items().stream()
                 .map(email -> RecordTiles.captionTile(typeName(email), email.address(),
                         email.isPrimary() ? List.of(RecordTiles.primaryBadge()) : List.of(),
                         () -> handleEditEmail(email)))
                 .toList(), "No email addresses recorded.");
+        emailPagerController.show(page);
+        return page;
     }
 
     @FXML

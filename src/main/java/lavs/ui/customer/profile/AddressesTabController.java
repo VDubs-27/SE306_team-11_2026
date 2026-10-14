@@ -4,6 +4,7 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.LongFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 
 /** The Addresses tab: one tile per address, plus a way to add another. */
@@ -20,12 +22,29 @@ public class AddressesTabController {
     private static final String HOME_COUNTRY = "New Zealand";
 
     @FXML private VBox addressList;
+    @FXML private PagerController pagerController;
 
-    void show(List<Address> addresses) {
-        RecordTiles.fill(addressList, addresses.stream()
+    private LongFunction<Page<Address>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
+
+    @FXML
+    private void initialize() {
+        pagerController.setOnPageRequested(this::showPage);
+    }
+
+    /** Shows the first page and returns how many there are altogether, for the tab's count. */
+    long show(LongFunction<Page<Address>> loadPage) {
+        this.loadPage = loadPage;
+        return showPage(1).total();
+    }
+
+    private Page<Address> showPage(long pageNumber) {
+        Page<Address> page = loadPage.apply(pageNumber);
+        RecordTiles.fill(addressList, page.items().stream()
                 .map(address -> RecordTiles.tile(typeName(address), street(address), locality(address),
                         badges(address), () -> handleEditAddress(address)))
                 .toList(), "No addresses recorded.");
+        pagerController.show(page);
+        return page;
     }
 
     @FXML

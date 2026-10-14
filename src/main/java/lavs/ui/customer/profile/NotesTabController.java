@@ -38,16 +38,17 @@ public class NotesTabController {
         pagerController.setOnPageRequested(this::showPage);
     }
 
-    /** Shows the first page; loadPage fetches any page by number when the user moves between them. */
-    void show(LongFunction<Page<NoteRow>> loadPage) {
+    /** Shows the first page and returns how many there are altogether, for the tab's count. */
+    long show(LongFunction<Page<NoteRow>> loadPage) {
         this.loadPage = loadPage;
-        showPage(1);
+        return showPage(1).total();
     }
 
-    private void showPage(long pageNumber) {
+    private Page<NoteRow> showPage(long pageNumber) {
         Page<NoteRow> page = loadPage.apply(pageNumber);
         RecordTiles.fill(noteList, page.items().stream().map(this::card).toList(), "No notes recorded.");
         pagerController.show(page);
+        return page;
     }
 
     @FXML

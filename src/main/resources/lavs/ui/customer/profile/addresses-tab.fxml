@@ -6,6 +6,7 @@
       fx:controller="lavs.ui.customer.profile.AddressesTabController"
       spacing="12">
     <VBox fx:id="addressList" spacing="12"/>
+    <fx:include fx:id="pager" source="pager.fxml"/>
     <Button text="+  Add address" styleClass="button-add" onAction="#handleAddAddress"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>

@@ -74,18 +74,19 @@ public class CustomerProfileController implements NavigatorAware {
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         showSummary(profile);
         detailsController.show(profile.customer());
-        addressesController.show(profile.addresses());
-        contactsController.show(profile.phones(), profile.emails());
-        employmentController.show(profile.employers());
-        loansController.show(page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE));
-        documentsController.show(page -> SampleProfiles.pageOf(profile.documents(), page, PAGE_SIZE));
-        notesController.show(page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE));
-        setCount(addressesTab, profile.addresses().size());
-        setCount(contactsTab, profile.phones().size() + profile.emails().size());
-        setCount(employmentTab, profile.employers().size());
-        setCount(loansTab, profile.loans().size());
-        setCount(documentsTab, profile.documents().size());
-        setCount(notesTab, profile.notes().size());
+        setCount(addressesTab, addressesController.show(
+                page -> SampleProfiles.pageOf(profile.addresses(), page, PAGE_SIZE)));
+        setCount(contactsTab, contactsController.show(
+                page -> SampleProfiles.pageOf(profile.phones(), page, PAGE_SIZE),
+                page -> SampleProfiles.pageOf(profile.emails(), page, PAGE_SIZE)));
+        setCount(employmentTab, employmentController.show(
+                page -> SampleProfiles.pageOf(profile.employers(), page, PAGE_SIZE)));
+        setCount(loansTab, loansController.show(
+                page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE)));
+        setCount(documentsTab, documentsController.show(
+                page -> SampleProfiles.pageOf(profile.documents(), page, PAGE_SIZE)));
+        setCount(notesTab, notesController.show(
+                page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE)));
     }
 
     @FXML
@@ -150,7 +151,7 @@ public class CustomerProfileController implements NavigatorAware {
     }
 
     /** Puts a small count pill beside the tab name. */
-    private static void setCount(Tab tab, int count) {
+    private static void setCount(Tab tab, long count) {
         Label countLabel = new Label(String.valueOf(count));
         countLabel.getStyleClass().add("tab-count");
         tab.setGraphic(countLabel);

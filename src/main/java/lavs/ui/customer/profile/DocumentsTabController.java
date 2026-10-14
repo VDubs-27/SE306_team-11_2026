@@ -27,19 +27,20 @@ public class DocumentsTabController {
         pagerController.setOnPageRequested(this::showPage);
     }
 
-    /** Shows the first page; loadPage fetches any page by number when the user moves between them. */
-    void show(LongFunction<Page<DocumentRow>> loadPage) {
+    /** Shows the first page and returns how many there are altogether, for the tab's count. */
+    long show(LongFunction<Page<DocumentRow>> loadPage) {
         this.loadPage = loadPage;
-        showPage(1);
+        return showPage(1).total();
     }
 
-    private void showPage(long pageNumber) {
+    private Page<DocumentRow> showPage(long pageNumber) {
         Page<DocumentRow> page = loadPage.apply(pageNumber);
         RecordTiles.fill(documentList, page.items().stream()
                 .map(document -> RecordTiles.iconTile(fileIcon(), document.fileName(), details(document),
                         badges(document), () -> handleEditDocument(document)))
                 .toList(), "No documents recorded.");
         pagerController.show(page);
+        return page;
     }
 
     @FXML
