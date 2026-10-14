@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.DetailsTabController"
+      spacing="16">
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Personal details" styleClass="heading-2"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Edit details" styleClass="button-secondary"
+                onAction="#handleEditDetails"/>
+    </HBox>
+    <GridPane styleClass="detail-grid" hgap="24" vgap="16">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="Title" styleClass="detail-label"/>
+            <Label fx:id="titleValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="Customer number" styleClass="detail-label"/>
+            <Label fx:id="customerNumberValue" styleClass="detail-value, mono"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="First name" styleClass="detail-label"/>
+            <Label fx:id="firstNameValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Family name" styleClass="detail-label"/>
+            <Label fx:id="familyNameValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Label text="Date of birth" styleClass="detail-label"/>
+            <Label fx:id="dateOfBirthValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label text="Nationality" styleClass="detail-label"/>
+            <Label fx:id="nationalityValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <Label text="Status" styleClass="detail-label"/>
+            <Label fx:id="statusValue" styleClass="detail-value"/>
+        </VBox>
+    </GridPane>
+</VBox>

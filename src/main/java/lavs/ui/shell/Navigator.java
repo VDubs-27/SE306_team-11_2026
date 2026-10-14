@@ -10,7 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
-import lavs.ui.customer.CustomerProfileController;
+import lavs.ui.customer.profile.CustomerProfileController;
 
 /**
  * Owns all screen switching. Controllers ask the navigator to move;
@@ -51,7 +51,7 @@ public class Navigator {
 
     /** Shows one customer's profile below the header. */
     public void showCustomerProfile(String customerNumber) {
-        FXMLLoader loader = load("/lavs/ui/customer/customer-profile.fxml");
+        FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
         CustomerProfileController controller = loader.getController();
         controller.showCustomer(customerNumber);
         show(loader.getRoot());

@@ -1,4 +1,4 @@
-package lavs.ui.customer;
+package lavs.ui.customer.profile;
 
 import java.util.List;
 
