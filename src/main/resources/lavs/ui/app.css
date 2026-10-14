@@ -550,23 +550,34 @@
 }
 .wizard-icon-glyph { -fx-fill: transparent; -fx-stroke: -brand-blue; -fx-stroke-width: 1.4; }
 
-/* ===================== Pop-up forms ===================== */
-.form-dialog {
+/* ===================== Pop-ups (Modal) ===================== */
+/* The screen behind a pop-up: dimmed, and it takes the clicks so nothing behind can be used */
+.modal-scrim { -fx-background-color: rgba(31, 33, 48, 0.38); }
+.modal-card {
     -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: -line;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(31, 33, 48, 0.22), 28, 0, 0, 8);
+    -fx-min-width: 420;
+}
+.modal-header { -fx-padding: 18 18 6 24; -fx-spacing: 12; }
+.modal-body { -fx-padding: 10 24 8 24; }
+.modal-footer {
+    -fx-padding: 14 24 20 24;
+    -fx-border-color: -line-soft transparent transparent transparent;
+}
+.modal-close {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 14px;
+    -fx-min-width: 32; -fx-min-height: 32;
+    -fx-max-width: 32; -fx-max-height: 32;
     -fx-padding: 0;
+    -fx-cursor: hand;
 }
-.form-dialog > .header-panel {
-    -fx-background-color: white;
-    -fx-padding: 18 24 6 24;
-    -fx-border-color: transparent;
-}
-.form-dialog > .header-panel > .label {
-    -fx-font-size: 17px;
-    -fx-font-weight: bold;
-    -fx-text-fill: -text;
-}
-.form-dialog > .content { -fx-padding: 12 24 8 24; }
-.form-dialog > .button-bar > .container { -fx-padding: 12 24 20 24; }
+.modal-close:hover { -fx-background-color: -subtle-bg; -fx-text-fill: -text; }
 /* Review & save: the checklist and the summary rows */
 .review-heading { -fx-font-weight: bold; -fx-text-fill: -text; }
 .review-value { -fx-font-weight: bold; -fx-text-fill: -text; }
