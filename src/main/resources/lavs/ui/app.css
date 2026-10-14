@@ -257,6 +257,7 @@
 .badge-outline  { -fx-background-color: white; -fx-border-color: -brand-blue; -fx-text-fill: -brand-blue; }
 .badge-active   { -fx-background-color: -success-tint; -fx-border-color: -success-border; -fx-text-fill: -success-text; }
 .badge-neutral  { -fx-background-color: -subtle-bg; -fx-text-fill: #3a3d52; }
+.badge-error    { -fx-background-color: -error-tint; -fx-border-color: -error-red; -fx-text-fill: -error-red-text; }
 .badge .badge-icon { -fx-fill: transparent; -fx-stroke-width: 1.2; }
 .badge-mailing .badge-icon { -fx-stroke: -brand-blue; }
 

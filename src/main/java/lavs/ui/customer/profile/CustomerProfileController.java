@@ -34,6 +34,7 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private AddressesTabController addressesController;
     @FXML private ContactsTabController contactsController;
     @FXML private EmploymentTabController employmentController;
+    @FXML private LoansTabController loansController;
 
     private Navigator navigator;
 
@@ -56,6 +57,7 @@ public class CustomerProfileController implements NavigatorAware {
         addressesController.show(profile.addresses());
         contactsController.show(profile.phones(), profile.emails());
         employmentController.show(profile.employers());
+        loansController.show(profile.loans());
         setCount(addressesTab, profile.addresses().size());
         setCount(contactsTab, profile.phones().size() + profile.emails().size());
         setCount(employmentTab, profile.employers().size());
