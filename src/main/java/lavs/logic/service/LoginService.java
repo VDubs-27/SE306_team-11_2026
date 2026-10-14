@@ -1,24 +1,21 @@
 package lavs.logic.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import lavs.logic.adapter.MainframeAdapter;
+import lavs.logic.adapter.MainframeException;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
-import mainframe.client.Connection;
-import mainframe.client.Status;
-import mainframe.client.StatusMessage;
 
 public class LoginService {
 
-    static final String NETWORK_FAILURE_MESSAGE = "Could not reach the mainframe. Check the connection and try again.";
     static final String REJECTED_MESSAGE = "The user name or password is incorrect.";
 
-    private final Connection connection;
+    private final MainframeAdapter mainframe;
     private volatile String currentUser;
 
-    public LoginService(Connection connection) {
-        this.connection = Objects.requireNonNull(connection, "connection");
+    public LoginService(MainframeAdapter mainframe) {
+        this.mainframe = Objects.requireNonNull(mainframe, "mainframe");
     }
 
     public LoginResult login(String userName, String password) {
@@ -30,14 +27,10 @@ public class LoginService {
             return LoginResult.invalid(errors);
         }
 
-        Status status;
         try {
-            status = connection.Login(userName, password);
-        } catch (IOException e) {
-            return LoginResult.failed(NETWORK_FAILURE_MESSAGE);
-        }
-        if (!status.getWasSuccessful()) {
-            return LoginResult.failed(describe(status));
+            mainframe.login(userName, password);
+        } catch (MainframeException e) {
+            return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : REJECTED_MESSAGE);
         }
 
         currentUser = userName;
@@ -45,7 +38,7 @@ public class LoginService {
     }
 
     public void logout() {
-        connection.Logout();
+        mainframe.logout();
         currentUser = null;
     }
 
@@ -55,12 +48,5 @@ public class LoginService {
 
     public String getCurrentUser() {
         return currentUser;
-    }
-
-    private static String describe(Status status) {
-        if (status.getErrorCode().equals(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode())) {
-            return NETWORK_FAILURE_MESSAGE;
-        }
-        return REJECTED_MESSAGE;
     }
 }
