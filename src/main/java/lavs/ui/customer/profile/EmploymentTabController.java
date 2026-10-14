@@ -1,8 +1,5 @@
 package lavs.ui.customer.profile;
 
-import static lavs.logic.model.Validation.isBlank;
-
-import java.util.List;
 import java.util.function.LongFunction;
 
 import javafx.fxml.FXML;
@@ -10,7 +7,7 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Employer;
-import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.EmployerRows;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordTiles;
 
@@ -26,9 +23,7 @@ public class EmploymentTabController {
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Employer>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(employerList, items.stream()
-                .map(employer -> RecordTiles.tile(employer.type().code(),
-                        DisplayFormat.orNotRecorded(employer.name()), role(employer),
-                        List.of(), () -> handleEditEmployer(employer)))
+                .map(employer -> EmployerRows.tile(employer.details(), () -> handleEditEmployer(employer)))
                 .toList(), "No employers recorded."));
     }
 
@@ -39,14 +34,5 @@ public class EmploymentTabController {
 
     private void handleEditEmployer(Employer employer) {
         // Later: open the edit employer form for this employer
-    }
-
-    /** e.g. "Project Manager · $98,000 a year", leaving out whichever part is missing. */
-    private static String role(Employer employer) {
-        String salary = employer.salary() == null ? null : DisplayFormat.money(employer.salary()) + " a year";
-        if (isBlank(employer.position())) {
-            return salary;
-        }
-        return salary == null ? employer.position() : employer.position() + " · " + salary;
     }
 }

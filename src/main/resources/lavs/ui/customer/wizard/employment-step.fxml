@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.wizard.EmploymentStepController"
+      styleClass="card, card-flush">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing an employer -->
+        <fx:include fx:id="employerForm" source="/lavs/ui/customer/forms/employer-form.fxml"/>
+        <ToggleGroup fx:id="employmentChoice"/>
+    </fx:define>
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Employment" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Optional" styleClass="chip-unmet"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="12">
+        <!-- Employed / Not employed, as a pill-shaped switch -->
+        <HBox styleClass="segmented" maxWidth="-Infinity">
+            <ToggleButton fx:id="employedButton" text="Employed" toggleGroup="$employmentChoice"/>
+            <ToggleButton fx:id="notEmployedButton" text="Not employed" toggleGroup="$employmentChoice"/>
+        </HBox>
+
+        <VBox fx:id="employedSection" spacing="12">
+            <VBox fx:id="employerList" spacing="12"/>
+            <Button text="+  Add employer" styleClass="button-add" onAction="#handleAddEmployer"/>
+        </VBox>
+
+        <HBox fx:id="errorBanner" styleClass="banner-error">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Add the customer's employer, or choose &quot;Not employed&quot;." wrapText="true"/>
+        </HBox>
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="If the customer is not employed, choose &quot;Not employed&quot; and leave this empty. Any loan will then need a guarantor."/>
+        </HBox>
+    </VBox>
+</VBox>
