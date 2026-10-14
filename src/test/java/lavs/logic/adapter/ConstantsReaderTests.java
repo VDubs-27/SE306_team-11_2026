@@ -71,7 +71,7 @@ class ConstantsReaderTests {
         MessageRequest first = connection.constantRequests().get(0);
         assertAll(
                 () -> assertEquals("1", first.getValue("page")),
-                () -> assertEquals(String.valueOf(ConstantsReader.PAGE_SIZE), first.getValue("size"))
+                () -> assertEquals(String.valueOf(Pages.SIZE), first.getValue("size"))
         );
     }
 
