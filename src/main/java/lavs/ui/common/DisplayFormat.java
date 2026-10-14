@@ -1,4 +1,4 @@
-package lavs.ui.customer.profile;
+package lavs.ui.common;
 
 import static lavs.logic.model.Validation.isBlank;
 
@@ -10,12 +10,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 /**
- * Formatting shared by the profile screen and its tabs.
+ * How values are written on screen: dates, money, file sizes and missing values.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-final class ProfileFormat {
+public final class DisplayFormat {
 
-    static final String NOT_RECORDED = "—";
+    public static final String NOT_RECORDED = "—";
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -23,21 +23,21 @@ final class ProfileFormat {
 
     private static final long KILOBYTE = 1024;
 
-    private ProfileFormat() {
+    private DisplayFormat() {
     }
 
     /** A date as dd/MM/yyyy, or a dash when there isn't one. */
-    static String date(LocalDate date) {
+    public static String date(LocalDate date) {
         return date == null ? NOT_RECORDED : DATE_FORMAT.format(date);
     }
 
     /** The value, or a dash when it is blank. */
-    static String orNotRecorded(String value) {
+    public static String orNotRecorded(String value) {
         return isBlank(value) ? NOT_RECORDED : value;
     }
 
     /** e.g. "$98,000", or "$1,234.50" when there are cents; a dash when there's no amount. */
-    static String money(BigDecimal amount) {
+    public static String money(BigDecimal amount) {
         if (amount == null) {
             return NOT_RECORDED;
         }
@@ -46,12 +46,12 @@ final class ProfileFormat {
     }
 
     /** Always with cents, e.g. "$1,050.00", for amounts like repayments; a dash when there's no amount. */
-    static String moneyWithCents(BigDecimal amount) {
+    public static String moneyWithCents(BigDecimal amount) {
         return amount == null ? NOT_RECORDED : new DecimalFormat("$#,##0.00", SYMBOLS).format(amount);
     }
 
     /** e.g. "184 KB" or "1.2 MB". */
-    static String fileSize(long bytes) {
+    public static String fileSize(long bytes) {
         if (bytes < KILOBYTE) {
             return bytes + " B";
         }

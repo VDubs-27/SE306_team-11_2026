@@ -11,6 +11,7 @@ import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
+import lavs.ui.common.DisplayFormat;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
 public class CustomerProfileController implements NavigatorAware {
@@ -116,7 +117,7 @@ public class CustomerProfileController implements NavigatorAware {
 
         dateOfBirthLabel.setText(customer.dateOfBirth() == null
                 ? ""
-                : "Born " + ProfileFormat.date(customer.dateOfBirth()));
+                : "Born " + DisplayFormat.date(customer.dateOfBirth()));
         showIfPresent(dateOfBirthLabel);
 
         suburbLabel.setText(primarySuburb(profile));

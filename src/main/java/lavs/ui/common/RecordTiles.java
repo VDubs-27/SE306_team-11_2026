@@ -1,4 +1,4 @@
-package lavs.ui.customer.profile;
+package lavs.ui.common;
 
 import java.util.List;
 
@@ -15,23 +15,23 @@ import javafx.scene.layout.VBox;
  * Builds the bordered rows used to list addresses, contacts and employers.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-final class RecordTiles {
+public final class RecordTiles {
 
     private RecordTiles() {
     }
 
     /** A row: type on the left, two lines of detail, then any badges and an Edit button. */
-    static HBox tile(String type, String line1, String line2, List<Label> badges, Runnable onEdit) {
+    public static HBox tile(String type, String line1, String line2, List<Label> badges, Runnable onEdit) {
         return tile(badges, onEdit, styled(new Label(type), "tile-type"), lines(line1, line2));
     }
 
     /** A row led by an icon instead of a type, e.g. a file icon beside a document's name. */
-    static HBox iconTile(Node icon, String line1, String line2, List<Label> badges, Runnable onEdit) {
+    public static HBox iconTile(Node icon, String line1, String line2, List<Label> badges, Runnable onEdit) {
         return tile(badges, onEdit, icon, lines(line1, line2));
     }
 
     /** A compact row for narrow columns: a small caption above the value, e.g. "Mobile" over the number. */
-    static HBox captionTile(String caption, String value, List<Label> badges, Runnable onEdit) {
+    public static HBox captionTile(String caption, String value, List<Label> badges, Runnable onEdit) {
         VBox text = new VBox(2, styled(new Label(caption), "tile-caption"), styled(new Label(value), "tile-value"));
         text.setAlignment(Pos.CENTER_LEFT);
         HBox tile = tile(badges, onEdit, text);
@@ -68,7 +68,7 @@ final class RecordTiles {
     }
 
     /** Shows the tiles in a list, or a short message when there are none. */
-    static void fill(VBox list, List<? extends Node> tiles, String emptyMessage) {
+    public static void fill(VBox list, List<? extends Node> tiles, String emptyMessage) {
         if (tiles.isEmpty()) {
             list.getChildren().setAll(styled(new Label(emptyMessage), "text-muted"));
         } else {
@@ -77,12 +77,12 @@ final class RecordTiles {
     }
 
     /** The badge marking a customer's main address, phone or email. */
-    static Label primaryBadge() {
+    public static Label primaryBadge() {
         return badge("✓ Primary", "badge-primary");
     }
 
     /** A small pill such as "Primary" or "Mailing". */
-    static Label badge(String text, String styleClass) {
+    public static Label badge(String text, String styleClass) {
         Label badge = new Label(text);
         badge.getStyleClass().addAll("badge", styleClass);
         return badge;

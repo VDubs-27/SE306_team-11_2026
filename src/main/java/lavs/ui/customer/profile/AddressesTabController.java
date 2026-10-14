@@ -15,6 +15,8 @@ import javafx.scene.shape.SVGPath;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Addresses tab: one tile per address, plus a way to add another.

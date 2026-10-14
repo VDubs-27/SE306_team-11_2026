@@ -1,4 +1,4 @@
-package lavs.ui.customer.profile;
+package lavs.ui.common;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ import javafx.scene.layout.HBox;
 import lavs.logic.model.Page;
 
 /**
- * Pages a list in a profile tab: loads a page, has the tab draw its items, and keeps the
+ * Pages a list on screen, such as a profile tab: loads a page, has the tab draw its items, and keeps the
  * Prev and Next buttons and "Page x of y" in step.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
@@ -35,7 +35,7 @@ public class PagerController {
      * Shows page 1, then any page the user moves to. loadPage fetches a page by number and draw
      * puts its items on screen. Returns how many items there are altogether, for the tab's count.
      */
-    <T> long show(LongFunction<Page<T>> loadPage, Consumer<List<T>> draw) {
+    public <T> long show(LongFunction<Page<T>> loadPage, Consumer<List<T>> draw) {
         showPage = number -> {
             Page<T> page = loadPage.apply(number);
             draw.accept(page.items());

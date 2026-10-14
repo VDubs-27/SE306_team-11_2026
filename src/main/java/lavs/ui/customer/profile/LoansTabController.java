@@ -14,6 +14,9 @@ import javafx.scene.layout.StackPane;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Loans tab: a table of the customer's loans, a page at a time.
@@ -36,7 +39,7 @@ public class LoansTabController {
         loanNumberColumn.setCellValueFactory(
                 cell -> new SimpleStringProperty(cell.getValue().loanNumber().value()));
         principalColumn.setCellValueFactory(
-                cell -> new SimpleStringProperty(ProfileFormat.money(cell.getValue().principal())));
+                cell -> new SimpleStringProperty(DisplayFormat.money(cell.getValue().principal())));
         repaymentColumn.setCellValueFactory(
                 cell -> new SimpleStringProperty(repayment(cell.getValue())));
         statusColumn.setCellValueFactory(
@@ -78,9 +81,9 @@ public class LoansTabController {
     /** e.g. "$1,312.14 fortnightly". */
     private static String repayment(Loan loan) {
         if (loan.paymentAmount() == null) {
-            return ProfileFormat.NOT_RECORDED;
+            return DisplayFormat.NOT_RECORDED;
         }
-        String amount = ProfileFormat.moneyWithCents(loan.paymentAmount());
+        String amount = DisplayFormat.moneyWithCents(loan.paymentAmount());
         return switch (loan.paymentFrequency()) {
             case ON_RENEWAL -> amount + " on renewal";
             case UNKNOWN -> amount;
