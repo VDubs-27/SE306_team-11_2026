@@ -309,6 +309,14 @@
 .record-tile .tile-caption { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
 .record-tile .tile-value { -fx-font-size: 15px; -fx-text-fill: -text; }
 .record-tile-compact { -fx-padding: 10 14 10 14; -fx-spacing: 10; }
+/* Rounded square holding a file icon, at the start of a document row */
+.file-icon {
+    -fx-background-color: -brand-blue-tint;
+    -fx-background-radius: 8;
+    -fx-min-width: 36; -fx-min-height: 36;
+    -fx-max-width: 36; -fx-max-height: 36;
+}
+.file-icon-glyph { -fx-fill: transparent; -fx-stroke: -brand-blue; -fx-stroke-width: 1.4; }
 /* Smaller Edit/View buttons inside rows */
 .record-tile .button-secondary { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
 

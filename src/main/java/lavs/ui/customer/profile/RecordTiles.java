@@ -19,32 +19,35 @@ final class RecordTiles {
 
     /** A row: type on the left, two lines of detail, then any badges and an Edit button. */
     static HBox tile(String type, String line1, String line2, List<Label> badges, Runnable onEdit) {
-        return tile(type, line1, line2, badges, "Edit", onEdit);
+        return tile(badges, onEdit, styled(new Label(type), "tile-type"), lines(line1, line2));
     }
 
-    /** As above, with a different label on the button, e.g. "View". */
-    static HBox tile(String type, String line1, String line2, List<Label> badges,
-            String actionText, Runnable onAction) {
-        Label typeLabel = styled(new Label(type), "tile-type");
-        VBox lines = new VBox(2, styled(new Label(line1), "tile-line1"));
-        lines.setAlignment(Pos.CENTER_LEFT);
-        if (line2 != null && !line2.isBlank()) {
-            lines.getChildren().add(styled(new Label(line2), "tile-line2"));
-        }
-        return tile(badges, actionText, onAction, typeLabel, lines);
+    /** A row led by an icon instead of a type, e.g. a file icon beside a document's name. */
+    static HBox iconTile(Node icon, String line1, String line2, List<Label> badges, Runnable onEdit) {
+        return tile(badges, onEdit, icon, lines(line1, line2));
     }
 
     /** A compact row for narrow columns: a small caption above the value, e.g. "Mobile" over the number. */
     static HBox captionTile(String caption, String value, List<Label> badges, Runnable onEdit) {
         VBox text = new VBox(2, styled(new Label(caption), "tile-caption"), styled(new Label(value), "tile-value"));
         text.setAlignment(Pos.CENTER_LEFT);
-        HBox tile = tile(badges, "Edit", onEdit, text);
+        HBox tile = tile(badges, onEdit, text);
         tile.getStyleClass().add("record-tile-compact");
         return tile;
     }
 
-    /** The parts every row shares: the given content, then badges and a button on the right. */
-    private static HBox tile(List<Label> badges, String actionText, Runnable onAction, Node... content) {
+    /** A bold first line with an optional muted second line under it. */
+    private static VBox lines(String line1, String line2) {
+        VBox lines = new VBox(2, styled(new Label(line1), "tile-line1"));
+        lines.setAlignment(Pos.CENTER_LEFT);
+        if (line2 != null && !line2.isBlank()) {
+            lines.getChildren().add(styled(new Label(line2), "tile-line2"));
+        }
+        return lines;
+    }
+
+    /** The parts every row shares: the given content, then badges and an Edit button on the right. */
+    private static HBox tile(List<Label> badges, Runnable onEdit, Node... content) {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -52,11 +55,11 @@ final class RecordTiles {
         badgeRow.setAlignment(Pos.CENTER_RIGHT);
         badgeRow.getChildren().setAll(badges);
 
-        Button action = styled(new Button(actionText), "button-secondary");
-        action.setOnAction(event -> onAction.run());
+        Button edit = styled(new Button("Edit"), "button-secondary");
+        edit.setOnAction(event -> onEdit.run());
 
         HBox tile = new HBox(content);
-        tile.getChildren().addAll(spacer, badgeRow, action);
+        tile.getChildren().addAll(spacer, badgeRow, edit);
         tile.getStyleClass().add("record-tile");
         return tile;
     }

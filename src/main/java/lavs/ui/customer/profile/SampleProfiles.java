@@ -69,8 +69,8 @@ final class SampleProfiles {
                 new Loan.Summary(new LoanNumber("L-10023"), JOHN, Loan.Status.ACTIVE,
                         new BigDecimal("450000"), LocalDate.of(2021, 6, 1)));
         List<DocumentRow> documents = List.of(
-                new DocumentRow(1, "Proof of Identity", "PassportPhoto.png"),
-                new DocumentRow(2, "Proof of Address", "PowerBill.pdf"));
+                new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
+                new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291));
         List<NoteRow> notes = List.of(
                 new NoteRow(1, "Initial account setup", "Peter Smith", LocalDate.of(2025, 7, 1)),
                 new NoteRow(2, "Loan query", "Peter Smith", LocalDate.of(2025, 7, 3)),

@@ -1,19 +1,25 @@
 package lavs.ui.customer.profile;
 
+import static lavs.logic.model.Validation.isBlank;
+
 import java.util.List;
+import java.util.Locale;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 
-/** The Documents tab: the files held for the customer, such as proof of identity. */
+/** The Documents tab: the files recorded for the customer, such as a payslip or licence. */
 public class DocumentsTabController {
 
     @FXML private VBox documentList;
 
     void show(List<DocumentRow> documents) {
         RecordTiles.fill(documentList, documents.stream()
-                .map(document -> RecordTiles.tile(ProfileFormat.orNotRecorded(document.type()),
-                        document.fileName(), null, List.of(), "View", () -> handleViewDocument(document)))
+                .map(document -> RecordTiles.iconTile(fileIcon(), document.fileName(), details(document),
+                        badges(document), () -> handleEditDocument(document)))
                 .toList(), "No documents recorded.");
     }
 
@@ -22,7 +28,39 @@ public class DocumentsTabController {
         // Later: open the add document form
     }
 
-    private void handleViewDocument(DocumentRow document) {
+    private void handleEditDocument(DocumentRow document) {
         // Later: open the document details for this document
+    }
+
+    /** e.g. "PDF · 184 KB". */
+    private static String details(DocumentRow document) {
+        return format(document) + " · " + ProfileFormat.fileSize(document.size());
+    }
+
+    /** The file's extension in capitals, or the end of its file type when the name has none. */
+    private static String format(DocumentRow document) {
+        String name = document.fileName();
+        int dot = name.lastIndexOf('.');
+        if (dot >= 0 && dot < name.length() - 1) {
+            return name.substring(dot + 1).toUpperCase(Locale.ROOT);
+        }
+        String fileType = ProfileFormat.orNotRecorded(document.fileType());
+        return fileType.substring(fileType.indexOf('/') + 1).toUpperCase(Locale.ROOT);
+    }
+
+    private static List<Label> badges(DocumentRow document) {
+        return isBlank(document.type())
+                ? List.of()
+                : List.of(RecordTiles.badge(document.type(), "badge-mailing"));
+    }
+
+    /** A page outline with a folded corner, on a small tinted square. */
+    private static StackPane fileIcon() {
+        SVGPath page = new SVGPath();
+        page.setContent("M2 1h7l4 4v10H2z M9 1v4h4");
+        page.getStyleClass().add("file-icon-glyph");
+        StackPane icon = new StackPane(page);
+        icon.getStyleClass().add("file-icon");
+        return icon;
     }
 }

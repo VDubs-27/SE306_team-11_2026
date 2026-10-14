@@ -5,6 +5,11 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.customer.profile.DocumentsTabController"
       spacing="12">
+    <Label text="Documents" styleClass="section-heading"/>
     <VBox fx:id="documentList" spacing="12"/>
     <Button text="+  Add document" styleClass="button-add" onAction="#handleAddDocument"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Choose a file and LAVS records its name, type and size. Only these details are saved; the file itself stays with the customer's paperwork."/>
+    </HBox>
 </VBox>

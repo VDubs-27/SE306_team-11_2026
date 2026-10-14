@@ -18,6 +18,8 @@ final class ProfileFormat {
 
     private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
 
+    private static final long KILOBYTE = 1024;
+
     private ProfileFormat() {
     }
 
@@ -38,5 +40,16 @@ final class ProfileFormat {
         }
         String pattern = amount.stripTrailingZeros().scale() <= 0 ? "$#,##0" : "$#,##0.00";
         return new DecimalFormat(pattern, SYMBOLS).format(amount);
+    }
+
+    /** e.g. "184 KB" or "1.2 MB". */
+    static String fileSize(long bytes) {
+        if (bytes < KILOBYTE) {
+            return bytes + " B";
+        }
+        if (bytes < KILOBYTE * KILOBYTE) {
+            return Math.round(bytes / (double) KILOBYTE) + " KB";
+        }
+        return new DecimalFormat("0.#", SYMBOLS).format(bytes / (double) (KILOBYTE * KILOBYTE)) + " MB";
     }
 }
