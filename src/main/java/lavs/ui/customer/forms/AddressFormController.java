@@ -1,6 +1,5 @@
 package lavs.ui.customer.forms;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javafx.fxml.FXML;
@@ -9,9 +8,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 
 import lavs.logic.model.customer.Address;
+import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
 
 /**
@@ -47,20 +46,7 @@ public class AddressFormController {
 
     @FXML
     private void initialize() {
-        typeBox.getItems().setAll(Arrays.stream(Address.Type.values())
-                .filter(type -> type != Address.Type.UNKNOWN)
-                .toList());
-        typeBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Address.Type type) {
-                return type == null ? "" : type.code();
-            }
-
-            @Override
-            public Address.Type fromString(String text) {
-                return Address.Type.fromCode(text);
-            }
-        });
+        Choices.fill(typeBox, Address.Type.values(), Address.Type.UNKNOWN, Address.Type::code);
         // "Describe the address" only applies to an Other address
         typeBox.valueProperty().addListener((obs, oldType, type) -> showOtherType(type == Address.Type.OTHER));
         errors = new FieldErrors()

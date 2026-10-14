@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.wizard.ContactsStepController"
+      styleClass="card, card-flush">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing -->
+        <fx:include fx:id="phoneForm" source="/lavs/ui/customer/forms/phone-form.fxml"/>
+        <fx:include fx:id="emailForm" source="/lavs/ui/customer/forms/email-form.fxml"/>
+    </fx:define>
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Contact details" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="contactChip" text="✓  Phone or email added" styleClass="chip-met"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="12">
+        <VBox fx:id="contactList" spacing="12"/>
+        <HBox spacing="12">
+            <Button text="+  Add phone" styleClass="button-add" HBox.hgrow="ALWAYS" onAction="#handleAddPhone"/>
+            <Button text="+  Add email" styleClass="button-add" HBox.hgrow="ALWAYS" onAction="#handleAddEmail"/>
+        </HBox>
+        <HBox fx:id="errorBanner" styleClass="banner-error">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Add a phone number or an email address before moving on." wrapText="true"/>
+        </HBox>
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="The customer needs at least one phone number or email address. Mark one of each type as primary."/>
+        </HBox>
+    </VBox>
+</VBox>

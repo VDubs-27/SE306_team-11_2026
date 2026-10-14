@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One email address, shown in a pop-up when adding or editing. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.forms.EmailFormController"
+      spacing="12" prefWidth="520">
+
+    <VBox styleClass="field">
+        <Label text="Email type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox fx:id="otherTypeFieldBox" styleClass="field">
+        <Label text="Describe the email"/>
+        <TextField fx:id="otherTypeField" promptText="e.g. Family"/>
+        <Label fx:id="otherTypeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field">
+        <Label text="Email address"/>
+        <TextField fx:id="addressField" promptText="name@example.co.nz"/>
+        <Label fx:id="addressError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <CheckBox fx:id="primaryBox" text="Primary email"/>
+</VBox>

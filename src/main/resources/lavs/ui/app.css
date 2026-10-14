@@ -195,6 +195,7 @@
 .check-box { -fx-text-fill: -text; }
 .check-box > .box {
     -fx-background-color: -input-border, white;
+    -fx-background-insets: 0, 1.5;
     -fx-background-radius: 4, 3;
 }
 .check-box:selected > .box { -fx-background-color: -brand-blue, -brand-blue; }

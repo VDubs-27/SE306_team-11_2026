@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One phone number, shown in a pop-up when adding or editing. -->
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="lavs.ui.customer.forms.PhoneFormController"
+          hgap="16" vgap="12" prefWidth="520">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="30"/>
+        <ColumnConstraints percentWidth="70"/>
+    </columnConstraints>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+        <Label text="Phone type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox fx:id="otherTypeFieldBox" styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+        <Label text="Describe the phone"/>
+        <TextField fx:id="otherTypeField" promptText="e.g. Partner's phone"/>
+        <Label fx:id="otherTypeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <Label text="Country code"/>
+        <TextField fx:id="countryCodeField" promptText="64"/>
+        <Label fx:id="countryCodeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Label text="Number"/>
+        <TextField fx:id="numberField" promptText="e.g. 21 555 0142"/>
+        <Label fx:id="numberError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+        <CheckBox fx:id="primaryBox" text="Primary phone"/>
+        <CheckBox fx:id="canTextBox" text="Can receive texts"/>
+    </VBox>
+</GridPane>
