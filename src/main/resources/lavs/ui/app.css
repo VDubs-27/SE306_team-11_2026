@@ -407,7 +407,11 @@
 .tab-pane .tab:selected .tab-label { -fx-text-fill: white; -fx-font-weight: bold; }
 .tab-pane .tab:selected .focus-indicator { -fx-border-color: transparent; }
 .tab-pane .tab:disabled .tab-label { -fx-text-fill: #8a8ca0; }
-.tab-pane > .tab-content-area { -fx-background-color: white; -fx-padding: 16; }
+.tab-pane > .tab-content-area {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 16 16;
+    -fx-padding: 16;
+}
 
 /* Tabs are sized to fit, so hide the overflow menu; zero size so no space is kept for it.
    The skin sets its visibility itself, so opacity is used instead. */
@@ -422,6 +426,11 @@
 .tab-pane > .tab-header-area > .control-buttons-tab .arrow {
     -fx-padding: 0;
 }
+
+/* Read-only label/value pairs (customer profile Details tab) */
+.detail { -fx-spacing: 4; }
+.detail-label { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
+.detail-value { -fx-font-size: 15px; }
 
 /* Count pill shown after the tab name */
 .tab-pane .tab .tab-label { -fx-content-display: right; -fx-graphic-text-gap: 8; }

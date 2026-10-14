@@ -17,6 +17,7 @@ import lavs.ui.shell.NavigatorAware;
 public class CustomerProfileController implements NavigatorAware {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final String NOT_RECORDED = "—";
 
     /** Horizontal padding of the tab header area (app.css). */
     private static final double TAB_BAR_PADDING = 24;
@@ -29,6 +30,13 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private Label customerNumberLabel;
     @FXML private Label dateOfBirthLabel;
     @FXML private Label suburbLabel;
+    @FXML private Label titleValue;
+    @FXML private Label customerNumberValue;
+    @FXML private Label firstNameValue;
+    @FXML private Label familyNameValue;
+    @FXML private Label dateOfBirthValue;
+    @FXML private Label nationalityValue;
+    @FXML private Label statusValue;
     @FXML private TabPane tabPane;
     @FXML private Tab addressesTab;
     @FXML private Tab contactsTab;
@@ -52,6 +60,7 @@ public class CustomerProfileController implements NavigatorAware {
         // Later: load the profile from CustomerService in the background
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         showSummary(profile);
+        showDetails(profile.customer());
         setCount(addressesTab, profile.addresses().size());
         setCount(contactsTab, profile.phones().size() + profile.emails().size());
         setCount(employmentTab, profile.employers().size());
@@ -66,6 +75,11 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML
     private void handleNewLoan() {
         // Later: navigator.showNewLoanWizard(customer)
+    }
+
+    @FXML
+    private void handleEditDetails() {
+        // Later: open the edit details form
     }
 
     /** The card at the top: avatar, name, status and key facts. */
@@ -89,6 +103,23 @@ public class CustomerProfileController implements NavigatorAware {
 
         suburbLabel.setText(primarySuburb(profile));
         showIfPresent(suburbLabel);
+    }
+
+    /** The Details tab: the customer's personal details, read-only. */
+    private void showDetails(Customer customer) {
+        titleValue.setText(orNotRecorded(customer.title()));
+        customerNumberValue.setText(customer.number().value());
+        firstNameValue.setText(customer.firstName());
+        familyNameValue.setText(customer.familyName());
+        dateOfBirthValue.setText(customer.dateOfBirth() == null
+                ? NOT_RECORDED
+                : DATE_FORMAT.format(customer.dateOfBirth()));
+        nationalityValue.setText(orNotRecorded(customer.nationality()));
+        statusValue.setText(orNotRecorded(customer.status().code()));
+    }
+
+    private static String orNotRecorded(String value) {
+        return isBlank(value) ? NOT_RECORDED : value;
     }
 
     private static String initials(Customer customer) {
