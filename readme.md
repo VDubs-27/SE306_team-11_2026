@@ -41,6 +41,8 @@ Every pull request runs two GitHub Actions jobs:
   Checkstyle (complexity, nesting depth, fan-out and naming rules) and
   fails if JaCoCo line or branch coverage of `lavs.logic` is below 95%.
   The coverage report is written to `target/site/jacoco/index.html`.
+  `ArchitectureTests` also fails the build if any class outside
+  `lavs.logic.adapter` uses `mainframe.client`.
 * **metrics** (Ubuntu): runs CK on the `lavs` package, fails if the
   depth of inheritance (DIT) or number of children (NOC) targets are
   broken, and adds a CBO, WMC, fan-in and fan-out table to the job summary.
@@ -66,7 +68,8 @@ otherwise Maven will not run them.
 * `src/main/java/lavs/ui/`: user interface layer (screens and controllers).
   Must not use `mainframe.client` directly.
 * `src/main/java/lavs/logic/`: business logic layer (services, validation,
-  domain objects, mainframe adapter).
+  domain objects, mainframe adapter). Only `lavs.logic.adapter` may use
+  `mainframe.client`; services call `MainframeAdapter` instead.
 * `src/main/resources/lavs/ui/`: FXML layouts and CSS.
 * `src/main/java/mainframe/client/`: provided mainframe interface. Do not edit.
 
