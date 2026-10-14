@@ -45,6 +45,7 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private DocumentsTabController documentsController;
     @FXML private NotesTabController notesController;
 
+    private Customer customer;
     private Navigator navigator;
 
     @Override
@@ -74,6 +75,7 @@ public class CustomerProfileController implements NavigatorAware {
     public void showCustomer(String customerNumber) {
         // Later: load the profile from CustomerService in the background
         CustomerProfile profile = SampleProfiles.find(customerNumber);
+        customer = profile.customer();
         showSummary(profile);
         detailsController.show(profile.customer());
         setCount(addressesTab, addressesController.show(
@@ -98,16 +100,14 @@ public class CustomerProfileController implements NavigatorAware {
 
     @FXML
     private void handleNewLoan() {
-        // Later: navigator.showNewLoanWizard(customer)
+        navigator.showNewLoanWizard(customer);
     }
 
     /** The card at the top: avatar, name, status and key facts. */
     private void showSummary(CustomerProfile profile) {
         Customer customer = profile.customer();
-        initialsAvatar.setText(initials(customer));
-        nameLabel.setText(isBlank(customer.title())
-                ? customer.fullName()
-                : customer.title() + " " + customer.fullName());
+        initialsAvatar.setText(DisplayFormat.initials(customer));
+        nameLabel.setText(DisplayFormat.fullNameWithTitle(customer));
         customerNumberLabel.setText(customer.number().value());
 
         statusBadge.setText(customer.status().code());
@@ -122,10 +122,6 @@ public class CustomerProfileController implements NavigatorAware {
 
         suburbLabel.setText(primarySuburb(profile));
         showIfPresent(suburbLabel);
-    }
-
-    private static String initials(Customer customer) {
-        return customer.firstName().substring(0, 1) + customer.familyName().substring(0, 1);
     }
 
     private static String primarySuburb(CustomerProfile profile) {

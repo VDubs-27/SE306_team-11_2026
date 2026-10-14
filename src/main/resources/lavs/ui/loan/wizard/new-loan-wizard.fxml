@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- The shared wizard frame, plus this wizard's steps. The frame shows one step at a time. -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="lavs.ui.loan.wizard.NewLoanWizardController">
+    <fx:define>
+        <!-- Placeholders until each step is built -->
+        <VBox fx:id="loanDetailsStep" styleClass="card">
+            <Label text="Loan details" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="uploadStep" styleClass="card">
+            <Label text="Upload &amp; review" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="coborrowersStep" styleClass="card">
+            <Label text="Co-borrowers and guarantors" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="submitStep" styleClass="card">
+            <Label text="Submit" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+    </fx:define>
+    <fx:include fx:id="wizard" source="/lavs/ui/wizard/wizard.fxml"/>
+</StackPane>
