@@ -10,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
+import lavs.ui.customer.CustomerProfileController;
+
 /**
  * Owns all screen switching. Controllers ask the navigator to move;
  * they never load FXML themselves.
@@ -44,6 +46,14 @@ public class Navigator {
     /** Shows customer search below the header. */
     public void showCustomerSearch() {
         FXMLLoader loader = load("/lavs/ui/customer/customer-search.fxml");
+        show(loader.getRoot());
+    }
+
+    /** Shows one customer's profile below the header. */
+    public void showCustomerProfile(String customerNumber) {
+        FXMLLoader loader = load("/lavs/ui/customer/customer-profile.fxml");
+        CustomerProfileController controller = loader.getController();
+        controller.showCustomer(customerNumber);
         show(loader.getRoot());
     }
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.customer.CustomerProfileController"
+            styleClass="page-scroll" fitToWidth="true">
+    <VBox styleClass="page" alignment="TOP_CENTER">
+        <VBox spacing="16" maxWidth="960">
+
+            <Hyperlink text="‹  Back to search results" onAction="#handleBack"/>
+
+            <!-- Summary card -->
+            <HBox styleClass="card" alignment="CENTER_LEFT">
+                <Label fx:id="initialsAvatar" styleClass="avatar, avatar-large"/>
+                <VBox spacing="4" alignment="CENTER_LEFT">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="nameLabel" styleClass="heading-1"/>
+                        <Label fx:id="statusBadge" styleClass="badge"/>
+                    </HBox>
+                    <HBox spacing="16" alignment="BASELINE_LEFT">
+                        <HBox spacing="6" alignment="BASELINE_LEFT">
+                            <Label text="Customer number" styleClass="text-muted"/>
+                            <Label fx:id="customerNumberLabel" styleClass="mono"/>
+                        </HBox>
+                        <Label fx:id="dateOfBirthLabel" styleClass="text-muted"/>
+                        <Label fx:id="suburbLabel" styleClass="text-muted"/>
+                    </HBox>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+  New loan" styleClass="button-primary" onAction="#handleNewLoan"/>
+            </HBox>
+
+            <!-- Tabs card -->
+            <VBox styleClass="card, card-flush">
+                <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+                    <Tab text="Details">
+                        <VBox fx:id="detailsContent" spacing="12"/>
+                    </Tab>
+                    <Tab fx:id="addressesTab" text="Addresses">
+                        <VBox fx:id="addressesContent" spacing="12"/>
+                    </Tab>
+                    <Tab fx:id="contactsTab" text="Contacts">
+                        <VBox fx:id="contactsContent" spacing="12"/>
+                    </Tab>
+                    <Tab fx:id="employmentTab" text="Employment">
+                        <VBox fx:id="employmentContent" spacing="12"/>
+                    </Tab>
+                    <Tab fx:id="loansTab" text="Loans">
+                        <VBox fx:id="loansContent" spacing="12"/>
+                    </Tab>
+                    <Tab text="Documents">
+                        <VBox spacing="12"/>
+                    </Tab>
+                    <Tab text="Notes">
+                        <VBox spacing="12"/>
+                    </Tab>
+                </TabPane>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

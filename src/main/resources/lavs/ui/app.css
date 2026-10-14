@@ -382,17 +382,24 @@
 }
 
 /* ===================== Tabs (pill style) ===================== */
-.tab-pane > .tab-header-area { -fx-padding: 12 12 0 12; }
+.tab-pane > .tab-header-area {
+    -fx-padding: 12 12 12 12;
+    -fx-border-color: -line-soft;
+    -fx-border-width: 0 0 1 0;
+}
 .tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
 .tab-pane > .tab-header-area > .headers-region {
     -fx-background-color: -subtle-bg;
     -fx-background-radius: 999;
-    -fx-padding: 4;
+    /* Tabs are laid out from the edge regardless of padding, so the gap comes from the tab insets */
+    -fx-padding: 0;
 }
 .tab-pane .tab {
     -fx-background-color: transparent;
     -fx-background-radius: 999;
-    -fx-padding: 6 14 6 14;
+    /* Inset the pill so the grey bar shows around the selected tab */
+    -fx-background-insets: 4;
+    -fx-padding: 10 8 10 8;
     -fx-cursor: hand;
 }
 .tab-pane .tab:selected { -fx-background-color: -brand-blue; }
@@ -401,6 +408,38 @@
 .tab-pane .tab:selected .focus-indicator { -fx-border-color: transparent; }
 .tab-pane .tab:disabled .tab-label { -fx-text-fill: #8a8ca0; }
 .tab-pane > .tab-content-area { -fx-background-color: white; -fx-padding: 16; }
+
+/* Tabs are sized to fit, so hide the overflow menu; zero size so no space is kept for it.
+   The skin sets its visibility itself, so opacity is used instead. */
+.tab-pane > .tab-header-area > .control-buttons-tab {
+    -fx-opacity: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
+.tab-pane > .tab-header-area > .control-buttons-tab .tab-down-button,
+.tab-pane > .tab-header-area > .control-buttons-tab .arrow {
+    -fx-padding: 0;
+}
+
+/* Count pill shown after the tab name */
+.tab-pane .tab .tab-label { -fx-content-display: right; -fx-graphic-text-gap: 8; }
+.tab-count {
+    -fx-background-color: #e4e4ec;
+    -fx-background-radius: 999;
+    -fx-padding: 0 7 0 7;
+    -fx-font-size: 12px;
+    -fx-text-fill: -text-muted;
+}
+.tab-pane .tab:selected .tab-count { -fx-background-color: #5a5b98; -fx-text-fill: white; }
+
+/* Scrolling page: no border, same background as the page */
+.page-scroll, .page-scroll > .viewport {
+    -fx-background-color: -page-bg;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
 
 /* ===================== Wizard stepper ===================== */
 .step-circle {

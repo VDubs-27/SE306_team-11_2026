@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
@@ -78,6 +79,16 @@ public class CustomerSearchController implements NavigatorAware {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : chevron);
             }
+        });
+
+        resultsTable.setRowFactory(table -> {
+            TableRow<CustomerRow> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    navigator.showCustomerProfile(row.getItem().customerNumber());
+                }
+            });
+            return row;
         });
 
         showPrompt();
