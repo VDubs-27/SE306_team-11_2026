@@ -2,6 +2,7 @@ package lavs.logic.service;
 
 import java.io.IOException;
 import java.util.List;
+import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.model.FieldError;
 import mainframe.client.Status;
 import mainframe.client.StubConnection;
@@ -15,7 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class LoginServiceTests {
 
     private final StubConnection connection = new StubConnection();
-    private final LoginService service = new LoginService(connection);
+    private final LoginService service = new LoginService(new MainframeAdapter(connection));
 
     @Test
     void successfulLoginRecordsCurrentUser() {
@@ -44,7 +45,7 @@ class LoginServiceTests {
     void blankFieldsAreRejectedWithoutCallingMainframe(String blank) {
         CountingConnection counting = new CountingConnection();
 
-        LoginResult result = new LoginService(counting).login(blank, blank);
+        LoginResult result = new LoginService(new MainframeAdapter(counting)).login(blank, blank);
 
         Assertions.assertAll(
                 () -> Assertions.assertFalse(result.successful()),
@@ -60,7 +61,7 @@ class LoginServiceTests {
     void blankUserNameOnlyReportsUserName() {
         CountingConnection counting = new CountingConnection();
 
-        LoginResult result = new LoginService(counting).login(" ", "secret");
+        LoginResult result = new LoginService(new MainframeAdapter(counting)).login(" ", "secret");
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(List.of(
@@ -73,7 +74,7 @@ class LoginServiceTests {
     void blankPasswordOnlyReportsPassword() {
         CountingConnection counting = new CountingConnection();
 
-        LoginResult result = new LoginService(counting).login("alice", "");
+        LoginResult result = new LoginService(new MainframeAdapter(counting)).login("alice", "");
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(List.of(
@@ -87,7 +88,7 @@ class LoginServiceTests {
         CountingConnection counting = new CountingConnection();
         counting.setupSuccessfulLoginResult("token", "alice", 42);
 
-        new LoginService(counting).login("alice", "secret");
+        new LoginService(new MainframeAdapter(counting)).login("alice", "secret");
 
         Assertions.assertAll(
                 () -> Assertions.assertEquals(1, counting.calls),
@@ -158,17 +159,18 @@ class LoginServiceTests {
 
     @Test
     void ioExceptionIsReportedAsNetworkFailure() {
-        LoginService failing = new LoginService(new StubConnection() {
+        LoginService failing = new LoginService(new MainframeAdapter(new StubConnection() {
             @Override
             public Status Login(String username, String password) throws IOException {
                 throw new IOException("boom");
             }
-        });
+        }));
 
         LoginResult result = failing.login("alice", "secret");
 
         Assertions.assertAll(
-                () -> Assertions.assertEquals(LoginService.NETWORK_FAILURE_MESSAGE, result.errorMessage()),
+                () -> Assertions.assertEquals("Could not reach the mainframe. Check the connection and try again.",
+                        result.errorMessage()),
                 () -> Assertions.assertFalse(failing.isLoggedIn())
         );
     }
@@ -177,7 +179,7 @@ class LoginServiceTests {
     void logoutClearsCurrentUserAndConnection() {
         CountingConnection counting = new CountingConnection();
         counting.setupSuccessfulLoginResult("token", "alice", 42);
-        LoginService loggedIn = new LoginService(counting);
+        LoginService loggedIn = new LoginService(new MainframeAdapter(counting));
         loggedIn.login("alice", "secret");
 
         loggedIn.logout();
@@ -197,7 +199,7 @@ class LoginServiceTests {
     }
 
     @Test
-    void requiresConnection() {
+    void requiresAdapter() {
         Assertions.assertThrows(NullPointerException.class, () -> new LoginService(null));
     }
 
