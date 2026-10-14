@@ -18,6 +18,7 @@ import lavs.logic.model.Page;
 /**
  * Pages a list in a profile tab: loads a page, has the tab draw its items, and keeps the
  * Prev and Next buttons and "Page x of y" in step.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class PagerController {
 

@@ -11,7 +11,10 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Employer;
 
-/** The Employment tab: the customer's employers. */
+/**
+ * The Employment tab: the customer's employers.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class EmploymentTabController {
 
     @FXML private VBox employerList;

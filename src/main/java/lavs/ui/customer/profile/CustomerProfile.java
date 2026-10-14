@@ -9,7 +9,10 @@ import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
 
-/** Everything the profile screen shows for one customer. */
+/**
+ * Everything the profile screen shows for one customer.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public record CustomerProfile(
         Customer customer,
         List<Address> addresses,

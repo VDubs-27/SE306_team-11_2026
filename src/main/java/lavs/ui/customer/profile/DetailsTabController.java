@@ -8,7 +8,10 @@ import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
 
-/** The Details tab: the customer's personal details, read-only. */
+/**
+ * The Details tab: the customer's personal details, read-only.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class DetailsTabController {
 
     @FXML private Label titleValue;

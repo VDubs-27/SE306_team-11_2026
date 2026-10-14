@@ -16,7 +16,10 @@ import javafx.scene.shape.SVGPath;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 
-/** The Addresses tab: one tile per address, plus a way to add another. */
+/**
+ * The Addresses tab: one tile per address, plus a way to add another.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class AddressesTabController {
 
     private static final String HOME_COUNTRY = "New Zealand";

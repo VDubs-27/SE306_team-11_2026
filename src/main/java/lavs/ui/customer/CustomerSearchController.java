@@ -81,6 +81,8 @@ public class CustomerSearchController implements NavigatorAware {
             }
         });
 
+        // Clicking a result opens that customer's profile.
+        // AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
         resultsTable.setRowFactory(table -> {
             TableRow<CustomerRow> row = new TableRow<>();
             row.setOnMouseClicked(event -> {

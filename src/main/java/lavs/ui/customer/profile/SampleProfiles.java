@@ -15,7 +15,10 @@ import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
 
-/** Temporary sample data for designing. Replaced by CustomerService results. */
+/**
+ * Temporary sample data for designing. Replaced by CustomerService results.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 final class SampleProfiles {
 
     private static final CustomerNumber JOHN = new CustomerNumber("01-0013-5810482");

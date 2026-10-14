@@ -14,7 +14,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
-/** Set-up for tables in the profile tabs, such as Loans. */
+/**
+ * Set-up for tables in the profile tabs, such as Loans.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 final class ProfileTables {
 
     /** Row height from .table-row-cell in app.css. */

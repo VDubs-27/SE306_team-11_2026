@@ -14,7 +14,10 @@ import javafx.scene.shape.SVGPath;
 
 import lavs.logic.model.Page;
 
-/** The Documents tab: the files recorded for the customer, such as a payslip or licence, a page at a time. */
+/**
+ * The Documents tab: the files recorded for the customer, such as a payslip or licence, a page at a time.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class DocumentsTabController {
 
     @FXML private VBox documentList;

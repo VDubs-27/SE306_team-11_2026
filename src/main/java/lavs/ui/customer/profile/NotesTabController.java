@@ -17,7 +17,10 @@ import javafx.scene.text.Text;
 
 import lavs.logic.model.Page;
 
-/** The Notes tab: notes staff have written about the customer, a page at a time. */
+/**
+ * The Notes tab: notes staff have written about the customer, a page at a time.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class NotesTabController {
 
     /** Widths for the Author and Added fields, so they line up from card to card like columns. */

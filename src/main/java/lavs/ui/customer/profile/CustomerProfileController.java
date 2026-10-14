@@ -12,6 +12,7 @@ import lavs.logic.model.customer.Customer;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 
+/** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
 public class CustomerProfileController implements NavigatorAware {
 
     /** How many items each paged tab shows at once. */

@@ -9,7 +9,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-/** Formatting shared by the profile screen and its tabs. */
+/**
+ * Formatting shared by the profile screen and its tabs.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 final class ProfileFormat {
 
     static final String NOT_RECORDED = "—";

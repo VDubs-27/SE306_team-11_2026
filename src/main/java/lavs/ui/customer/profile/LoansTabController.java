@@ -15,7 +15,10 @@ import javafx.scene.layout.StackPane;
 import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
 
-/** The Loans tab: a table of the customer's loans, a page at a time. */
+/**
+ * The Loans tab: a table of the customer's loans, a page at a time.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 public class LoansTabController {
 
     @FXML private StackPane tableBox;

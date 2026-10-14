@@ -11,7 +11,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-/** Builds the bordered rows used to list addresses, contacts and employers. */
+/**
+ * Builds the bordered rows used to list addresses, contacts and employers.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
 final class RecordTiles {
 
     private RecordTiles() {

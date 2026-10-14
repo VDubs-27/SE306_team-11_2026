@@ -49,7 +49,10 @@ public class Navigator {
         show(loader.getRoot());
     }
 
-    /** Shows one customer's profile below the header. */
+    /**
+     * Shows one customer's profile below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
     public void showCustomerProfile(String customerNumber) {
         FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
         CustomerProfileController controller = loader.getController();
