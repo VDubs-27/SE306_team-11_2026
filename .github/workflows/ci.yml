@@ -112,22 +112,45 @@ jobs:
       - name: Check DIT and NOC targets, and summarise
         run: |
           python3 - <<'EOF'
-          import csv, os, sys
+          import csv, os, pathlib, re, sys
+
+          # Proposal Section 6: DIT counts the team's own classes only. CK's dit also counts
+          # JDK ancestors we cannot change (e.g. RuntimeException), so work it out from source.
+          own, parents = set(), {}
+          for f in pathlib.Path("src/main/java/lavs").rglob("*.java"):
+              text = f.read_text(encoding="utf-8")
+              own.update(re.findall(r"\b(?:class|record|enum|interface)\s+(\w+)", text))
+              for child, base in re.findall(r"\bclass\s+(\w+)[^{]*?\bextends\s+(\w+)", text):
+                  parents[child] = base
+
+          def team_dit(name):
+              depth = 1
+              while parents.get(name) in own:
+                  name = parents[name]
+                  depth += 1
+              return depth
 
           rows = list(csv.DictReader(open("ck-report/class.csv")))
           failures = []
           for r in rows:
-              if int(r["dit"]) > 3:
-                  failures.append(f"{r['class']}: DIT {r['dit']} (target 3 or less)")
+              r["team_dit"] = team_dit(re.split(r"[.$]", r["class"])[-1])
+              if r["team_dit"] > 3:
+                  failures.append(f"{r['class']}: DIT {r['team_dit']} (target 3 or less, team classes only)")
               if int(r["noc"]) > 10:
                   failures.append(f"{r['class']}: NOC {r['noc']} (target 10 or less)")
 
           # Report for reviewers: relative metrics, compared across classes
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as s:
-              s.write("## CK metrics\n\n| Class | CBO | WMC | Fan-in | Fan-out | DIT | NOC |\n|---|---|---|---|---|---|---|\n")
+              s.write("## CK metrics\n\nDIT counts team classes only; CK DIT also counts JDK ancestors.\n\n")
+              s.write("| Class | CBO | WMC | Fan-in | Fan-out | DIT | CK DIT | NOC |\n|---|---|---|---|---|---|---|---|\n")
               for r in sorted(rows, key=lambda r: -int(r["cbo"])):
-                  s.write(f"| {r['class']} | {r['cbo']} | {r['wmc']} | {r['fanin']} | {r['fanout']} | {r['dit']} | {r['noc']} |\n")
+                  s.write(f"| {r['class']} | {r['cbo']} | {r['wmc']} | {r['fanin']} | {r['fanout']} "
+                          f"| {r['team_dit']} | {r['dit']} | {r['noc']} |\n")
 
+          print("DIT per class (team classes only, CK value in brackets):")
+          for r in sorted(rows, key=lambda r: (-r["team_dit"], r["class"])):
+              print(f"{r['class']}: DIT {r['team_dit']} (CK {r['dit']})")
+          
           if failures:
               print("Metric targets broken:")
               print("\n".join(failures))
