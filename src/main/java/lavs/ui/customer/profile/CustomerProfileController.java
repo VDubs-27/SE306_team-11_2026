@@ -14,6 +14,9 @@ import lavs.ui.shell.NavigatorAware;
 
 public class CustomerProfileController implements NavigatorAware {
 
+    /** How many items each paged tab shows at once. */
+    private static final int PAGE_SIZE = 5;
+
     /** Horizontal padding of the tab header area (app.css). */
     private static final double TAB_BAR_PADDING = 24;
     /** Horizontal padding inside each tab (app.css). */
@@ -76,7 +79,7 @@ public class CustomerProfileController implements NavigatorAware {
         employmentController.show(profile.employers());
         loansController.show(profile.loans());
         documentsController.show(profile.documents());
-        notesController.show(profile.notes());
+        notesController.show(page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE));
         setCount(addressesTab, profile.addresses().size());
         setCount(contactsTab, profile.phones().size() + profile.emails().size());
         setCount(employmentTab, profile.employers().size());

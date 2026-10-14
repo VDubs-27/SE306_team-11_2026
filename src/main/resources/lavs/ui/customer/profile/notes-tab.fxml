@@ -7,6 +7,7 @@
       spacing="12">
     <Label text="Notes" styleClass="section-heading"/>
     <VBox fx:id="noteList" spacing="12"/>
+    <fx:include fx:id="pager" source="pager.fxml"/>
     <Button text="+  Add note" styleClass="button-add" onAction="#handleAddNote"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>

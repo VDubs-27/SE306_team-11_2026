@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.customer.CustomerNumber;
@@ -43,6 +44,13 @@ final class SampleProfiles {
         return new CustomerProfile(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
+    /** One page of a sample list, the way the mainframe returns lists a page at a time. */
+    static <T> Page<T> pageOf(List<T> items, long page, long size) {
+        int from = (int) Math.min((page - 1) * size, items.size());
+        int to = (int) Math.min(from + size, items.size());
+        return new Page<>(items.subList(from, to), page, size, items.size());
+    }
+
     private static Customer customer(String number, String title, String firstName,
             String familyName, LocalDate dateOfBirth) {
         return new Customer(new CustomerNumber(number), title, firstName, familyName,
@@ -77,14 +85,33 @@ final class SampleProfiles {
         List<DocumentRow> documents = List.of(
                 new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
                 new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291));
+        // Newest first, as the Notes tab shows them
         List<NoteRow> notes = List.of(
-                new NoteRow(1, "General", "Ana Tui", LocalDate.of(2026, 9, 18),
-                        "Updated mailing address after the customer moved from Grey Lynn."),
-                new NoteRow(2, "Contact", "Bob Ross", LocalDate.of(2026, 10, 5),
-                        "Prefers to be contacted by mobile after 4pm on weekdays."),
-                new NoteRow(3, "Application", "Bob Ross", LocalDate.of(2026, 10, 12),
+                new NoteRow(12, "Application", "Bob Ross", LocalDate.of(2026, 10, 12),
                         "Customer is applying for a $450,000 mortgage on a Papamoa property. "
-                                + "Partner Sarah Smith will be a co-borrower."));
+                                + "Partner Sarah Smith will be a co-borrower."),
+                new NoteRow(11, "Contact", "Bob Ross", LocalDate.of(2026, 10, 5),
+                        "Prefers to be contacted by mobile after 4pm on weekdays."),
+                new NoteRow(10, "General", "Ana Tui", LocalDate.of(2026, 9, 18),
+                        "Updated mailing address after the customer moved from Grey Lynn."),
+                new NoteRow(9, "Contact", "Ana Tui", LocalDate.of(2026, 8, 30),
+                        "Left a voicemail about the missing payslip. Will try again Monday."),
+                new NoteRow(8, "Application", "Bob Ross", LocalDate.of(2026, 8, 14),
+                        "Pre-approval discussed. Customer to bring three recent payslips."),
+                new NoteRow(7, "General", "Peter Smith", LocalDate.of(2026, 7, 2),
+                        "Customer asked about fixed versus floating rates. Sent the rate sheet."),
+                new NoteRow(6, "Contact", "Peter Smith", LocalDate.of(2026, 5, 21),
+                        "Changed preferred contact from home phone to mobile."),
+                new NoteRow(5, "General", "Maram\u0101 Lee", LocalDate.of(2026, 3, 9),
+                        "Annual review done. No changes to employment or income."),
+                new NoteRow(4, "Loan", "Maram\u0101 Lee", LocalDate.of(2025, 11, 27),
+                        "Loan -002 repayments moved from fortnightly to monthly at the customer's request."),
+                new NoteRow(3, "General", "Peter Smith", LocalDate.of(2025, 7, 3),
+                        "Customer queried a fee on their statement. Explained the annual account fee."),
+                new NoteRow(2, "Identification", "Maram\u0101 Lee", LocalDate.of(2025, 7, 1),
+                        "Passport, power bill and latest payslip sighted and copied to the filestore."),
+                new NoteRow(1, "Initial account setup", "Peter Smith", LocalDate.of(2025, 6, 30),
+                        "New customer set up in branch."));
         return new CustomerProfile(customer, addresses, phones, emails, employers, loans, documents, notes);
     }
 }

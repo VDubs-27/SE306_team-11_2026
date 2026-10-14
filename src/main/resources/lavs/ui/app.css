@@ -319,6 +319,9 @@
 .note-card { -fx-spacing: 10; -fx-alignment: top-left; }
 .note-divider { -fx-min-height: 1; -fx-max-height: 1; -fx-background-color: -line-soft; }
 .note-text { -fx-text-fill: -text; -fx-font-size: 15px; }
+
+/* Prev / page / Next under a paged list in a profile tab */
+.pager { -fx-padding: 4 0 4 0; }
 /* Rounded square holding a file icon, at the start of a document row */
 .file-icon {
     -fx-background-color: -brand-blue-tint;

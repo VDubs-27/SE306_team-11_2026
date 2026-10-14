@@ -2,9 +2,8 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.LongFunction;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -15,23 +14,35 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-/** The Notes tab: notes staff have written about the customer, newest first. */
-public class NotesTabController {
+import lavs.logic.model.Page;
 
-    private static final Comparator<NoteRow> NEWEST_FIRST = Comparator.comparing(
-            NoteRow::dateAdded, Comparator.nullsLast(Comparator.<LocalDate>reverseOrder()));
+/** The Notes tab: notes staff have written about the customer, a page at a time. */
+public class NotesTabController {
 
     /** Widths for the Author and Added fields, so they line up from card to card like columns. */
     private static final double AUTHOR_WIDTH = 180;
     private static final double ADDED_WIDTH = 120;
 
     @FXML private VBox noteList;
+    @FXML private PagerController pagerController;
 
-    void show(List<NoteRow> notes) {
-        RecordTiles.fill(noteList, notes.stream()
-                .sorted(NEWEST_FIRST)
-                .map(this::card)
-                .toList(), "No notes recorded.");
+    private LongFunction<Page<NoteRow>> loadPage = page -> new Page<>(List.of(), 1, 1, 0);
+
+    @FXML
+    private void initialize() {
+        pagerController.setOnPageRequested(this::showPage);
+    }
+
+    /** Shows the first page; loadPage fetches any page by number when the user moves between them. */
+    void show(LongFunction<Page<NoteRow>> loadPage) {
+        this.loadPage = loadPage;
+        showPage(1);
+    }
+
+    private void showPage(long pageNumber) {
+        Page<NoteRow> page = loadPage.apply(pageNumber);
+        RecordTiles.fill(noteList, page.items().stream().map(this::card).toList(), "No notes recorded.");
+        pagerController.show(page);
     }
 
     @FXML
