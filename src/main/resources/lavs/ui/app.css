@@ -567,6 +567,15 @@
 }
 .form-dialog > .content { -fx-padding: 12 24 8 24; }
 .form-dialog > .button-bar > .container { -fx-padding: 12 24 20 24; }
+/* Review & save: the checklist and the summary rows */
+.review-heading { -fx-font-weight: bold; -fx-text-fill: -text; }
+.review-value { -fx-font-weight: bold; -fx-text-fill: -text; }
+.review-row {
+    -fx-padding: 10 0 10 0;
+    -fx-border-color: transparent transparent -line-soft transparent;
+}
+.step-circle.review-skipped { -fx-text-fill: -text-soft; }
+
 /* Two or three choices side by side in a pill, e.g. Employed / Not employed */
 .segmented {
     -fx-background-color: -subtle-bg;

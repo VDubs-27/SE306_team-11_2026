@@ -32,7 +32,8 @@ public class NewCustomerWizardController implements NavigatorAware {
     @FXML private ContactsStepController contactsController;
     @FXML private Node employment;
     @FXML private EmploymentStepController employmentController;
-    @FXML private Node reviewStep;
+    @FXML private Node review;
+    @FXML private ReviewStepController reviewController;
 
     private final NewCustomerDraft draft = new NewCustomerDraft();
     private Navigator navigator;
@@ -58,7 +59,7 @@ public class NewCustomerWizardController implements NavigatorAware {
                 new WizardStep("Addresses", addresses, addressesController::check, null),
                 new WizardStep("Contacts", contacts, contactsController::check, null),
                 new WizardStep("Employment", employment, employmentController::check, null),
-                new WizardStep("Review & save", reviewStep)));
+                new WizardStep("Review & save", review, null, () -> reviewController.show(draft))));
     }
 
     /** Checks the details and, once they pass, puts the customer's name in the header. */
