@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- The shared wizard frame, plus this wizard's steps. The frame shows one step at a time. -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="lavs.ui.customer.wizard.NewCustomerWizardController">
+    <fx:define>
+        <!-- Placeholders until each step is built -->
+        <VBox fx:id="detailsStep" styleClass="card">
+            <Label text="Customer details" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="addressesStep" styleClass="card">
+            <Label text="Addresses" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="contactsStep" styleClass="card">
+            <Label text="Contact details" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="employmentStep" styleClass="card">
+            <Label text="Employment" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+        <VBox fx:id="reviewStep" styleClass="card">
+            <Label text="Ready to save" styleClass="section-heading"/>
+            <Label text="Coming soon." styleClass="text-muted"/>
+        </VBox>
+    </fx:define>
+    <fx:include fx:id="wizard" source="/lavs/ui/wizard/wizard.fxml"/>
+</StackPane>

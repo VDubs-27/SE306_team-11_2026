@@ -60,6 +60,15 @@ public class Navigator {
         show(loader.getRoot());
     }
 
+    /**
+     * Shows the new customer wizard below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showNewCustomerWizard() {
+        FXMLLoader loader = load("/lavs/ui/customer/wizard/new-customer-wizard.fxml");
+        show(loader.getRoot());
+    }
+
     /** Returns to the previous screen, if there is one. */
     public void back() {
         if (history.isEmpty()) {
