@@ -65,7 +65,7 @@ final class RecordTiles {
     }
 
     /** Shows the tiles in a list, or a short message when there are none. */
-    static void fill(VBox list, List<HBox> tiles, String emptyMessage) {
+    static void fill(VBox list, List<? extends Node> tiles, String emptyMessage) {
         if (tiles.isEmpty()) {
             list.getChildren().setAll(styled(new Label(emptyMessage), "text-muted"));
         } else {

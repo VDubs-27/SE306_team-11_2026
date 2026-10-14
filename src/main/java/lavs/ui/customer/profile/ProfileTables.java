@@ -14,7 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
-/** Shared set-up for the tables in the profile tabs (Loans, Notes). */
+/** Set-up for tables in the profile tabs, such as Loans. */
 final class ProfileTables {
 
     /** Row height from .table-row-cell in app.css. */

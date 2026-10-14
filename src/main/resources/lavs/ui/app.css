@@ -310,6 +310,10 @@
 .record-tile .tile-caption { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
 .record-tile .tile-value { -fx-font-size: 15px; -fx-text-fill: -text; }
 .record-tile-compact { -fx-padding: 10 14 10 14; -fx-spacing: 10; }
+/* Note cards: labelled details along the top, a thin line, then the note itself */
+.note-card { -fx-spacing: 10; -fx-alignment: top-left; }
+.note-divider { -fx-min-height: 1; -fx-max-height: 1; -fx-background-color: -line-soft; }
+.note-text { -fx-text-fill: -text; -fx-font-size: 15px; }
 /* Rounded square holding a file icon, at the start of a document row */
 .file-icon {
     -fx-background-color: -brand-blue-tint;

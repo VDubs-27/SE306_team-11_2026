@@ -78,9 +78,13 @@ final class SampleProfiles {
                 new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
                 new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291));
         List<NoteRow> notes = List.of(
-                new NoteRow(1, "Initial account setup", "Peter Smith", LocalDate.of(2025, 7, 1)),
-                new NoteRow(2, "Loan query", "Peter Smith", LocalDate.of(2025, 7, 3)),
-                new NoteRow(3, "Change of address", "Maramā Lee", LocalDate.of(2025, 9, 12)));
+                new NoteRow(1, "General", "Ana Tui", LocalDate.of(2026, 9, 18),
+                        "Updated mailing address after the customer moved from Grey Lynn."),
+                new NoteRow(2, "Contact", "Bob Ross", LocalDate.of(2026, 10, 5),
+                        "Prefers to be contacted by mobile after 4pm on weekdays."),
+                new NoteRow(3, "Application", "Bob Ross", LocalDate.of(2026, 10, 12),
+                        "Customer is applying for a $450,000 mortgage on a Papamoa property. "
+                                + "Partner Sarah Smith will be a co-borrower."));
         return new CustomerProfile(customer, addresses, phones, emails, employers, loans, documents, notes);
     }
 }
