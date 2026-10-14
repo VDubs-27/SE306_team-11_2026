@@ -50,6 +50,19 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML
     private void initialize() {
         tabPane.widthProperty().addListener((obs, oldWidth, width) -> spreadTabs(width.doubleValue()));
+        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, tab) -> sizeToTab(tab));
+        sizeToTab(tabPane.getSelectionModel().getSelectedItem());
+    }
+
+    /**
+     * A TabPane is as tall as its tallest tab, even when that tab isn't showing. Only the selected
+     * tab's content counts towards the size, so the card fits whichever tab is open. Uses the tab
+     * passed in, because each tab's own isSelected() hasn't caught up yet when selection changes.
+     */
+    private void sizeToTab(Tab selected) {
+        for (Tab tab : tabPane.getTabs()) {
+            tab.getContent().setManaged(tab == selected);
+        }
     }
 
     /** Fills the screen for one customer. */
