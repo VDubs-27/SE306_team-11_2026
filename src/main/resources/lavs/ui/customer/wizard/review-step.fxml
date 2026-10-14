@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.wizard.ReviewStepController"
+      spacing="16">
+    <HBox spacing="16">
+        <!-- What has been checked -->
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="0" spacing="14">
+            <Label text="Ready to save" styleClass="section-heading"/>
+            <VBox fx:id="checklist" spacing="14"/>
+        </VBox>
+        <!-- The customer at a glance -->
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="0" spacing="0">
+            <Label fx:id="nameLabel" styleClass="section-heading">
+                <VBox.margin><Insets bottom="8"/></VBox.margin>
+            </Label>
+            <VBox fx:id="summary"/>
+        </VBox>
+    </HBox>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Saving creates the customer on the mainframe, then adds their addresses, contacts and employer."/>
+    </HBox>
+</VBox>

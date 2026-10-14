@@ -11,11 +11,7 @@
         <fx:include fx:id="addresses" source="addresses-step.fxml"/>
         <fx:include fx:id="contacts" source="contacts-step.fxml"/>
         <fx:include fx:id="employment" source="employment-step.fxml"/>
-        <!-- Placeholders until each step is built -->
-        <VBox fx:id="reviewStep" styleClass="card">
-            <Label text="Ready to save" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
+        <fx:include fx:id="review" source="review-step.fxml"/>
     </fx:define>
     <fx:include fx:id="wizard" source="/lavs/ui/wizard/wizard.fxml"/>
 </StackPane>
