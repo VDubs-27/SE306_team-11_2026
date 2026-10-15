@@ -578,6 +578,18 @@
     -fx-cursor: hand;
 }
 .modal-close:hover { -fx-background-color: -subtle-bg; -fx-text-fill: -text; }
+/* People on a loan: avatar colours, the customer number beside a name, and search results */
+.avatar.avatar-tone-0 { -fx-background-color: -brand-blue; }
+.avatar.avatar-tone-1 { -fx-background-color: #5b4b8a; }
+.avatar.avatar-tone-2 { -fx-background-color: #4a4d63; }
+.person-number { -fx-text-fill: -brand-blue; -fx-font-size: 13px; }
+.person-result { -fx-cursor: hand; }
+.person-result:hover { -fx-background-color: -page-bg; }
+.person-result.person-result-selected {
+    -fx-background-color: -brand-blue-tint;
+    -fx-border-color: -brand-blue;
+}
+
 /* Review & save: the checklist and the summary rows */
 .review-heading { -fx-font-weight: bold; -fx-text-fill: -text; }
 .review-value { -fx-font-weight: bold; -fx-text-fill: -text; }
