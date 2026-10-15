@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.wizard.LoanDetailsStepController"
+      styleClass="card, card-flush">
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Loan details" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="All fields are required" styleClass="text-muted, text-small"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="16">
+        <fx:include fx:id="form" source="/lavs/ui/loan/forms/loan-details-form.fxml"/>
+
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Check the amounts and dates with the customer. Nothing is sent to the mainframe until the loan is submitted on the last step."/>
+        </HBox>
+    </VBox>
+</VBox>

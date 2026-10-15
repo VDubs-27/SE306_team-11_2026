@@ -31,7 +31,7 @@ class MainframeAdapterTest {
     }
 
     private Create newCreateMessage() {
-        return new Create("2000-01-01", "Smith", "John", "New Zealand", 1L, "Mr");
+        return new Create("2000-01-01", "Smith", "John", "New Zealand", 0L, "Mr");
     }
 
     @Test

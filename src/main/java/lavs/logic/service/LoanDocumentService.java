@@ -37,7 +37,7 @@ public class LoanDocumentService {
     }
 
     // The mainframe has no update message for documents, so an update adds the new details as a replacement and
-    // then deletes the original (deviation 10). Adding first means a failure leaves a duplicate, never a lost document.
+    // then deletes the original (deviation 12). Adding first means a failure leaves a duplicate, never a lost document.
     public Result<LoanDocument> update(LoanNumber loan, long id, LoanDocument.Details details) {
         List<FieldError> errors = details.validate();
         if (!errors.isEmpty()) {

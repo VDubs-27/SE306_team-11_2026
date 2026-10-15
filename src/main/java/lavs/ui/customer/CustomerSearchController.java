@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
@@ -80,6 +81,18 @@ public class CustomerSearchController implements NavigatorAware {
             }
         });
 
+        // Clicking a result opens that customer's profile.
+        // AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+        resultsTable.setRowFactory(table -> {
+            TableRow<CustomerRow> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    navigator.showCustomerProfile(row.getItem().customerNumber());
+                }
+            });
+            return row;
+        });
+
         showPrompt();
     }
 
@@ -96,7 +109,7 @@ public class CustomerSearchController implements NavigatorAware {
 
     @FXML
     private void handleAddCustomer() {
-        // Later: navigator.showNewCustomerWizard()
+        navigator.showNewCustomerWizard();
     }
 
     @FXML

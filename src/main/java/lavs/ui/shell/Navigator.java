@@ -10,6 +10,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
+import lavs.logic.model.customer.Customer;
+import lavs.logic.model.loan.Loan;
+import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.loan.view.LoanViewController;
+import lavs.ui.loan.wizard.NewLoanWizardController;
+
 /**
  * Owns all screen switching. Controllers ask the navigator to move;
  * they never load FXML themselves.
@@ -44,6 +50,48 @@ public class Navigator {
     /** Shows customer search below the header. */
     public void showCustomerSearch() {
         FXMLLoader loader = load("/lavs/ui/customer/customer-search.fxml");
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows one customer's profile below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showCustomerProfile(String customerNumber) {
+        FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
+        CustomerProfileController controller = loader.getController();
+        controller.showCustomer(customerNumber);
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows the new customer wizard below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showNewCustomerWizard() {
+        FXMLLoader loader = load("/lavs/ui/customer/wizard/new-customer-wizard.fxml");
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows the new loan wizard for a customer below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showNewLoanWizard(Customer customer) {
+        FXMLLoader loader = load("/lavs/ui/loan/wizard/new-loan-wizard.fxml");
+        NewLoanWizardController controller = loader.getController();
+        controller.start(customer);
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows one of a customer's loans below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showLoan(Loan loan, Customer customer) {
+        FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
+        LoanViewController controller = loader.getController();
+        controller.showLoan(loan, customer);
         show(loader.getRoot());
     }
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- The frame every wizard shares: header with stepper, the current step, then Back/Next. -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.wizard.WizardController"
+            fx:id="scrollPane" styleClass="page-scroll" fitToWidth="true">
+    <VBox styleClass="page" alignment="TOP_CENTER">
+        <VBox spacing="16" maxWidth="960">
+
+            <!-- Header: icon, title, subtitle, then the stepper -->
+            <VBox styleClass="card">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <StackPane fx:id="iconHolder"/>
+                    <VBox spacing="2">
+                        <Label fx:id="titleLabel" styleClass="heading-2"/>
+                        <Label fx:id="subtitleLabel" styleClass="text-muted, text-small"/>
+                    </VBox>
+                </HBox>
+                <HBox fx:id="stepper" styleClass="stepper" alignment="CENTER_LEFT"/>
+            </VBox>
+
+            <!-- The current step; each step brings its own card -->
+            <StackPane fx:id="stepArea"/>
+
+            <!-- Footer: Cancel or Back on the left, Next or Finish on the right -->
+            <HBox styleClass="card" alignment="CENTER_LEFT">
+                <Button fx:id="backButton" styleClass="button-secondary" onAction="#handleBack"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="nextButton" styleClass="button-primary" onAction="#handleNext"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

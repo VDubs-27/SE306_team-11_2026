@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.wizard.AddressesStepController"
+      styleClass="card, card-flush">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing an address -->
+        <fx:include fx:id="addressForm" source="/lavs/ui/customer/forms/address-form.fxml"/>
+    </fx:define>
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Addresses" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="mailingChip" text="✓  Mailing address added" styleClass="chip-met"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="12">
+        <VBox fx:id="addressList" spacing="12"/>
+        <Button text="+  Add address" styleClass="button-add" onAction="#handleAddAddress"/>
+        <HBox fx:id="errorBanner" styleClass="banner-error">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Add an address and mark it as the mailing address before moving on." wrapText="true"/>
+        </HBox>
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="At least one address must be marked as mailing. Loan documents are sent there, and a loan cannot start without one."/>
+        </HBox>
+    </VBox>
+</VBox>

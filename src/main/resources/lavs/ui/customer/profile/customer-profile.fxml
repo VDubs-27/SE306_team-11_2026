@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.customer.profile.CustomerProfileController"
+            styleClass="page-scroll" fitToWidth="true">
+    <VBox styleClass="page" alignment="TOP_CENTER">
+        <VBox spacing="16" maxWidth="960">
+
+            <Hyperlink text="‹  Back to search results" onAction="#handleBack"/>
+
+            <!-- Summary card -->
+            <HBox styleClass="card" alignment="CENTER_LEFT">
+                <Label fx:id="initialsAvatar" styleClass="avatar, avatar-large"/>
+                <VBox spacing="4" alignment="CENTER_LEFT">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="nameLabel" styleClass="heading-1"/>
+                        <Label fx:id="statusBadge" styleClass="badge"/>
+                    </HBox>
+                    <HBox spacing="16" alignment="BASELINE_LEFT">
+                        <HBox spacing="6" alignment="BASELINE_LEFT">
+                            <Label text="Customer number" styleClass="text-muted"/>
+                            <Label fx:id="customerNumberLabel" styleClass="mono"/>
+                        </HBox>
+                        <Label fx:id="dateOfBirthLabel" styleClass="text-muted"/>
+                        <Label fx:id="suburbLabel" styleClass="text-muted"/>
+                    </HBox>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="+  New loan" styleClass="button-primary" onAction="#handleNewLoan"/>
+            </HBox>
+
+            <!-- Tabs card -->
+            <VBox styleClass="card, card-flush">
+                <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+                    <Tab text="Details">
+                        <fx:include fx:id="details" source="details-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="addressesTab" text="Addresses">
+                        <fx:include fx:id="addresses" source="addresses-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="contactsTab" text="Contacts">
+                        <fx:include fx:id="contacts" source="contacts-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="employmentTab" text="Employment">
+                        <fx:include fx:id="employment" source="employment-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="loansTab" text="Loans">
+                        <fx:include fx:id="loans" source="loans-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="documentsTab" text="Documents">
+                        <fx:include fx:id="documents" source="documents-tab.fxml"/>
+                    </Tab>
+                    <Tab fx:id="notesTab" text="Notes">
+                        <fx:include fx:id="notes" source="notes-tab.fxml"/>
+                    </Tab>
+                </TabPane>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.wizard.CoborrowersStepController"
+      styleClass="card, card-flush">
+    <fx:define>
+        <!-- Shown in a pop-up when finding an existing customer -->
+        <fx:include fx:id="findCustomer" source="/lavs/ui/loan/people/find-customer.fxml"/>
+    </fx:define>
+
+    <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+        <Label text="Co-borrowers and guarantors" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="loanSummary" styleClass="text-muted, text-small"/>
+    </HBox>
+
+    <VBox styleClass="card-section" spacing="12">
+        <VBox fx:id="peopleList" spacing="12"/>
+        <HBox spacing="12">
+            <Button text="⌕  Find existing customer" styleClass="button-add" HBox.hgrow="ALWAYS"
+                    onAction="#handleFindCustomer"/>
+            <Button text="+  Add new customer" styleClass="button-add" HBox.hgrow="ALWAYS"
+                    onAction="#handleAddNewCustomer"/>
+        </HBox>
+        <HBox fx:id="errorBanner" styleClass="banner-error">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="This applicant isn't employed, so the loan needs a guarantor. Add one before moving on."
+                   wrapText="true"/>
+        </HBox>
+        <HBox styleClass="note">
+            <Label text="ⓘ" minWidth="-Infinity"/>
+            <Label text="Add each person as a co-borrower or a guarantor. Both are optional, but an applicant with no employment needs a guarantor. A new customer goes through the new customer wizard first, then returns here."/>
+        </HBox>
+    </VBox>
+</VBox>

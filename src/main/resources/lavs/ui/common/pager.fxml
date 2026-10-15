@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Prev / page number / Next under a list. Hidden when everything fits on one page. -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.common.PagerController"
+      fx:id="pager" styleClass="pager" alignment="CENTER_LEFT">
+    <Button fx:id="prevButton" text="‹ Prev" styleClass="button-secondary, button-small"
+            onAction="#handlePrev"/>
+    <Region HBox.hgrow="ALWAYS"/>
+    <Label fx:id="pageLabel" styleClass="text-muted"/>
+    <Region HBox.hgrow="ALWAYS"/>
+    <Button fx:id="nextButton" text="Next ›" styleClass="button-primary, button-small"
+            onAction="#handleNext"/>
+</HBox>
