@@ -8,10 +8,13 @@ import java.util.Objects;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
@@ -24,6 +27,8 @@ public class Navigator {
 
     private final Stage stage;
     private final Services services;
+    /** The window's root for good: the current screen first, then the layer that short messages appear in. */
+    private final StackPane windowRoot = new StackPane();
     private final Deque<Parent> history = new ArrayDeque<>();
     private ShellController shell;
     private Parent currentScreen;
@@ -31,6 +36,9 @@ public class Navigator {
     public Navigator(Stage stage, Services services) {
         this.stage = stage;
         this.services = services;
+        windowRoot.getChildren().add(new Region());
+        stage.getScene().setRoot(windowRoot);
+        Toasts.install(stage.getScene(), windowRoot);
     }
 
     /** The services built at start-up, for screens that need them. */
@@ -45,7 +53,7 @@ public class Navigator {
         if (services.session().isLoggedIn()) {
             shell.showUser(services.session().currentUser());
         }
-        stage.getScene().setRoot(loader.getRoot());
+        showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
     }
@@ -56,16 +64,18 @@ public class Navigator {
      */
     public void showLogin() {
         FXMLLoader loader = load("/lavs/ui/login/login.fxml");
-        stage.getScene().setRoot(loader.getRoot());
+        showWindow(loader.getRoot());
         shell = null;
         history.clear();
         currentScreen = null;
     }
 
-    /** Signs out of the mainframe and goes back to the login screen. */
+    /** Signs out of the mainframe and goes back to the login screen, saying it worked. */
     public void logOut() {
         services.login().logout();
         showLogin();
+        Toasts.show(stage.getScene(), Toasts.Kind.SUCCESS, "Signed out",
+                "You've signed out of LAVS. Sign in again to carry on.");
     }
 
     /** Shows customer search below the header. */
@@ -123,6 +133,11 @@ public class Navigator {
         }
         currentScreen = history.pop();
         shell.setContent(currentScreen);
+    }
+
+    /** Fills the whole window with a screen (the shell, or the login screen), under any messages. */
+    private void showWindow(Parent screen) {
+        windowRoot.getChildren().set(0, screen);
     }
 
     /** Shows a screen below the header, remembering the current one for back(). */
