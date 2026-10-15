@@ -73,3 +73,10 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Code:** the CI metrics step works out DIT from source, counting only classes declared under `src/main/java/lavs`. The depth stops at the first parent that isn't a team class, so JDK ancestors are excluded as well as JavaFX ones. CK's own DIT is still shown alongside in the CI summary.
 - **Justification:** CK counts every ancestor, so any custom exception extending `RuntimeException` scores DIT 4 from JDK depth the team can't change (e.g. `MainframeException`). Excluding the JDK follows the same reasoning as excluding JavaFX: the target measures hierarchies the team designs, not library ones.
 - **Introduced in:** PR #11.
+
+## 10. Mainframe adapter is split into a shared adapter and per-area gateways
+
+- **Proposal:** Sections 2.2 and 4.2 describe one mainframe adapter that translates domain objects to and from the provided message classes and turns status codes into meaningful errors.
+- **Code:** `MainframeAdapter` only runs a provided message (`send`) and turns failures into `MainframeException`. One gateway per area (`CustomerGateway`, with loan and co-borrower to follow at time of writing) builds the provided message, calls `adapter.send`, and maps the getters into domain records so that services depend on the gateways, not the adapter.
+- **Justification:** the provided message classes already build their own request and unpack their own response, so one adapter building requests would duplicate them. `Message.send` throws a checked `IOException` and catching it once in `send` and rethrowing it as `MainframeException` stops it spreading to the services and UI. Splitting by area also keeps each class small and lets the work be reviewed in parts. UI still never touches the mainframe.
+- **Introduced in:** PR #11 (adapter foundation), PR #26 (customer gateway).
