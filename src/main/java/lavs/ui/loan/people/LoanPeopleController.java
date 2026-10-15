@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.loan.Coborrower;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.Modal;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.Pages;
 
@@ -44,8 +45,8 @@ public class LoanPeopleController {
 
     @FXML
     private void initialize() {
-        show(errorBanner, false);
-        show(newCustomerButton, false);
+        Nodes.show(errorBanner, false);
+        Nodes.show(newCustomerButton, false);
     }
 
     /** The applicant, and everyone else on the loan; this list is changed in place as people are added or removed. */
@@ -58,14 +59,14 @@ public class LoanPeopleController {
     /** Whether people can be added and removed; when not, the list is shown read-only. */
     public void setEditable(boolean canEdit) {
         this.editable = canEdit;
-        show(addButtons, canEdit);
+        Nodes.show(addButtons, canEdit);
         redraw();
     }
 
     /** Offers "Add new customer" beside "Find existing customer", which runs this. */
     public void setOnAddNewCustomer(Runnable action) {
         this.onAddNewCustomer = action;
-        show(newCustomerButton, true);
+        Nodes.show(newCustomerButton, true);
     }
 
     /** What happens after someone is added or removed, e.g. the screen updates a count. */
@@ -81,7 +82,7 @@ public class LoanPeopleController {
     /** An applicant who isn't employed needs a guarantor; shows why when that's missing. */
     public boolean check() {
         boolean ok = meetsGuarantorRule();
-        show(errorBanner, !ok);
+        Nodes.show(errorBanner, !ok);
         return ok;
     }
 
@@ -126,7 +127,7 @@ public class LoanPeopleController {
         List<LoanPerson> people = Stream.concat(Stream.of(applicant), others.stream()).toList();
         pagerController.show(page -> Pages.of(people, page, PAGE_SIZE), this::draw);
         if (!editable || meetsGuarantorRule()) {
-            show(errorBanner, false);
+            Nodes.show(errorBanner, false);
         }
     }
 
@@ -146,10 +147,5 @@ public class LoanPeopleController {
         return Stream.concat(Stream.of(applicant), others.stream())
                 .map(person -> person.customer().number().value())
                 .collect(Collectors.toSet());
-    }
-
-    private static void show(Node node, boolean visible) {
-        node.setVisible(visible);
-        node.setManaged(visible);
     }
 }

@@ -2,7 +2,6 @@ package lavs.ui.loan.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -34,12 +33,11 @@ public class CoborrowersTabController {
 
     /** Shows everyone on the loan, with adding and removing only while it's New. Returns how many others there are. */
     long show(Loan loan) {
-        boolean editable = loan.status() == Loan.Status.NEW;
+        boolean editable = LoanLock.isEditable(loan);
         peopleController.setEditable(editable);
         lockNote.setText(editable
                 ? "Add each person as a co-borrower or a guarantor. An applicant with no job needs a guarantor."
-                : "This loan is " + loan.status().code().toLowerCase(Locale.ROOT)
-                        + ", so who is on it can no longer be changed.");
+                : LoanLock.lockedNote(loan, "who is on it"));
         return peopleController.count();
     }
 

@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Address;
 import lavs.ui.common.AddressRows;
 import lavs.ui.common.EditableList;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.RecordEditor;
 import lavs.ui.customer.forms.AddressFormController;
 
@@ -29,7 +30,7 @@ public class AddressesStepController {
 
     @FXML
     private void initialize() {
-        show(errorBanner, false);
+        Nodes.show(errorBanner, false);
         // A customer has one primary and one mailing address
         addresses = new EditableList<>(new RecordEditor<>(addressList, "address", addressForm, addressFormController),
                 addressList, AddressRows::tile, "No addresses added yet.")
@@ -49,7 +50,7 @@ public class AddressesStepController {
     /** True when there is a mailing address; otherwise shows why the step can't move on. */
     boolean check() {
         boolean ok = hasMailingAddress();
-        show(errorBanner, !ok);
+        Nodes.show(errorBanner, !ok);
         return ok;
     }
 
@@ -59,9 +60,9 @@ public class AddressesStepController {
     }
 
     private void refresh() {
-        show(mailingChip, hasMailingAddress());
+        Nodes.show(mailingChip, hasMailingAddress());
         if (hasMailingAddress()) {
-            show(errorBanner, false);
+            Nodes.show(errorBanner, false);
         }
     }
 
@@ -72,10 +73,5 @@ public class AddressesStepController {
     private static Address.Details withFlags(Address.Details address, boolean primary, boolean mailing) {
         return new Address.Details(address.type(), address.otherType(), address.line1(), address.line2(),
                 address.suburb(), address.city(), address.postCode(), address.country(), primary, mailing);
-    }
-
-    private static void show(Node node, boolean visible) {
-        node.setVisible(visible);
-        node.setManaged(visible);
     }
 }

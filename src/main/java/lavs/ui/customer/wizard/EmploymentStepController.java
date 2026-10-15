@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Employer;
 import lavs.ui.common.EditableList;
 import lavs.ui.common.EmployerRows;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.RecordEditor;
 import lavs.ui.customer.forms.EmployerFormController;
 
@@ -32,7 +33,7 @@ public class EmploymentStepController {
 
     @FXML
     private void initialize() {
-        show(errorBanner, false);
+        Nodes.show(errorBanner, false);
         // One primary employer: saving another as primary makes the old one secondary
         employers = new EditableList<>(
                 new RecordEditor<>(employerList, "employer", employerForm, employerFormController),
@@ -63,7 +64,7 @@ public class EmploymentStepController {
     /** Not employed, or employed with at least one employer; otherwise shows what's missing. */
     boolean check() {
         boolean ok = !draft.isEmployed() || !draft.employers().isEmpty();
-        show(errorBanner, !ok);
+        Nodes.show(errorBanner, !ok);
         return ok;
     }
 
@@ -73,14 +74,9 @@ public class EmploymentStepController {
     }
 
     private void refresh() {
-        show(employedSection, draft.isEmployed());
+        Nodes.show(employedSection, draft.isEmployed());
         if (!draft.isEmployed() || !draft.employers().isEmpty()) {
-            show(errorBanner, false);
+            Nodes.show(errorBanner, false);
         }
-    }
-
-    private static void show(Node node, boolean visible) {
-        node.setVisible(visible);
-        node.setManaged(visible);
     }
 }

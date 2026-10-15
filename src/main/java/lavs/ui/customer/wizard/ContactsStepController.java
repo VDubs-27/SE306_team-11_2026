@@ -10,6 +10,7 @@ import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Phone;
 import lavs.ui.common.ContactRows;
 import lavs.ui.common.EditableList;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.RecordEditor;
 import lavs.ui.customer.forms.EmailFormController;
 import lavs.ui.customer.forms.PhoneFormController;
@@ -37,7 +38,7 @@ public class ContactsStepController {
 
     @FXML
     private void initialize() {
-        show(errorBanner, false);
+        Nodes.show(errorBanner, false);
         // Phones first, then emails, as in the mockup; one primary of each
         phones = new EditableList<>(new RecordEditor<>(contactList, "phone", phoneForm, phoneFormController),
                 phoneList, ContactRows::phoneTile, null)
@@ -61,7 +62,7 @@ public class ContactsStepController {
     /** True when there is a phone or an email; otherwise shows why the step can't move on. */
     boolean check() {
         boolean ok = hasContact();
-        show(errorBanner, !ok);
+        Nodes.show(errorBanner, !ok);
         return ok;
     }
 
@@ -76,19 +77,14 @@ public class ContactsStepController {
     }
 
     private void refresh() {
-        show(noContacts, !hasContact());
-        show(contactChip, hasContact());
+        Nodes.show(noContacts, !hasContact());
+        Nodes.show(contactChip, hasContact());
         if (hasContact()) {
-            show(errorBanner, false);
+            Nodes.show(errorBanner, false);
         }
     }
 
     private boolean hasContact() {
         return !phones.items().isEmpty() || !emails.items().isEmpty();
-    }
-
-    private static void show(Node node, boolean visible) {
-        node.setVisible(visible);
-        node.setManaged(visible);
     }
 }

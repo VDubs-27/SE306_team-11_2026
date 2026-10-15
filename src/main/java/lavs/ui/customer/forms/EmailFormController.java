@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Email;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.RecordForm;
 
 /**
@@ -78,7 +79,6 @@ public class EmailFormController implements RecordForm<Email.Details> {
     }
 
     private void showOtherType(boolean show) {
-        otherTypeFieldBox.setVisible(show);
-        otherTypeFieldBox.setManaged(show);
+        Nodes.show(otherTypeFieldBox, show);
     }
 }

@@ -65,10 +65,8 @@ public final class Tables {
         table.getItems().setAll(rows);
 
         boolean hasRows = !rows.isEmpty();
-        container.setVisible(hasRows);
-        container.setManaged(hasRows);
-        emptyState.setVisible(!hasRows);
-        emptyState.setManaged(!hasRows);
+        Nodes.show(container, hasRows);
+        Nodes.show(emptyState, !hasRows);
     }
 
     /**

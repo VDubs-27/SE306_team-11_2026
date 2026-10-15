@@ -15,6 +15,7 @@ import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.LoanText;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.NotesTabController;
 import lavs.ui.common.TabBars;
 import lavs.ui.loan.people.LoanPerson;
@@ -124,9 +125,8 @@ public class LoanViewController implements NavigatorAware {
         customerValue.setText("for " + customer.fullName());
         principalValue.setText(DisplayFormat.money(loan.principal()));
         interestValue.setText(LoanText.interest(details));
-        boolean isNew = loan.status() == Loan.Status.NEW;
-        submitButton.setVisible(isNew);
-        submitButton.setManaged(isNew);
+        // Offered only when the loan's status allows the move, which the model decides (New to Pending)
+        Nodes.show(submitButton, loan.status().canMoveTo(Loan.Status.PENDING));
         showTotals(loan);
         detailsController.show(loan);
         scheduleController.show(loan);

@@ -150,8 +150,7 @@ public final class EditableList<T> {
                 .map(i -> row.apply(items.get(i), () -> edit(i)))
                 .toList();
         boolean hidden = drawn.isEmpty() && emptyMessage == null;
-        rows.setVisible(!hidden);
-        rows.setManaged(!hidden);
+        Nodes.show(rows, !hidden);
         if (drawn.isEmpty() && emptyMessage != null) {
             Label empty = new Label(emptyMessage);
             empty.getStyleClass().add("text-muted");
