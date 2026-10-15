@@ -9,8 +9,8 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Employer;
 import lavs.ui.common.EmployerRows;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.common.RecordTiles;
 import lavs.ui.customer.forms.EmployerFormController;
 
@@ -26,6 +26,13 @@ public class EmploymentTabController {
     @FXML private Node employerForm;
     @FXML private EmployerFormController employerFormController;
 
+    private RecordEditor<Employer.Details> editor;
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(employerList, "employer", employerForm, employerFormController);
+    }
+
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Employer>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(employerList, items.stream()
@@ -35,25 +42,16 @@ public class EmploymentTabController {
 
     @FXML
     private void handleAddEmployer() {
-        employerFormController.clear(false);
-        if (FormDialog.show(employerList, "Add employer", employerForm, employerFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            // Later: CustomerService.addEmployer(customerNumber, employerFormController.read()), then reload the tab
-        }
+        editor.add(false, employer -> {
+            // Later: CustomerService.addEmployer(customerNumber, employer), then reload the tab
+        });
     }
 
     private void handleEditEmployer(Employer employer) {
-        employerFormController.fill(employer.details());
-        switch (FormDialog.show(employerList, "Edit employer", employerForm, employerFormController::check, true)) {
-            case SAVED -> {
-                // Later: CustomerService.updateEmployer(employer.id(), employerFormController.read()), then reload the tab
-            }
-            case REMOVED -> {
-                // Later: CustomerService.removeEmployer(employer.id()), then reload the tab
-            }
-            default -> {
-                // Cancelled: nothing to do
-            }
-        }
+        editor.edit(employer.details(), changed -> {
+            // Later: CustomerService.updateEmployer(employer.id(), changed), then reload the tab
+        }, () -> {
+            // Later: CustomerService.removeEmployer(employer.id()), then reload the tab
+        });
     }
 }

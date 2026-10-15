@@ -4,16 +4,16 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="lavs.ui.loan.view.DocumentsTabController"
+      fx:controller="lavs.ui.common.DocumentsTabController"
       spacing="12">
     <fx:define>
         <!-- Shown in a pop-up when adding or editing a document -->
-        <fx:include fx:id="documentForm" source="/lavs/ui/common/document-form.fxml"/>
+        <fx:include fx:id="documentForm" source="document-form.fxml"/>
     </fx:define>
 
     <Label text="Documents" styleClass="section-heading"/>
     <VBox fx:id="documentList" spacing="12"/>
-    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
+    <fx:include fx:id="pager" source="pager.fxml"/>
     <Button text="+  Add document" styleClass="button-add" maxWidth="Infinity"
             onAction="#handleAddDocument"/>
     <HBox styleClass="note">

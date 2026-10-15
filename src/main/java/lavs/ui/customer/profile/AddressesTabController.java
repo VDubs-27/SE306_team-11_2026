@@ -9,8 +9,8 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 import lavs.ui.common.AddressRows;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.common.RecordTiles;
 import lavs.ui.customer.forms.AddressFormController;
 
@@ -26,6 +26,13 @@ public class AddressesTabController {
     @FXML private Node addressForm;
     @FXML private AddressFormController addressFormController;
 
+    private RecordEditor<Address.Details> editor;
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(addressList, "address", addressForm, addressFormController);
+    }
+
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Address>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(addressList, items.stream()
@@ -35,25 +42,16 @@ public class AddressesTabController {
 
     @FXML
     private void handleAddAddress() {
-        addressFormController.clear(false);
-        if (FormDialog.show(addressList, "Add address", addressForm, addressFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            // Later: CustomerService.addAddress(customerNumber, addressFormController.read()), then reload the tab
-        }
+        editor.add(false, address -> {
+            // Later: CustomerService.addAddress(customerNumber, address), then reload the tab
+        });
     }
 
     private void handleEditAddress(Address address) {
-        addressFormController.fill(address.details());
-        switch (FormDialog.show(addressList, "Edit address", addressForm, addressFormController::check, true)) {
-            case SAVED -> {
-                // Later: CustomerService.updateAddress(address.id(), addressFormController.read()), then reload the tab
-            }
-            case REMOVED -> {
-                // Later: CustomerService.removeAddress(address.id()), then reload the tab
-            }
-            default -> {
-                // Cancelled: nothing to do
-            }
-        }
+        editor.edit(address.details(), changed -> {
+            // Later: CustomerService.updateAddress(address.id(), changed), then reload the tab
+        }, () -> {
+            // Later: CustomerService.removeAddress(address.id()), then reload the tab
+        });
     }
 }

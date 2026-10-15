@@ -13,7 +13,9 @@ import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.LoanText;
+import lavs.ui.common.NotesTabController;
 import lavs.ui.common.TabBars;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
@@ -29,8 +31,9 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Hyperlink backLink;
     @FXML private Label loanNumberLabel;
     @FXML private Label statusBadge;
-    @FXML private Label customerLabel;
-    @FXML private Label termsLabel;
+    @FXML private Label customerValue;
+    @FXML private Label principalValue;
+    @FXML private Label interestValue;
     @FXML private Button submitButton;
     @FXML private Label totalPaidValue;
     @FXML private Label paymentCountValue;
@@ -63,8 +66,9 @@ public class LoanViewController implements NavigatorAware {
         TabBars.setUp(tabPane);
         detailsController.setOnSaved(this::saveDetails);
         coborrowersController.setOnChanged(this::showCoborrowers);
-        documentsController.setOnChanged(this::showDocuments);
-        notesController.setOnChanged(this::showNotes);
+        // Later: save document and note changes through LoanService; until then they only show on this screen
+        documentsController.setOnChanged(this::showCounts);
+        notesController.setOnChanged(this::showCounts);
     }
 
     /** Fills the screen for one of a customer's loans. */
@@ -117,8 +121,9 @@ public class LoanViewController implements NavigatorAware {
         Label badge = LoanText.statusBadge(loan.status());
         statusBadge.setText(badge.getText());
         statusBadge.getStyleClass().setAll(badge.getStyleClass());
-        customerLabel.setText("for " + customer.fullName() + " · " + customer.number().value());
-        termsLabel.setText(DisplayFormat.money(loan.principal()) + " · " + LoanText.interest(details));
+        customerValue.setText("for " + customer.fullName());
+        principalValue.setText(DisplayFormat.money(loan.principal()));
+        interestValue.setText(LoanText.interest(details));
         boolean isNew = loan.status() == Loan.Status.NEW;
         submitButton.setVisible(isNew);
         submitButton.setManaged(isNew);
@@ -126,20 +131,16 @@ public class LoanViewController implements NavigatorAware {
         detailsController.show(loan);
         scheduleController.show(loan);
         showCoborrowers();
-        showDocuments();
-        showNotes();
+        showCounts();
     }
 
     private void showCoborrowers() {
         TabBars.setCount(coborrowersTab, coborrowersController.show(loan));
     }
 
-    private void showDocuments() {
-        TabBars.setCount(documentsTab, documentsController.show());
-    }
-
-    private void showNotes() {
-        TabBars.setCount(notesTab, notesController.show());
+    private void showCounts() {
+        TabBars.setCount(documentsTab, documentsController.count());
+        TabBars.setCount(notesTab, notesController.count());
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

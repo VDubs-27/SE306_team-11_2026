@@ -18,6 +18,7 @@ import lavs.ui.common.DateInput;
 import lavs.ui.common.FieldErrors;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.Numbers;
+import lavs.ui.common.RecordForm;
 
 /**
  * The form for a loan's amount, interest, repayments and dates, used by the new loan wizard and by
@@ -25,7 +26,7 @@ import lavs.ui.common.Numbers;
  * amounts and dates were typed correctly.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class LoanDetailsFormController {
+public class LoanDetailsFormController implements RecordForm<Loan.Details> {
 
     private static final String BAD_DATE = "Enter a real date, e.g. 01/11/2026.";
 
@@ -60,11 +61,6 @@ public class LoanDetailsFormController {
         startDate = new DateInput(startDatePicker);
         renewalDate = new DateInput(renewalDatePicker);
 
-        // Sensible starting points; all can be changed
-        rateFrequencyBox.setValue(Loan.RateFrequency.YEARLY);
-        paymentFrequencyBox.setValue(Loan.PaymentFrequency.MONTHLY);
-        startDatePicker.setValue(LocalDate.now());
-
         errors = new FieldErrors()
                 .add("principal", principalField, principalError)
                 .add("rateType", rateTypeBox, rateTypeError)
@@ -74,6 +70,21 @@ public class LoanDetailsFormController {
                 .add("paymentFrequency", paymentFrequencyBox, paymentFrequencyError)
                 .add("startDate", startDatePicker, startDateError)
                 .add("renewalDate", renewalDatePicker, renewalDateError);
+        clear(true);
+    }
+
+    /** Empties the form for a new loan, with sensible starting points that can all be changed; first is ignored. */
+    @Override
+    public void clear(boolean first) {
+        principalField.clear();
+        rateTypeBox.setValue(null);
+        rateField.clear();
+        rateFrequencyBox.setValue(Loan.RateFrequency.YEARLY);
+        paymentField.clear();
+        paymentFrequencyBox.setValue(Loan.PaymentFrequency.MONTHLY);
+        startDatePicker.setValue(LocalDate.now());
+        renewalDatePicker.setValue(null);
+        errors.show(List.of());
     }
 
     /** True once any amount has been typed or a rate type chosen, so cancelling should ask first. */
@@ -84,6 +95,7 @@ public class LoanDetailsFormController {
     }
 
     /** Puts an existing loan's details into the form for editing. */
+    @Override
     public void fill(Loan.Details details) {
         principalField.setText(plain(details.principal()));
         rateTypeBox.setValue(details.rateType());
@@ -97,6 +109,7 @@ public class LoanDetailsFormController {
     }
 
     /** Checks the details, showing any problems. Returns true when they can be saved. */
+    @Override
     public boolean check() {
         List<FieldError> problems = new ArrayList<>();
         addTypingProblems(problems);
@@ -106,6 +119,7 @@ public class LoanDetailsFormController {
     }
 
     /** What the form holds now. Amounts that aren't numbers read as none; check() reports them. */
+    @Override
     public Loan.Details read() {
         return new Loan.Details(
                 Numbers.parse(principalField.getText()),

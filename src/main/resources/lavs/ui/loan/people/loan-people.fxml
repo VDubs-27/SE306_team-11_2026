@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Who is on a loan, with Find existing customer and Remove; used by the new loan wizard and the loan screen. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.people.LoanPeopleController"
+      spacing="12">
+    <fx:define>
+        <!-- Shown in a pop-up when finding an existing customer -->
+        <fx:include fx:id="findCustomer" source="find-customer.fxml"/>
+    </fx:define>
+
+    <VBox fx:id="peopleList" spacing="12"/>
+    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
+    <HBox fx:id="addButtons" spacing="12">
+        <Button text="⌕  Find existing customer" styleClass="button-add" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                onAction="#handleFindCustomer"/>
+        <Button fx:id="newCustomerButton" text="+  Add new customer" styleClass="button-add" HBox.hgrow="ALWAYS"
+                maxWidth="Infinity" onAction="#handleAddNewCustomer"/>
+    </HBox>
+    <HBox fx:id="errorBanner" styleClass="banner-error">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="The applicant isn't employed, so this loan needs a guarantor."/>
+    </HBox>
+</VBox>
