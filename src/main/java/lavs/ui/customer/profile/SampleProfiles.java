@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.customer.CustomerNumber;
@@ -67,13 +66,6 @@ public final class SampleProfiles {
                 .sorted(Comparator.comparing((Customer customer) -> customer.familyName())
                         .thenComparing(Customer::firstName))
                 .toList();
-    }
-
-    /** One page of a sample list, the way the mainframe returns lists a page at a time. */
-    static <T> Page<T> pageOf(List<T> items, long page, long size) {
-        int from = (int) Math.min((page - 1) * size, items.size());
-        int to = (int) Math.min(from + size, items.size());
-        return new Page<>(items.subList(from, to), page, size, items.size());
     }
 
     /** A customer with just a home address and one job, enough to show them as a co-borrower. */

@@ -16,6 +16,7 @@ import lavs.ui.shell.NavigatorAware;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.NotesTabController;
+import lavs.ui.common.Pages;
 import lavs.ui.common.TabBars;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
@@ -72,14 +73,14 @@ public class CustomerProfileController implements NavigatorAware {
         showSummary(profile);
         detailsController.show(profile.customer());
         TabBars.setCount(addressesTab, addressesController.show(
-                page -> SampleProfiles.pageOf(profile.addresses(), page, PAGE_SIZE)));
+                page -> Pages.of(profile.addresses(), page, PAGE_SIZE)));
         TabBars.setCount(contactsTab, contactsController.show(
-                page -> SampleProfiles.pageOf(profile.phones(), page, PAGE_SIZE),
-                page -> SampleProfiles.pageOf(profile.emails(), page, PAGE_SIZE)));
+                page -> Pages.of(profile.phones(), page, PAGE_SIZE),
+                page -> Pages.of(profile.emails(), page, PAGE_SIZE)));
         TabBars.setCount(employmentTab, employmentController.show(
-                page -> SampleProfiles.pageOf(profile.employers(), page, PAGE_SIZE)));
+                page -> Pages.of(profile.employers(), page, PAGE_SIZE)));
         TabBars.setCount(loansTab, loansController.show(
-                page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE)));
+                page -> Pages.of(profile.loans(), page, PAGE_SIZE)));
         documentsController.use(profile.documents());
         TabBars.setCount(documentsTab, documentsController.count());
         notesController.use(profile.notes());

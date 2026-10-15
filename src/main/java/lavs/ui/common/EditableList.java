@@ -166,9 +166,7 @@ public final class EditableList<T> {
     }
 
     private Page<Integer> pageOfIndexes(long page) {
-        int from = (int) Math.min((page - 1) * pageSize, items.size());
-        int to = (int) Math.min(from + pageSize, items.size());
-        return new Page<>(IntStream.range(from, to).boxed().toList(), page, pageSize, items.size());
+        return Pages.of(indexes(), page, pageSize);
     }
 
     /** One "only one of these" rule. */

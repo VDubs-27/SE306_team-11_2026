@@ -6,20 +6,8 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.loan.view.CoborrowersTabController"
       spacing="12">
-    <fx:define>
-        <!-- Shown in a pop-up when finding an existing customer -->
-        <fx:include fx:id="findCustomer" source="/lavs/ui/loan/people/find-customer.fxml"/>
-    </fx:define>
-
     <Label text="Co-borrowers and guarantors" styleClass="section-heading"/>
-    <VBox fx:id="peopleList" spacing="12"/>
-    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
-    <Button fx:id="findButton" text="⌕  Find existing customer" styleClass="button-add" maxWidth="Infinity"
-            onAction="#handleFindCustomer"/>
-    <HBox fx:id="errorBanner" styleClass="banner-error">
-        <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="The applicant isn't employed, so this loan needs a guarantor before it can be submitted."/>
-    </HBox>
+    <fx:include fx:id="people" source="/lavs/ui/loan/people/loan-people.fxml"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
         <Label fx:id="lockNote"/>

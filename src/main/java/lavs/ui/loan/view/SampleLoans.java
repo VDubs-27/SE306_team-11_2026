@@ -14,6 +14,7 @@ import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.ScheduledRepayment;
 import lavs.ui.common.DocumentFile;
 import lavs.ui.common.NoteRow;
+import lavs.ui.common.Pages;
 import lavs.ui.customer.profile.SampleProfiles;
 import lavs.ui.loan.people.LoanPerson;
 
@@ -58,14 +59,7 @@ final class SampleLoans {
 
     /** One page of the schedule, the way the mainframe returns it a page at a time. */
     static Page<ScheduledRepayment> schedulePage(Loan loan, long page, long size) {
-        return pageOf(schedule(loan), page, size);
-    }
-
-    /** One page of a list, the way the mainframe returns lists a page at a time. */
-    static <T> Page<T> pageOf(List<T> items, long page, long size) {
-        int from = (int) Math.min((page - 1) * size, items.size());
-        int to = (int) Math.min(from + size, items.size());
-        return new Page<>(items.subList(from, to), page, size, items.size());
+        return Pages.of(schedule(loan), page, size);
     }
 
     /** The documents recorded for the loan: John's new loan has the ones a mortgage application needs. */
