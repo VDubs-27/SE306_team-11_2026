@@ -1,6 +1,9 @@
 package lavs.logic.adapter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static lavs.logic.model.Validation.isBlank;
 
 final class Values {
 
@@ -18,5 +21,9 @@ final class Values {
     // Salary is optional in LAVS, but the employer messages always send a number
     static double toDouble(BigDecimal value) {
         return value == null ? 0 : value.doubleValue();
+    }
+
+    static LocalDate date(String value) {
+        return isBlank(value) ? null : LocalDate.parse(value);
     }
 }
