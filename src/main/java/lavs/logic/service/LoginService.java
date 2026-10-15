@@ -12,14 +12,14 @@ public class LoginService {
 
     static final String REJECTED_MESSAGE = "The user name or password is incorrect.";
     static final String CONSTANTS_FAILED_MESSAGE =
-            "Signed in, but the list values could not be loaded from the mainframe. Try signing in again.";
+            "Could not load the list values from the mainframe. Try signing in again.";
 
     private final MainframeAdapter mainframe;
-    private volatile String currentUser;
-    private volatile Constants constants = Constants.EMPTY;
+    private final Session session;
 
-    public LoginService(MainframeAdapter mainframe) {
+    public LoginService(MainframeAdapter mainframe, Session session) {
         this.mainframe = Objects.requireNonNull(mainframe, "mainframe");
+        this.session = Objects.requireNonNull(session, "session");
     }
 
     public LoginResult login(String userName, String password) {
@@ -37,6 +37,7 @@ public class LoginService {
             return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : REJECTED_MESSAGE);
         }
 
+        Constants constants;
         try {
             constants = mainframe.loadConstants();
         } catch (MainframeException e) {
@@ -44,25 +45,12 @@ public class LoginService {
             return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : CONSTANTS_FAILED_MESSAGE);
         }
 
-        currentUser = userName;
+        session.start(userName, constants);
         return LoginResult.success();
     }
 
     public void logout() {
         mainframe.logout();
-        currentUser = null;
-        constants = Constants.EMPTY;
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
-    }
-
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    public Constants getConstants() {
-        return constants;
+        session.end();
     }
 }
