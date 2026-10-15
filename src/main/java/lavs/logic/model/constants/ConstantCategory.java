@@ -3,11 +3,8 @@ package lavs.logic.model.constants;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import lavs.logic.model.customer.Address;
-import lavs.logic.model.customer.Customer;
-import lavs.logic.model.customer.Email;
-import lavs.logic.model.customer.Employer;
-import lavs.logic.model.customer.Phone;
+
+import lavs.logic.model.customer.*;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 
@@ -34,10 +31,12 @@ public final class ConstantCategory<E extends Enum<E>> {
                     Loan.PaymentFrequency.UNKNOWN);
     public static final ConstantCategory<Coborrower.Type> COBORROWER_TYPE =
             new ConstantCategory<>("LoanCoborrowerType", Coborrower.Type::fromCode, Coborrower.Type.UNKNOWN);
+    public static final ConstantCategory<CustomerNote.Type> NOTE_TYPE =
+            new ConstantCategory<>("CustomerNoteType", CustomerNote.Type::fromCode, CustomerNote.Type.UNKNOWN);
 
     public static final List<ConstantCategory<?>> ALL = List.of(
             CUSTOMER_STATUS, ADDRESS_TYPE, EMAIL_TYPE, EMPLOYER_TYPE, PHONE_TYPE,
-            LOAN_STATUS, RATE_TYPE, RATE_FREQUENCY, PAYMENT_FREQUENCY, COBORROWER_TYPE);
+            LOAN_STATUS, RATE_TYPE, RATE_FREQUENCY, PAYMENT_FREQUENCY, COBORROWER_TYPE, NOTE_TYPE);
 
     private final String name;
     private final Function<String, E> fromCode;
