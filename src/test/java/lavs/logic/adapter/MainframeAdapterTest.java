@@ -96,4 +96,53 @@ class MainframeAdapterTest {
         assertTrue(e.isNetworkFailure());
         assertInstanceOf(IOException.class, e.getCause());
     }
+
+    @Test
+    void loginSucceedsWhenMainframeAcceptsCredentials() {
+        stub.setupSuccessfulLoginResult("token", "alice", 42);
+
+        adapter.login("alice", "secret");
+    }
+
+    @Test
+    void loginThrowsWithMainframeMessageWhenRejected() {
+        stub.setupFailedLoginResult(3, "Incorrect password");
+
+        MainframeException e = assertThrows(MainframeException.class,
+                () -> adapter.login("alice", "wrong"));
+
+        assertEquals(3, e.errorCode());
+        assertEquals("Incorrect password", e.getMessage());
+    }
+
+    @Test
+    void loginTreatsIoExceptionAsNetworkFailure() {
+        MainframeAdapter failing = new MainframeAdapter(new StubConnection() {
+            @Override
+            public Status Login(String username, String password) throws IOException {
+                throw new IOException("socket closed");
+            }
+        });
+
+        MainframeException e = assertThrows(MainframeException.class,
+                () -> failing.login("alice", "secret"));
+
+        assertTrue(e.isNetworkFailure());
+        assertInstanceOf(IOException.class, e.getCause());
+    }
+
+    @Test
+    void logoutLogsOutOfConnection() {
+        int[] logouts = {0};
+        MainframeAdapter counting = new MainframeAdapter(new StubConnection() {
+            @Override
+            public void Logout() {
+                logouts[0]++;
+            }
+        });
+
+        counting.logout();
+
+        assertEquals(1, logouts[0]);
+    }
 }

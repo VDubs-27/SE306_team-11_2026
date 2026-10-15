@@ -57,7 +57,17 @@ Add an entry here whenever a change knowingly departs from the proposal.
   They have no identity, validation or create, update and delete operations, and exist so the UI receives typed values instead of raw mainframe strings.
 - **Introduced in:** PR #5.
 
-## 8. DIT excludes JDK library classes
+## 8. Phone number list uses LAVS's own message class
+
+- **Proposal:** Section 4.2 says the mainframe adapter translates domain objects to and from the provided message classes.
+- **Code:** `PhoneGateway` lists phone numbers with `PhoneNumberList`, a LAVS message class in `lavs.logic.adapter`, instead of the provided `customerPhoneNumber.List`.
+- **Justification:** the provided class has a bug: its `Item` constructor writes the phone number to a field of the outer `List`, so every item reports the last item's number.
+  Tested against the live mainframe, two phones numbered `9 555 0001` and `9 555 0002` were both listed as `9 555 0002`.
+  `PhoneNumberList` sends the same `customerPhoneNumber.list` request and reads each item's own number.
+  The provided code is left unedited, as the readme requires.
+- **Introduced in:** PR #19.
+
+## 9. DIT excludes JDK library classes
 
 - **Proposal:** Section 6 sets DIT ≤ 3 "within the team's own classes, excluding JavaFX library classes".
 - **Code:** the CI metrics step works out DIT from source, counting only classes declared under `src/main/java/lavs`. The depth stops at the first parent that isn't a team class, so JDK ancestors are excluded as well as JavaFX ones. CK's own DIT is still shown alongside in the CI summary.
