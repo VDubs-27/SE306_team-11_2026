@@ -11,12 +11,16 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.constants.ConstantCategory;
+import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
+import lavs.ui.common.Choices;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.Modal;
 import lavs.ui.common.Nodes;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.Pages;
+import lavs.ui.common.Toasts;
 
 /**
  * Who is on a loan, used by the new loan wizard and the loan screen: the applicant first, then
@@ -102,8 +106,41 @@ public class LoanPeopleController {
 
     @FXML
     private void handleAddNewCustomer() {
-        // Later: once saving a new customer creates them, add them here as a co-borrower
         onAddNewCustomer.run();
+    }
+
+    /**
+     * Adds a customer just made in the new customer wizard, asking first whether they're a
+     * co-borrower or a guarantor (when the mainframe offers both).
+     */
+    public void addNewCustomer(Customer customer, String suburb, boolean employed) {
+        Coborrower.Type role = askRole(customer);
+        if (role == null) {
+            return;
+        }
+        others.add(new LoanPerson(customer, role, suburb, employed));
+        changed();
+        Toasts.show(peopleList, Toasts.Kind.SUCCESS, "Added to the loan", customer.fullName() + " is on the loan as a "
+                + (role == Coborrower.Type.GUARANTOR ? "guarantor." : "co-borrower."));
+    }
+
+    /** Co-borrower or guarantor; null if the pop-up is closed without choosing. */
+    private Coborrower.Type askRole(Customer customer) {
+        List<Coborrower.Type> offered = Choices.options(
+                ConstantCategory.COBORROWER_TYPE, Coborrower.Type.values(), Coborrower.Type.UNKNOWN);
+        if (offered.size() == 1) {
+            return offered.get(0);
+        }
+        String chosen = new Modal(peopleList, "Add " + customer.fullName() + " to the loan")
+                .message("A co-borrower shares the loan; a guarantor promises to repay it if the borrowers can't.")
+                .button("guarantor", "Guarantor", Modal.Kind.SECONDARY)
+                .button("coborrower", "Co-borrower", Modal.Kind.PRIMARY)
+                .showAndWait();
+        return switch (chosen) {
+            case "coborrower" -> Coborrower.Type.COBORROWER;
+            case "guarantor" -> Coborrower.Type.GUARANTOR;
+            default -> null;
+        };
     }
 
     private void handleRemove(LoanPerson person) {

@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
+import lavs.ui.customer.wizard.NewCustomer;
 import lavs.ui.loan.people.LoanPeopleController;
 
 /**
@@ -40,6 +41,11 @@ public class CoborrowersStepController {
     /** What "Add new customer" does: the wizard opens the new customer wizard. */
     void setOnAddNewCustomer(Runnable onAddNewCustomer) {
         peopleController.setOnAddNewCustomer(onAddNewCustomer);
+    }
+
+    /** Adds a customer just made in the new customer wizard to the loan. */
+    void addNewCustomer(NewCustomer created) {
+        peopleController.addNewCustomer(created.customer(), created.suburb(), created.employed());
     }
 
     /** An applicant who isn't employed needs a guarantor; otherwise anyone may move on. */

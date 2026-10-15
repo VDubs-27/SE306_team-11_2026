@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +20,8 @@ import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.customer.wizard.NewCustomer;
+import lavs.ui.customer.wizard.NewCustomerWizardController;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
 
@@ -111,7 +114,14 @@ public class Navigator {
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showNewCustomerWizard() {
+        showNewCustomerWizard(null);
+    }
+
+    /** Shows the new customer wizard; once the customer is saved, comes back here and runs onSaved. */
+    public void showNewCustomerWizard(Consumer<NewCustomer> onSaved) {
         FXMLLoader loader = load("/lavs/ui/customer/wizard/new-customer-wizard.fxml");
+        NewCustomerWizardController controller = loader.getController();
+        controller.setOnSaved(onSaved);
         show(loader.getRoot());
     }
 
