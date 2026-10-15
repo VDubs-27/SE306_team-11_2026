@@ -3,8 +3,10 @@ package lavs;
 import java.util.Objects;
 
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.service.LoginService;
@@ -18,16 +20,26 @@ public class App extends Application {
     private static final String MAINFRAME_URL =
             System.getProperty("lavs.mainframe.url", "https://animating-eraser-arrogance.ngrok-free.dev/");
 
+    // The window's usual size, and the smallest it can be made before screens stop fitting
+    private static final double WIDTH = 1280;
+    private static final double HEIGHT = 800;
+    private static final double MIN_WIDTH = 1100;
+    private static final double MIN_HEIGHT = 680;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Temporary root: the navigator replaces it straight away
-        Scene scene = new Scene(new StackPane(), 1280, 800);
+        // Temporary root: the navigator replaces it straight away. Opens smaller on a small screen.
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        Scene scene = new Scene(new StackPane(),
+                Math.min(WIDTH, screen.getWidth()), Math.min(HEIGHT, screen.getHeight()));
 
         scene.getStylesheets().add(Objects.requireNonNull(
                 getClass().getResource("/lavs/ui/app.css"),
                 "Stylesheet /lavs/ui/app.css not found").toExternalForm());
 
         primaryStage.setTitle("LAVS");
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setMinHeight(MIN_HEIGHT);
         primaryStage.setScene(scene);   // must come before the navigator uses the scene
 
         // The services every screen shares, built once; the UI only ever sees services

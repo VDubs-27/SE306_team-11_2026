@@ -592,6 +592,8 @@
 }
 .modal-header { -fx-padding: 18 18 6 24; -fx-spacing: 12; }
 .modal-body { -fx-padding: 10 24 8 24; }
+/* The card's content scrolls when the window is too short; it stays white with no frame of its own */
+.modal-scroll, .modal-scroll > .viewport { -fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; }
 .modal-footer {
     -fx-padding: 14 24 20 24;
     -fx-border-color: -line-soft transparent transparent transparent;
