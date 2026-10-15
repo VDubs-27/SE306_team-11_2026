@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 import lavs.logic.model.customer.Customer;
@@ -14,12 +15,13 @@ import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.TabBars;
+import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 
 /**
  * The loan screen, opened from a customer's Loans tab: the loan's number, status and terms, its
- * totals, and tabs for its details, schedule, payments, co-borrowers, documents and notes.
+ * totals, and tabs for its details, schedule, co-borrowers, documents and notes.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class LoanViewController implements NavigatorAware {
@@ -38,8 +40,10 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Label finalDateValue;
     @FXML private Label finalAmountValue;
     @FXML private TabPane tabPane;
+    @FXML private Tab coborrowersTab;
     @FXML private DetailsTabController detailsController;
     @FXML private ScheduleTabController scheduleController;
+    @FXML private CoborrowersTabController coborrowersController;
 
     private Navigator navigator;
     private Loan loan;
@@ -54,12 +58,14 @@ public class LoanViewController implements NavigatorAware {
     private void initialize() {
         TabBars.setUp(tabPane);
         detailsController.setOnSaved(this::saveDetails);
+        coborrowersController.setOnChanged(this::showCoborrowers);
     }
 
     /** Fills the screen for one of a customer's loans. */
     public void showLoan(Loan loan, Customer customer) {
         this.loan = loan;
         this.customer = customer;
+        coborrowersController.use(LoanPerson.lookUp(customer, null), SampleLoans.coborrowers(loan));
         refresh();
     }
 
@@ -68,9 +74,16 @@ public class LoanViewController implements NavigatorAware {
         navigator.back();
     }
 
-    /** Moves a New loan to Pending, after checking; its details are locked from then on. */
+    /**
+     * Moves a New loan to Pending, after checking; its details are locked from then on. A loan
+     * missing a guarantor it needs opens the Co-borrowers tab, which says why, instead.
+     */
     @FXML
     private void handleSubmitForApproval() {
+        if (!coborrowersController.check()) {
+            tabPane.getSelectionModel().select(coborrowersTab);
+            return;
+        }
         if (Dialogs.confirm(submitButton, "Submit this loan for approval?",
                 "It will move to Pending, and its details can no longer be changed.", "Submit for approval")) {
             // Later: LoanService.updateStatus(loan, PENDING); until then the change only shows on this screen
@@ -88,7 +101,7 @@ public class LoanViewController implements NavigatorAware {
         refresh();
     }
 
-    /** Shows the loan as it is now: summary, totals, details and schedule. */
+    /** Shows the loan as it is now: summary, totals and every tab. */
     private void refresh() {
         Loan.Details details = loan.details();
         backLink.setText("‹  Back to " + customer.fullName());
@@ -104,6 +117,11 @@ public class LoanViewController implements NavigatorAware {
         showTotals(loan);
         detailsController.show(loan);
         scheduleController.show(loan);
+        showCoborrowers();
+    }
+
+    private void showCoborrowers() {
+        TabBars.setCount(coborrowersTab, coborrowersController.show(loan));
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

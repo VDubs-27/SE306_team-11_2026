@@ -32,6 +32,6 @@
     <Label fx:id="emptyState" text="No repayments are due on this loan." styleClass="text-muted"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="Worked out from the loan's terms, so it changes if they do. Payments actually received are on the Payments tab."/>
+        <Label text="Worked out from the loan's terms, so it changes if they do."/>
     </HBox>
 </VBox>

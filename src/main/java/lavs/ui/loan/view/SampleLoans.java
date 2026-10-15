@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lavs.logic.model.Page;
+import lavs.logic.model.customer.CustomerNumber;
+import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.ScheduledRepayment;
+import lavs.ui.customer.profile.SampleProfiles;
+import lavs.ui.loan.people.LoanPerson;
 
 /**
- * Temporary sample data for the loan screen, worked out from a loan's own details: a standard
- * repayment schedule and its totals. Replaced by LoanService results (the mainframe's repayment
- * schedule and loan summary) once that exists.
+ * Temporary sample data for the loan screen: who else is on each loan, and, worked out from a
+ * loan's own details, a standard repayment schedule and its totals. Replaced by LoanService results
+ * (the mainframe's co-borrowers, repayment schedule and loan summary) once that exists.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 final class SampleLoans {
@@ -52,10 +56,26 @@ final class SampleLoans {
 
     /** One page of the schedule, the way the mainframe returns it a page at a time. */
     static Page<ScheduledRepayment> schedulePage(Loan loan, long page, long size) {
-        List<ScheduledRepayment> schedule = schedule(loan);
-        int from = (int) Math.min((page - 1) * size, schedule.size());
-        int to = (int) Math.min(from + size, schedule.size());
-        return new Page<>(schedule.subList(from, to), page, size, schedule.size());
+        return pageOf(schedule(loan), page, size);
+    }
+
+    /** One page of a list, the way the mainframe returns lists a page at a time. */
+    static <T> Page<T> pageOf(List<T> items, long page, long size) {
+        int from = (int) Math.min((page - 1) * size, items.size());
+        int to = (int) Math.min(from + size, items.size());
+        return new Page<>(items.subList(from, to), page, size, items.size());
+    }
+
+    /** Everyone on the loan besides the applicant: John's new loan has his partner Sarah as a co-borrower. */
+    static List<LoanPerson> coborrowers(Loan loan) {
+        List<Coborrower> coborrowers = loan.loanNumber().value().equals("01-0013-5810482-001")
+                ? List.of(new Coborrower(1, loan.loanNumber(), Coborrower.Type.COBORROWER,
+                        new CustomerNumber("01-0013-5810233"), "Sarah Smith"))
+                : List.of();
+        return coborrowers.stream()
+                .map(coborrower -> LoanPerson.lookUp(
+                        SampleProfiles.find(coborrower.coborrowerNumber().value()).customer(), coborrower.type()))
+                .toList();
     }
 
     /** Totals over the whole schedule: everything repaid, the interest in it, and the last payment. */
