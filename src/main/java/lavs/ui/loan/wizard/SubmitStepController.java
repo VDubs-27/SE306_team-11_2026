@@ -42,9 +42,7 @@ public class SubmitStepController {
         items.add(documentsItem(draft.documents()));
         items.add(ReviewRows.checkItem(true, "People on the loan", peopleSummary(draft)));
         if (!applicant.employed()) {
-            items.add(ReviewRows.checkItem(true, "Guarantor",
-                    "Needed because " + applicant.customer().firstName() + " isn't employed: "
-                            + namesWith(draft, Coborrower.Type.GUARANTOR)));
+            items.add(guarantorItem(draft, applicant));
         }
         checklist.getChildren().setAll(items);
 
@@ -66,6 +64,15 @@ public class SubmitStepController {
         }
         String types = documents.stream().map(DocumentFile::type).distinct().collect(Collectors.joining(", "));
         return ReviewRows.checkItem(true, "Documents", ReviewRows.count(documents.size(), "document") + ": " + types);
+    }
+
+    /** Ticked only once a guarantor is on the loan, since an applicant with no employer needs one. */
+    private static Node guarantorItem(NewLoanDraft draft, LoanPerson applicant) {
+        String reason = "Needed because " + applicant.customer().firstName() + " isn't employed";
+        if (countWith(draft, Coborrower.Type.GUARANTOR) == 0) {
+            return ReviewRows.checkItem(false, "Guarantor", reason + " · add one in the Co-borrowers step");
+        }
+        return ReviewRows.checkItem(true, "Guarantor", reason + ": " + namesWith(draft, Coborrower.Type.GUARANTOR));
     }
 
     /** e.g. "John Smith, with 1 co-borrower and 1 guarantor", or "John Smith only". */
