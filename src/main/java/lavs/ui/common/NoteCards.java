@@ -4,10 +4,13 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.time.LocalDate;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -70,6 +73,8 @@ public final class NoteCards {
      * Wraps the text onto at most three lines, ending in "..." when there's more. The TabPane sizes
      * its tabs without knowing their width, which would leave wrapped text squashed to one line, so
      * the label's minimum height is set from its real wrapped height at the width it was given.
+     * A card drawn while its tab is hidden is first measured at no width, so when the real height
+     * arrives the TabPane is asked to lay out again; it doesn't notice by itself.
      */
     private static void limitLines(Label label) {
         label.setAlignment(Pos.TOP_LEFT);
@@ -87,6 +92,14 @@ public final class NoteCards {
             return Math.min(measure.getLayoutBounds().getHeight(), maxHeight) + lineHeight * LINE_SLACK;
         }, label.widthProperty(), label.fontProperty(), label.textProperty()));
         label.maxHeightProperty().bind(label.minHeightProperty());
+        label.minHeightProperty().addListener((obs, oldHeight, height) -> Platform.runLater(() -> {
+            for (Parent parent = label.getParent(); parent != null; parent = parent.getParent()) {
+                if (parent instanceof TabPane tabPane) {
+                    tabPane.requestLayout();
+                    return;
+                }
+            }
+        }));
     }
 
     /** A small caption with its value under it, e.g. "Author" over "Bob Ross". */
