@@ -17,6 +17,7 @@ import lavs.ui.common.Nodes;
 import lavs.ui.common.NotesTabController;
 import lavs.ui.common.Pages;
 import lavs.ui.common.TabBars;
+import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 
@@ -50,6 +51,7 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private NotesTabController notesController;
 
     private Customer customer;
+    private String suburb;
     private Navigator navigator;
 
     @Override
@@ -61,6 +63,7 @@ public class CustomerProfileController implements NavigatorAware {
     private void initialize() {
         TabBars.setUp(tabPane);
         loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
+        detailsController.setOnSaved(this::saveDetails);
         // Later: save document and note changes through CustomerService; until then they only show on this screen
         documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
         notesController.setOnChanged(() -> TabBars.setCount(notesTab, notesController.count()));
@@ -71,8 +74,9 @@ public class CustomerProfileController implements NavigatorAware {
         // Later: load the profile from CustomerService in the background
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         customer = profile.customer();
-        showSummary(profile);
-        detailsController.show(profile.customer());
+        suburb = primarySuburb(profile);
+        showSummary();
+        detailsController.show(customer);
         TabBars.setCount(addressesTab, addressesController.show(
                 page -> Pages.of(profile.addresses(), page, PAGE_SIZE)));
         TabBars.setCount(contactsTab, contactsController.show(
@@ -98,14 +102,25 @@ public class CustomerProfileController implements NavigatorAware {
         navigator.showNewLoanWizard(customer);
     }
 
+    /** Keeps the customer's number and status, with the edited details. */
+    private void saveDetails(Customer.Details changed) {
+        // Later: CustomerService.update(customer.number(), changed); until then the change only shows on this screen
+        customer = new Customer(customer.number(), changed.title(), changed.firstName(), changed.familyName(),
+                customer.status(), changed.dateOfBirth(), changed.nationality());
+        showSummary();
+        detailsController.show(customer);
+        Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
+                DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
+    }
+
     /** The card at the top: avatar, name, status and key facts. */
-    private void showSummary(CustomerProfile profile) {
-        Customer customer = profile.customer();
+    private void showSummary() {
         initialsAvatar.setText(DisplayFormat.initials(customer));
         nameLabel.setText(DisplayFormat.fullNameWithTitle(customer));
         customerNumberLabel.setText(customer.number().value());
 
         statusBadge.setText(customer.status().code());
+        statusBadge.getStyleClass().removeAll("badge-active", "badge-neutral");
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
         showIfPresent(statusBadge, statusBadge);
@@ -113,7 +128,7 @@ public class CustomerProfileController implements NavigatorAware {
         dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
         showIfPresent(dateOfBirthLabel, dateOfBirthFact);
 
-        suburbLabel.setText(primarySuburb(profile));
+        suburbLabel.setText(suburb);
         showIfPresent(suburbLabel, suburbFact);
     }
 

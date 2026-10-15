@@ -1,13 +1,14 @@
-package lavs.ui.customer.wizard;
+package lavs.ui.customer.forms;
 
 import java.util.List;
 
 /**
- * Temporary choices for the drop-downs. Replaced by the mainframe's category lists
- * (constantCategory / constantItem) once there is a service to read them.
+ * The choices for a customer's title and nationality. The mainframe keeps no category list for
+ * either (its lists cover address, phone, email and employer types, statuses and loan values),
+ * so these are kept here.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-final class SampleCategories {
+final class CustomerChoices {
 
     static final List<String> TITLES = List.of("Mr", "Mrs", "Ms", "Miss", "Mx", "Dr");
 
@@ -15,6 +16,6 @@ final class SampleCategories {
             "New Zealand", "Australia", "China", "Cook Islands", "Fiji", "India", "Philippines",
             "Samoa", "South Africa", "Tonga", "United Kingdom", "United States");
 
-    private SampleCategories() {
+    private CustomerChoices() {
     }
 }
