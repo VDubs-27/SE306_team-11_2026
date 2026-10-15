@@ -14,10 +14,10 @@
     <Label text="Notes" styleClass="section-heading"/>
     <VBox fx:id="noteList" spacing="12"/>
     <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
-    <Button fx:id="addButton" text="+  Add note" styleClass="button-add" maxWidth="Infinity"
+    <Button text="+  Add note" styleClass="button-add" maxWidth="Infinity"
             onAction="#handleAddNote"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label fx:id="lockNote"/>
+        <Label text="Notes are shared with everyone who opens this loan, newest first. Keep them factual."/>
     </HBox>
 </VBox>

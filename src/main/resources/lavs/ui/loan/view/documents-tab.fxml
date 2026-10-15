@@ -14,10 +14,10 @@
     <Label text="Documents" styleClass="section-heading"/>
     <VBox fx:id="documentList" spacing="12"/>
     <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
-    <Button fx:id="addButton" text="+  Add document" styleClass="button-add" maxWidth="Infinity"
+    <Button text="+  Add document" styleClass="button-add" maxWidth="Infinity"
             onAction="#handleAddDocument"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label fx:id="lockNote"/>
+        <Label text="LAVS records each file's name, type and size. The file itself stays with the customer's paperwork."/>
     </HBox>
 </VBox>

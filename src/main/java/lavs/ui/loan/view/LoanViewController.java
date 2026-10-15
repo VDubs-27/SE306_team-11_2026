@@ -135,11 +135,11 @@ public class LoanViewController implements NavigatorAware {
     }
 
     private void showDocuments() {
-        TabBars.setCount(documentsTab, documentsController.show(loan));
+        TabBars.setCount(documentsTab, documentsController.show());
     }
 
     private void showNotes() {
-        TabBars.setCount(notesTab, notesController.show(loan));
+        TabBars.setCount(notesTab, notesController.show());
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

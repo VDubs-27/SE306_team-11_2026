@@ -3,15 +3,11 @@ package lavs.ui.loan.view;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import lavs.logic.model.loan.Loan;
 import lavs.ui.common.FormDialog;
 import lavs.ui.common.NoteCards;
 import lavs.ui.common.NoteFormController;
@@ -21,7 +17,7 @@ import lavs.ui.common.RecordTiles;
 
 /**
  * The loan screen's Notes tab: notes staff have written about the loan, newest first, a page at
- * a time. While the loan is New, notes can be added, changed or removed; after that they're locked.
+ * a time. Notes can be added, changed or removed whatever the loan's status.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class NotesTabController {
@@ -35,11 +31,8 @@ public class NotesTabController {
     @FXML private NoteFormController noteFormController;
     @FXML private VBox noteList;
     @FXML private PagerController pagerController;
-    @FXML private Button addButton;
-    @FXML private Label lockNote;
 
     private final List<NoteRow> notes = new ArrayList<>();
-    private Loan loan;
     private Runnable onChanged = () -> { };
 
     /** What happens after a note is added, changed or removed: the loan screen redraws this tab and its count. */
@@ -53,16 +46,8 @@ public class NotesTabController {
         this.notes.addAll(notes);
     }
 
-    /** Shows the notes, with Add and Edit only while the loan is New. Returns how many there are. */
-    long show(Loan loan) {
-        this.loan = loan;
-        boolean editable = isEditable();
-        addButton.setVisible(editable);
-        addButton.setManaged(editable);
-        lockNote.setText(editable
-                ? "Notes are shared with everyone who opens this loan, newest first. Keep them factual."
-                : "This loan is " + loan.status().code().toLowerCase(Locale.ROOT)
-                        + ", so its notes can no longer be changed.");
+    /** Shows the notes and returns how many there are, for the tab's count. */
+    long show() {
         return pagerController.show(page -> SampleLoans.pageOf(List.copyOf(notes), page, PAGE_SIZE), this::draw);
     }
 
@@ -92,16 +77,10 @@ public class NotesTabController {
         }
     }
 
-    /** One page of notes; Edit is offered only while the loan is New. */
     private void draw(List<NoteRow> page) {
-        boolean editable = isEditable();
         RecordTiles.fill(noteList, page.stream()
                 .map(note -> NoteCards.card(note.author(), note.dateAdded(), note.type(), note.text(),
-                        editable ? () -> handleEditNote(note) : null))
+                        () -> handleEditNote(note)))
                 .toList(), "No notes recorded.");
-    }
-
-    private boolean isEditable() {
-        return loan.status() == Loan.Status.NEW;
     }
 }

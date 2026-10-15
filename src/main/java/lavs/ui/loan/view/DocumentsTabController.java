@@ -2,15 +2,11 @@ package lavs.ui.loan.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DocumentFile;
 import lavs.ui.common.DocumentFormController;
 import lavs.ui.common.DocumentRows;
@@ -19,8 +15,8 @@ import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordTiles;
 
 /**
- * The loan screen's Documents tab: the files recorded for the loan, a page at a time. While the
- * loan is New, documents can be added, changed or removed; after that they're locked.
+ * The loan screen's Documents tab: the files recorded for the loan, a page at a time. Documents
+ * can be added, changed or removed whatever the loan's status, since paperwork can arrive late.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class DocumentsTabController {
@@ -31,11 +27,8 @@ public class DocumentsTabController {
     @FXML private DocumentFormController documentFormController;
     @FXML private VBox documentList;
     @FXML private PagerController pagerController;
-    @FXML private Button addButton;
-    @FXML private Label lockNote;
 
     private final List<DocumentFile> documents = new ArrayList<>();
-    private Loan loan;
     private Runnable onChanged = () -> { };
 
     /** What happens after a document is added, changed or removed: the loan screen redraws this tab and its count. */
@@ -49,16 +42,8 @@ public class DocumentsTabController {
         this.documents.addAll(documents);
     }
 
-    /** Shows the documents, with Add and Edit only while the loan is New. Returns how many there are. */
-    long show(Loan loan) {
-        this.loan = loan;
-        boolean editable = isEditable();
-        addButton.setVisible(editable);
-        addButton.setManaged(editable);
-        lockNote.setText(editable
-                ? "LAVS records each file's name, type and size. The file itself stays with the customer's paperwork."
-                : "This loan is " + loan.status().code().toLowerCase(Locale.ROOT)
-                        + ", so its documents can no longer be changed.");
+    /** Shows the documents and returns how many there are, for the tab's count. */
+    long show() {
         return pagerController.show(page -> SampleLoans.pageOf(List.copyOf(documents), page, PAGE_SIZE), this::draw);
     }
 
@@ -87,16 +72,10 @@ public class DocumentsTabController {
         }
     }
 
-    /** One page of documents; Edit is offered only while the loan is New. */
     private void draw(List<DocumentFile> page) {
-        boolean editable = isEditable();
         RecordTiles.fill(documentList, page.stream()
                 .map(document -> DocumentRows.tile(document.type(), document.fileName(), document.fileType(),
-                        document.size(), editable ? () -> handleEditDocument(document) : null))
+                        document.size(), () -> handleEditDocument(document)))
                 .toList(), "No documents recorded.");
-    }
-
-    private boolean isEditable() {
-        return loan.status() == Loan.Status.NEW;
     }
 }
