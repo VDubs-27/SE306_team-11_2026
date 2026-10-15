@@ -40,6 +40,10 @@ public class EmployerGateway {
                 .toList();
     }
 
+    public long count(CustomerNumber customer) {
+        return list(customer, 1, 1).total();
+    }
+
     public Employer retrieve(CustomerNumber customer, long id) {
         Retrieve message = adapter.send(new Retrieve(id, customer.value()));
         return new Employer(
