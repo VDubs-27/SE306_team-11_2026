@@ -31,12 +31,10 @@ public final class ConstantCategory<E extends Enum<E>> {
                     Loan.PaymentFrequency.UNKNOWN);
     public static final ConstantCategory<Coborrower.Type> COBORROWER_TYPE =
             new ConstantCategory<>("LoanCoborrowerType", Coborrower.Type::fromCode, Coborrower.Type.UNKNOWN);
-    public static final ConstantCategory<CustomerNote.Type> NOTE_TYPE =
-            new ConstantCategory<>("CustomerNoteType", CustomerNote.Type::fromCode, CustomerNote.Type.UNKNOWN);
 
     public static final List<ConstantCategory<?>> ALL = List.of(
             CUSTOMER_STATUS, ADDRESS_TYPE, EMAIL_TYPE, EMPLOYER_TYPE, PHONE_TYPE,
-            LOAN_STATUS, RATE_TYPE, RATE_FREQUENCY, PAYMENT_FREQUENCY, COBORROWER_TYPE, NOTE_TYPE);
+            LOAN_STATUS, RATE_TYPE, RATE_FREQUENCY, PAYMENT_FREQUENCY, COBORROWER_TYPE);
 
     private final String name;
     private final Function<String, E> fromCode;

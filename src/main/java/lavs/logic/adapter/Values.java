@@ -2,6 +2,7 @@ package lavs.logic.adapter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static lavs.logic.model.Validation.isBlank;
 
@@ -24,6 +25,11 @@ final class Values {
     }
 
     static LocalDate date(String value) {
-        return isBlank(value) ? null : LocalDate.parse(value);
+        if (isBlank(value)) {
+            return null;
+        }
+        return value.contains("T")
+                ? LocalDate.parse(value, DateTimeFormatter.ISO_DATE_TIME)
+                : LocalDate.parse(value);
     }
 }

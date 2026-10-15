@@ -6,19 +6,15 @@ import java.util.function.Supplier;
 import lavs.logic.adapter.CustomerNoteGateway;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Page;
-import lavs.logic.model.constants.ConstantCategory;
-import lavs.logic.model.constants.Constants;
 import lavs.logic.model.customer.CustomerNote;
 import lavs.logic.model.customer.CustomerNumber;
 
 public class CustomerNoteService {
 
     private final CustomerNoteGateway notes;
-    private final Supplier<Constants> constants;
 
-    public CustomerNoteService(CustomerNoteGateway notes, Supplier<Constants> constants) {
+    public CustomerNoteService(CustomerNoteGateway notes) {
         this.notes = Objects.requireNonNull(notes, "notes");
-        this.constants = Objects.requireNonNull(constants, "constants");
     }
 
     public Result<Page<CustomerNote>> list(CustomerNumber customer, long page, long size) {
@@ -49,8 +45,7 @@ public class CustomerNoteService {
     }
 
     private Result<CustomerNote> save(CustomerNote.Details details, Supplier<CustomerNote> send) {
-        List<FieldError> errors = Rules.withTypeCheck(
-                details.validate(), constants.get(), ConstantCategory.NOTE_TYPE, details.type(), "Note type");
+        List<FieldError> errors = details.validate();
         if (!errors.isEmpty()) {
             return Result.invalid(errors);
         }
