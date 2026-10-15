@@ -3,6 +3,7 @@ package lavs.logic.service;
 import static lavs.logic.adapter.ScriptedConnection.row;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,6 +49,27 @@ class CoborrowerServiceTests {
                 .reply("loan.addCoborrower", row("id", "9"))
                 .reply("loanCoborrower.retrieve", row(
                         "id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020", "coborrowerName", "Jo Bloggs"));
+    }
+
+    private static final Map<String, String> ORIGINAL = row(
+            "id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020", "coborrowerName", "Jo Bloggs");
+
+    private CoborrowerService serviceOffering(String... types) {
+        Constants offered = new Constants(Map.of(ConstantCategory.COBORROWER_TYPE, List.of(types)));
+        return new CoborrowerService(new CoborrowerGateway(new MainframeAdapter(connection)), () -> offered);
+    }
+
+    // Co-borrower 9 is being replaced; the new person is a customer, and the loan has the given people.
+    // The first retrieve reads the original, the second reads back the replacement.
+    @SafeVarargs
+    private ScriptedConnection replacing(Map<String, String>... people) {
+        return connection
+                .reply("loanCoborrower.retrieve", ORIGINAL)
+                .reply("loanCoborrower.retrieve", row(
+                        "id", "10", "type", "Guarantor", "coborrowerNumber", "01-0020", "coborrowerName", "Jo Bloggs"))
+                .reply("customer.retrieve", row("number", "01-0020"))
+                .replyList("loanCoborrower.list", people.length, people)
+                .reply("loan.deleteCoborrower", row("id", "9"));
     }
 
     @Test
@@ -142,6 +164,100 @@ class CoborrowerServiceTests {
         Result<Coborrower> result = service.add(LOAN, details(Coborrower.Type.COBORROWER, PERSON));
 
         assertEquals("Could not reach the mainframe. Check the connection and try again.", result.errorMessage());
+    }
+
+    @Test
+    void updateDeletesTheOriginalThenAddsTheReplacement() {
+        CoborrowerService both = serviceOffering("Coborrower", "Guarantor");
+        replacing(row("id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020"))
+                .reply("loan.addCoborrower", row("id", "10"));
+
+        Result<Coborrower> result = both.update(LOAN, 9, details(Coborrower.Type.GUARANTOR, PERSON));
+
+        assertAll(
+                () -> assertTrue(result.successful()),
+                () -> assertEquals(10, result.value().id()),
+                () -> assertEquals(Coborrower.Type.GUARANTOR, result.value().type()),
+                () -> assertEquals(List.of("loanCoborrower.retrieve", "customer.retrieve", "loanCoborrower.list",
+                        "loan.deleteCoborrower", "loan.addCoborrower", "loanCoborrower.retrieve"),
+                        connection.requestTypes()),
+                () -> assertEquals("9", connection.onlyRequest("loan.deleteCoborrower").getValue("id")),
+                () -> assertEquals("Guarantor", connection.onlyRequest("loan.addCoborrower").getValue("type"))
+        );
+    }
+
+    @Test
+    void updateWithNoChangesSendsNothing() {
+        connection.reply("loanCoborrower.retrieve", ORIGINAL);
+
+        Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, PERSON));
+
+        assertAll(
+                () -> assertEquals(9, result.value().id()),
+                () -> assertEquals(List.of("loanCoborrower.retrieve"), connection.requestTypes())
+        );
+    }
+
+    @Test
+    void updateWithInvalidDetailsSendsNothing() {
+        Result<Coborrower> result = service.update(LOAN, 9, details(null, PERSON));
+
+        assertAll(
+                () -> assertEquals("type", result.fieldErrors().get(0).field()),
+                () -> assertTrue(connection.requestTypes().isEmpty())
+        );
+    }
+
+    @Test
+    void updateCannotMakeTheBorrowerACoborrower() {
+        connection.reply("loanCoborrower.retrieve", ORIGINAL);
+
+        Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, BORROWER));
+
+        assertAll(
+                () -> assertEquals(List.of(CoborrowerService.IS_BORROWER), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.deleteCoborrower").isEmpty())
+        );
+    }
+
+    @Test
+    void updateCannotSwapInSomeoneAlreadyOnTheLoan() {
+        CustomerNumber other = new CustomerNumber("01-0030");
+        replacing(row("id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020"),
+                row("id", "4", "type", "Coborrower", "coborrowerNumber", "01-0030"));
+
+        Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, other));
+
+        assertAll(
+                () -> assertEquals(List.of(CoborrowerService.ALREADY_ON_LOAN), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.deleteCoborrower").isEmpty())
+        );
+    }
+
+    @Test
+    void failedReplacementPutsTheOriginalBack() {
+        replacing(row("id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020"))
+                .fail("loan.addCoborrower", 3, "Customer is archived")
+                .reply("loan.addCoborrower", row("id", "11"));
+
+        Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, new CustomerNumber("01-0030")));
+
+        assertAll(
+                () -> assertFalse(result.successful()),
+                () -> assertEquals("Customer is archived", result.errorMessage()),
+                () -> assertEquals(List.of("01-0030", "01-0020"), connection.requests("loan.addCoborrower").stream()
+                        .map(request -> request.getValue("coborrowerNumber")).toList())
+        );
+    }
+
+    @Test
+    void failedReplacementAndRestoreAreReported() {
+        replacing(row("id", "9", "type", "Coborrower", "coborrowerNumber", "01-0020"))
+                .fail("loan.addCoborrower", 10, "Unavailable");
+
+        Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, new CustomerNumber("01-0030")));
+
+        assertEquals(CoborrowerService.NOT_RESTORED_MESSAGE, result.errorMessage());
     }
 
     @Test

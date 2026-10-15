@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -33,11 +34,45 @@ class ValuesTests {
 
     @Test
     void missingDecimalStaysMissing() {
-        assertNull(Values.decimal(null));
+        assertNull(Values.decimal((Double) null));
     }
 
     @Test
     void missingAmountIsSentAsZero() {
         assertEquals(0, Values.toDouble(null));
+    }
+
+    @Test
+    void decimalTextKeepsItsDigits() {
+        assertEquals(new BigDecimal("250000.00"), Values.decimal(" 250000.00 "));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    void blankDecimalTextIsMissing(String blank) {
+        assertNull(Values.decimal(blank));
+    }
+
+    @Test
+    void dateIsReadFromIsoText() {
+        assertEquals(LocalDate.of(2026, 1, 15), Values.date("2026-01-15"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    void blankDateIsMissing(String blank) {
+        assertNull(Values.date(blank));
+    }
+
+    @Test
+    void dateIsSentAsIsoText() {
+        assertEquals("2026-01-15", Values.text(LocalDate.of(2026, 1, 15)));
+    }
+
+    @Test
+    void missingDateIsSentAsNothing() {
+        assertNull(Values.text(null));
     }
 }
