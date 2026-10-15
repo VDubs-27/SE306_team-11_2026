@@ -6,11 +6,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.SVGPath?>
 
-<!-- The whole window before signing in: a card on the brand blue, with the red line along the top. -->
+<!-- The whole window before signing in: a card on the brand blue, with the red line along the top,
+     which sweeps while signing in. -->
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="lavs.ui.login.LoginController"
            styleClass="login-page">
-    <VBox alignment="CENTER" spacing="18">
+    <VBox alignment="CENTER" spacing="18" styleClass="login-content">
         <VBox styleClass="login-card" maxWidth="400" spacing="16">
             <ImageView fitHeight="46" preserveRatio="true">
                 <Image url="@../images/countrywide-logo.jpg"/>
@@ -59,4 +60,6 @@
         </VBox>
         <Label text="Authorised Countrywide Bank staff only" styleClass="login-footnote"/>
     </VBox>
+    <Pane fx:id="topBar" styleClass="login-top-bar" StackPane.alignment="TOP_CENTER"
+          minHeight="4" prefHeight="4" maxHeight="4"/>
 </StackPane>

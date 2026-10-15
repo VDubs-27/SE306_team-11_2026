@@ -863,11 +863,13 @@
 
 /* ===================== Login ===================== */
 /* The whole window before signing in: brand blue with the red line along the top, like the header */
-.login-page {
-    -fx-background-color: -brand-blue;
-    -fx-border-color: -brand-red transparent transparent transparent;
-    -fx-border-width: 4 0 0 0;
-    -fx-padding: 24;
+.login-page { -fx-background-color: -brand-blue; }
+.login-content { -fx-padding: 24; }
+.login-top-bar { -fx-background-color: -brand-red; }
+/* The highlight that sweeps along a LoadingBar: brightest in the middle, fading at both ends */
+.loading-sweep {
+    -fx-background-color: linear-gradient(to right,
+            rgba(255, 255, 255, 0), rgba(255, 236, 228, 0.9), rgba(255, 255, 255, 0));
 }
 .login-card {
     -fx-background-color: white;

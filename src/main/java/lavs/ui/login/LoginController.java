@@ -9,10 +9,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
 import lavs.logic.service.LoginResult;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.LoadingBar;
 import lavs.ui.common.Nodes;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -40,9 +42,11 @@ public class LoginController implements NavigatorAware {
     @FXML private HBox errorBanner;
     @FXML private Label errorText;
     @FXML private Button signInButton;
+    @FXML private Pane topBar;
 
     private Navigator navigator;
     private FieldErrors errors;
+    private LoadingBar loadingBar;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -59,6 +63,7 @@ public class LoginController implements NavigatorAware {
                 .add("userName", userNameField, userNameError)
                 .add("password", passwordField, passwordError);
         Nodes.show(errorBanner, false);
+        loadingBar = new LoadingBar(topBar);
         Platform.runLater(userNameField::requestFocus);
     }
 
@@ -118,6 +123,11 @@ public class LoginController implements NavigatorAware {
     }
 
     private void setBusy(boolean busy) {
+        if (busy) {
+            loadingBar.start();
+        } else {
+            loadingBar.stop();
+        }
         signInButton.setDisable(busy);
         signInButton.setText(busy ? "Signing in…" : "Sign in");
         userNameField.setDisable(busy);
