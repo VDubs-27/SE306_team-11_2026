@@ -34,6 +34,11 @@ public final class NoteCards {
     private NoteCards() {
     }
 
+    /** The card for a recorded note. */
+    public static VBox card(NoteRow note, Runnable onEdit) {
+        return card(note.author(), note.dateAdded(), note.type(), note.text(), onEdit);
+    }
+
     /** A card: labelled author, date and type along the top with Edit (unless onEdit is null), then the note's text. */
     public static VBox card(String author, LocalDate dateAdded, String type, String text, Runnable onEdit) {
         Label typeLabel = isBlank(type)

@@ -23,7 +23,7 @@ import lavs.logic.model.FieldError;
  * from the computer. Only the file's name, type and size are kept, within the mainframe's limits.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class DocumentFormController {
+public class DocumentFormController implements RecordForm<DocumentFile> {
 
     /** Temporary choices; replaced by the mainframe's category list once there is a service to read it. */
     private static final List<String> TYPES = List.of(
@@ -58,12 +58,14 @@ public class DocumentFormController {
                 .add("file", chooseButton, fileError);
     }
 
-    /** Empties the form for a new document. */
-    public void clear() {
+    /** Empties the form for a new document; first is ignored, as documents have no primary. */
+    @Override
+    public void clear(boolean first) {
         fill(new DocumentFile(null, null, null, 0));
     }
 
     /** Puts an existing document into the form for editing. */
+    @Override
     public void fill(DocumentFile document) {
         typeBox.setValue(document.type());
         showFile(document.fileName(), document.fileType(), document.size());
@@ -71,6 +73,7 @@ public class DocumentFormController {
     }
 
     /** Checks there is a type and a file, within the mainframe's limits. Returns true when it can be saved. */
+    @Override
     public boolean check() {
         List<FieldError> problems = new ArrayList<>();
         String type = typeBox.getValue();
@@ -89,6 +92,7 @@ public class DocumentFormController {
     }
 
     /** What the form holds now. */
+    @Override
     public DocumentFile read() {
         return new DocumentFile(typeBox.getValue(), fileName, fileType, size);
     }

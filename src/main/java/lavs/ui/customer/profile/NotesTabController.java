@@ -7,11 +7,11 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.NoteCards;
 import lavs.ui.common.NoteFormController;
 import lavs.ui.common.NoteRow;
 import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.common.RecordTiles;
 
 /**
@@ -26,35 +26,32 @@ public class NotesTabController {
     @FXML private Node noteForm;
     @FXML private NoteFormController noteFormController;
 
+    private RecordEditor<NoteRow> editor;
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(noteList, "note", noteForm, noteFormController);
+    }
+
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<NoteRow>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(noteList, items.stream()
-                .map(note -> NoteCards.card(note.author(), note.dateAdded(), note.type(), note.text(),
-                        () -> handleEditNote(note)))
+                .map(note -> NoteCards.card(note, () -> handleEditNote(note)))
                 .toList(), "No notes recorded."));
     }
 
     @FXML
     private void handleAddNote() {
-        noteFormController.clear();
-        if (FormDialog.show(noteList, "Add note", noteForm, noteFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            // Later: CustomerService.addNote(customerNumber, type, text), then reload the tab
-        }
+        editor.add(false, note -> {
+            // Later: CustomerService.addNote(customerNumber, note), then reload the tab
+        });
     }
 
     private void handleEditNote(NoteRow note) {
-        noteFormController.fill(note.type(), note.text());
-        switch (FormDialog.show(noteList, "Edit note", noteForm, noteFormController::check, true)) {
-            case SAVED -> {
-                // Later: CustomerService.updateNote(note.id(), type, text), then reload the tab
-            }
-            case REMOVED -> {
-                // Later: CustomerService.removeNote(note.id()), then reload the tab
-            }
-            default -> {
-                // Cancelled: nothing to do
-            }
-        }
+        editor.edit(note, changed -> {
+            // Later: CustomerService.updateNote(note.id(), changed), then reload the tab
+        }, () -> {
+            // Later: CustomerService.removeNote(note.id()), then reload the tab
+        });
     }
 }

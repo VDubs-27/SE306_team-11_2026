@@ -19,7 +19,11 @@
     </HBox>
 
     <VBox styleClass="card-section" spacing="12">
-        <VBox fx:id="contactList" spacing="12"/>
+        <VBox fx:id="contactList" spacing="12">
+            <VBox fx:id="phoneList" spacing="12"/>
+            <VBox fx:id="emailList" spacing="12"/>
+            <Label fx:id="noContacts" text="No phone numbers or email addresses added yet." styleClass="text-muted"/>
+        </VBox>
         <HBox spacing="12">
             <Button text="+  Add phone" styleClass="button-add" HBox.hgrow="ALWAYS" onAction="#handleAddPhone"/>
             <Button text="+  Add email" styleClass="button-add" HBox.hgrow="ALWAYS" onAction="#handleAddEmail"/>

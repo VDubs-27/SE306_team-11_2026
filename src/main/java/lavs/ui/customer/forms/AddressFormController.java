@@ -12,13 +12,14 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Address;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.RecordForm;
 
 /**
  * The form for one address, used in a pop-up to add or edit. It checks itself with the model's
  * Address.Details.validate(), so the rules live in one place.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class AddressFormController {
+public class AddressFormController implements RecordForm<Address.Details> {
 
     private static final String HOME_COUNTRY = "New Zealand";
 
@@ -61,11 +62,13 @@ public class AddressFormController {
     }
 
     /** Empties the form for a new address. The first address is primary and mailing to start with. */
+    @Override
     public void clear(boolean firstAddress) {
         fill(new Address.Details(null, "", "", "", "", "", "", HOME_COUNTRY, firstAddress, firstAddress));
     }
 
     /** Puts an existing address into the form for editing. */
+    @Override
     public void fill(Address.Details address) {
         typeBox.setValue(address.type());
         otherTypeField.setText(text(address.otherType()));
@@ -82,11 +85,13 @@ public class AddressFormController {
     }
 
     /** Checks the form, showing any problems. Returns true when it can be saved. */
+    @Override
     public boolean check() {
         return errors.show(read().validate());
     }
 
     /** What the form holds now. */
+    @Override
     public Address.Details read() {
         Address.Type type = typeBox.getValue();
         return new Address.Details(

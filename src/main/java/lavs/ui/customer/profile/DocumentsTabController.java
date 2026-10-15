@@ -10,8 +10,8 @@ import lavs.logic.model.Page;
 import lavs.ui.common.DocumentFile;
 import lavs.ui.common.DocumentFormController;
 import lavs.ui.common.DocumentRows;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.common.RecordTiles;
 
 /**
@@ -26,6 +26,13 @@ public class DocumentsTabController {
     @FXML private Node documentForm;
     @FXML private DocumentFormController documentFormController;
 
+    private RecordEditor<DocumentFile> editor;
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(documentList, "document", documentForm, documentFormController);
+    }
+
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<DocumentRow>> loadPage) {
         return pagerController.show(loadPage, items -> RecordTiles.fill(documentList, items.stream()
@@ -36,26 +43,18 @@ public class DocumentsTabController {
 
     @FXML
     private void handleAddDocument() {
-        documentFormController.clear();
-        if (FormDialog.show(documentList, "Add document", documentForm, documentFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            // Later: CustomerService.addDocument(customerNumber, documentFormController.read()), then reload the tab
-        }
+        editor.add(false, document -> {
+            // Later: CustomerService.addDocument(customerNumber, document), then reload the tab
+        });
     }
 
     private void handleEditDocument(DocumentRow document) {
-        documentFormController.fill(new DocumentFile(document.type(), document.fileName(), document.fileType(),
-                document.size()));
-        switch (FormDialog.show(documentList, "Edit document", documentForm, documentFormController::check, true)) {
-            case SAVED -> {
-                // Later: CustomerService.updateDocument(document.id(), documentFormController.read()), then reload the tab
-            }
-            case REMOVED -> {
-                // Later: CustomerService.removeDocument(document.id()), then reload the tab
-            }
-            default -> {
-                // Cancelled: nothing to do
-            }
-        }
+        DocumentFile file = new DocumentFile(document.type(), document.fileName(), document.fileType(),
+                document.size());
+        editor.edit(file, changed -> {
+            // Later: CustomerService.updateDocument(document.id(), changed), then reload the tab
+        }, () -> {
+            // Later: CustomerService.removeDocument(document.id()), then reload the tab
+        });
     }
 }

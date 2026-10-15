@@ -19,6 +19,11 @@ public final class DocumentRows {
     private DocumentRows() {
     }
 
+    /** A row for a recorded document; Edit is left out when onEdit is null. */
+    public static HBox tile(DocumentFile document, Runnable onEdit) {
+        return tile(document.type(), document.fileName(), document.fileType(), document.size(), onEdit);
+    }
+
     public static HBox tile(String type, String fileName, String fileType, long size, Runnable onEdit) {
         return RecordTiles.iconTile(fileIcon(), fileName, details(fileName, fileType, size),
                 isBlank(type) ? List.of() : List.of(RecordTiles.badge(type, "badge-mailing")), onEdit);

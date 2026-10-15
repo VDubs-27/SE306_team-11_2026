@@ -10,9 +10,9 @@ import javafx.scene.layout.VBox;
 import lavs.ui.common.DocumentFile;
 import lavs.ui.common.DocumentFormController;
 import lavs.ui.common.DocumentRows;
-import lavs.ui.common.FormDialog;
+import lavs.ui.common.EditableList;
 import lavs.ui.common.PagerController;
-import lavs.ui.common.RecordTiles;
+import lavs.ui.common.RecordEditor;
 
 /**
  * The loan screen's Documents tab: the files recorded for the loan, a page at a time. Documents
@@ -28,54 +28,34 @@ public class DocumentsTabController {
     @FXML private VBox documentList;
     @FXML private PagerController pagerController;
 
-    private final List<DocumentFile> documents = new ArrayList<>();
-    private Runnable onChanged = () -> { };
+    private EditableList<DocumentFile> documents;
 
-    /** What happens after a document is added, changed or removed: the loan screen redraws this tab and its count. */
+    @FXML
+    private void initialize() {
+        // Later: save through LoanService (add, update and delete document); until then changes only show on this screen
+        documents = new EditableList<>(
+                new RecordEditor<>(documentList, "document", documentForm, documentFormController),
+                documentList, DocumentRows::tile, "No documents recorded.")
+                .paged(pagerController, PAGE_SIZE);
+    }
+
+    /** What happens after a document is added, changed or removed: the loan screen updates the tab's count. */
     void setOnChanged(Runnable onChanged) {
-        this.onChanged = onChanged;
+        documents.onChanged(onChanged);
     }
 
-    /** The loan's documents when the screen opens. */
-    void use(List<DocumentFile> documents) {
-        this.documents.clear();
-        this.documents.addAll(documents);
+    /** Shows the loan's documents from the first page. */
+    void use(List<DocumentFile> loanDocuments) {
+        documents.use(new ArrayList<>(loanDocuments));
     }
 
-    /** Shows the documents and returns how many there are, for the tab's count. */
-    long show() {
-        return pagerController.show(page -> SampleLoans.pageOf(List.copyOf(documents), page, PAGE_SIZE), this::draw);
+    /** How many documents there are, for the tab's count. */
+    long count() {
+        return documents.items().size();
     }
 
     @FXML
     private void handleAddDocument() {
-        documentFormController.clear();
-        if (FormDialog.show(documentList, "Add document", documentForm, documentFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            // Later: LoanService.addDocument(loan, ...); until then the change only shows on this screen
-            documents.add(documentFormController.read());
-            onChanged.run();
-        }
-    }
-
-    private void handleEditDocument(DocumentFile document) {
-        documentFormController.fill(document);
-        FormDialog.Result result = FormDialog.show(documentList, "Edit document", documentForm,
-                documentFormController::check, true);
-        // Later: LoanService.updateDocument / deleteDocument; until then the change only shows on this screen
-        if (result == FormDialog.Result.SAVED) {
-            documents.set(documents.indexOf(document), documentFormController.read());
-            onChanged.run();
-        } else if (result == FormDialog.Result.REMOVED) {
-            documents.remove(document);
-            onChanged.run();
-        }
-    }
-
-    private void draw(List<DocumentFile> page) {
-        RecordTiles.fill(documentList, page.stream()
-                .map(document -> DocumentRows.tile(document.type(), document.fileName(), document.fileType(),
-                        document.size(), () -> handleEditDocument(document)))
-                .toList(), "No documents recorded.");
+        documents.add();
     }
 }

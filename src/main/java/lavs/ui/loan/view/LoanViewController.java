@@ -63,8 +63,8 @@ public class LoanViewController implements NavigatorAware {
         TabBars.setUp(tabPane);
         detailsController.setOnSaved(this::saveDetails);
         coborrowersController.setOnChanged(this::showCoborrowers);
-        documentsController.setOnChanged(this::showDocuments);
-        notesController.setOnChanged(this::showNotes);
+        documentsController.setOnChanged(this::showCounts);
+        notesController.setOnChanged(this::showCounts);
     }
 
     /** Fills the screen for one of a customer's loans. */
@@ -126,20 +126,16 @@ public class LoanViewController implements NavigatorAware {
         detailsController.show(loan);
         scheduleController.show(loan);
         showCoborrowers();
-        showDocuments();
-        showNotes();
+        showCounts();
     }
 
     private void showCoborrowers() {
         TabBars.setCount(coborrowersTab, coborrowersController.show(loan));
     }
 
-    private void showDocuments() {
-        TabBars.setCount(documentsTab, documentsController.show());
-    }
-
-    private void showNotes() {
-        TabBars.setCount(notesTab, notesController.show());
+    private void showCounts() {
+        TabBars.setCount(documentsTab, documentsController.count());
+        TabBars.setCount(notesTab, notesController.count());
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

@@ -29,6 +29,7 @@ public class PagerController {
 
     private LongConsumer showPage = number -> { };
     private long currentPage = 1;
+    private long pageSize = 1;
     private long total;
 
     /**
@@ -45,6 +46,18 @@ public class PagerController {
         return total;
     }
 
+    /**
+     * Shows the page that's open again, after the list changed. If the change emptied it, such as
+     * removing the only item on the last page, shows the page before instead.
+     */
+    public void reload() {
+        showPage.accept(currentPage);
+        if (currentPage > 1 && total <= (currentPage - 1) * pageSize) {
+            showPage.accept(currentPage - 1);
+        }
+        moveTo(false);
+    }
+
     @FXML
     private void handlePrev() {
         changePage(currentPage - 1);
@@ -58,6 +71,7 @@ public class PagerController {
     /** Updates the buttons and label for the page now showing; hides the pager when there's only one page. */
     private void update(Page<?> page) {
         currentPage = page.page();
+        pageSize = page.size();
         total = page.total();
         pageLabel.setText("Page " + page.page() + " of " + page.totalPages());
         prevButton.setDisable(!page.hasPrevious());
@@ -68,19 +82,26 @@ public class PagerController {
         pager.setManaged(needed);
     }
 
-    /**
-     * Loads the page, then resizes and scrolls to suit it. A TabPane doesn't notice when the
-     * open tab's content changes size, so it is asked to lay out again; the page then scrolls
-     * back to the top so the new items start in view.
-     */
+    /** Loads the page, then resizes and scrolls to suit it. */
     private void changePage(long page) {
         showPage.accept(page);
+        moveTo(true);
+    }
+
+    /**
+     * A TabPane doesn't notice when the open tab's content changes size, so it is asked to lay out
+     * again. After moving to another page, the screen also scrolls back to the top so the new items
+     * start in view.
+     */
+    private void moveTo(boolean scrollToTop) {
         for (Parent parent = pager.getParent(); parent != null; parent = parent.getParent()) {
             if (parent instanceof TabPane tabPane) {
                 tabPane.requestLayout();
             }
             if (parent instanceof ScrollPane scrollPane) {
-                scrollPane.setVvalue(0);
+                if (scrollToTop) {
+                    scrollPane.setVvalue(0);
+                }
                 return;
             }
         }

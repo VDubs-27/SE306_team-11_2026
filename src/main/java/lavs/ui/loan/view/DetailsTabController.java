@@ -12,8 +12,8 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.LoanText;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.loan.forms.LoanDetailsFormController;
 
 /**
@@ -30,7 +30,13 @@ public class DetailsTabController {
     @FXML private Label lockNote;
 
     private Loan loan;
+    private RecordEditor<Loan.Details> editor;
     private Consumer<Loan.Details> onSaved = details -> { };
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(detailGrid, "loan details", detailsForm, detailsFormController).withoutRemove();
+    }
 
     /** What happens after Edit is saved: the loan screen updates itself. */
     void setOnSaved(Consumer<Loan.Details> onSaved) {
@@ -64,11 +70,7 @@ public class DetailsTabController {
 
     @FXML
     private void handleEdit() {
-        detailsFormController.fill(loan.details());
-        if (FormDialog.show(detailGrid, "Edit loan details", detailsForm, detailsFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            onSaved.accept(detailsFormController.read());
-        }
+        editor.edit(loan.details(), changed -> onSaved.accept(changed), () -> { });
     }
 
     /** One read-only field: a small label with its value under it. */

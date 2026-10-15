@@ -1,8 +1,5 @@
 package lavs.ui.loan.wizard;
 
-import java.util.List;
-import java.util.stream.IntStream;
-
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
@@ -12,9 +9,9 @@ import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentFile;
 import lavs.ui.common.DocumentFormController;
 import lavs.ui.common.DocumentRows;
-import lavs.ui.common.FormDialog;
+import lavs.ui.common.EditableList;
 import lavs.ui.common.LoanText;
-import lavs.ui.common.RecordTiles;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.common.ReviewRows;
 
 /**
@@ -30,12 +27,20 @@ public class UploadStepController {
     @FXML private VBox summary;
 
     private NewLoanDraft draft;
+    private EditableList<DocumentFile> documents;
     private Runnable onChangeDetails = () -> { };
+
+    @FXML
+    private void initialize() {
+        documents = new EditableList<>(
+                new RecordEditor<>(documentList, "document", documentForm, documentFormController),
+                documentList, DocumentRows::tile, "No documents added yet.");
+    }
 
     /** Gives the step the draft whose documents it edits. */
     void use(NewLoanDraft draft) {
         this.draft = draft;
-        refresh();
+        documents.use(draft.documents());
     }
 
     /** What the "Change" link does: the wizard goes back to Loan details. */
@@ -56,25 +61,7 @@ public class UploadStepController {
 
     @FXML
     private void handleAddDocument() {
-        documentFormController.clear();
-        if (FormDialog.show(documentList, "Add document", documentForm, documentFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            draft.documents().add(documentFormController.read());
-        }
-        refresh();
-    }
-
-    private void handleEditDocument(int index) {
-        List<DocumentFile> documents = draft.documents();
-        documentFormController.fill(documents.get(index));
-        FormDialog.Result result = FormDialog.show(documentList, "Edit document", documentForm,
-                documentFormController::check, true);
-        if (result == FormDialog.Result.SAVED) {
-            documents.set(index, documentFormController.read());
-        } else if (result == FormDialog.Result.REMOVED) {
-            documents.remove(index);
-        }
-        refresh();
+        documents.add();
     }
 
     @FXML
@@ -82,11 +69,4 @@ public class UploadStepController {
         onChangeDetails.run();
     }
 
-    private void refresh() {
-        List<DocumentFile> documents = draft.documents();
-        RecordTiles.fill(documentList, IntStream.range(0, documents.size())
-                .mapToObj(i -> DocumentRows.tile(documents.get(i).type(), documents.get(i).fileName(),
-                        documents.get(i).fileType(), documents.get(i).size(), () -> handleEditDocument(i)))
-                .toList(), "No documents added yet.");
-    }
 }
