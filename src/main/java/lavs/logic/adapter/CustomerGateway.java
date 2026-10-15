@@ -15,21 +15,24 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 public class CustomerGateway {
 
     private final MainframeAdapter adapter;
+    private static final long DEFAULT_ORGANISATION = 0L;
 
     public CustomerGateway(MainframeAdapter adapter) {
-        this.adapter = adapter;
+        this.adapter = Objects.requireNonNull(adapter, "adapter");
     }
 
     public Page<Customer.Summary> search(long page, String searchTerm, long size) {
         Search search = adapter.send(new Search(page, searchTerm, size));
         List<Customer.Summary> summaries = new ArrayList<>();
         for (Search.Item item : search.getItems()) {
-            summaries.add(toSummary(item));
+            toSummary(item).ifPresent(summaries::add);
         }
         return new Page<>(summaries, page, size, search.getTotal());
     }
@@ -43,7 +46,7 @@ public class CustomerGateway {
     public CustomerNumber create(Customer.Details customerDetails) {
         Create create = adapter.send(new Create(
                 dateOrNull(customerDetails.dateOfBirth()), customerDetails.familyName(), customerDetails.firstName(),
-                customerDetails.nationality(), 0L, customerDetails.title()));
+                customerDetails.nationality(), DEFAULT_ORGANISATION, customerDetails.title()));
         return new CustomerNumber(create.getNumber());
     }
 
@@ -63,15 +66,16 @@ public class CustomerGateway {
         return isBlank(value) ? null : LocalDate.parse(value);
     }
 
-    private static Customer.Summary toSummary(Search.Item item) {
+    private static Optional<Customer.Summary> toSummary(Search.Item item) {
+        if (isBlank(item.getNumber())) {
+            return Optional.empty();
+        }
         try {
-            return new Customer.Summary(new CustomerNumber(item.getNumber()), item.getTitle(),
+            return Optional.of(new Customer.Summary(new CustomerNumber(item.getNumber()), item.getTitle(),
                     item.getFirstName(), item.getFamilyName(), parseDate(item.getDateOfBirth()),
-                    Customer.Status.fromCode(item.getStatus()));
-        } catch (IllegalArgumentException | NullPointerException | DateTimeParseException e) {
-            throw new MainframeException(
-                    StatusMessage.UNABLE_TO_PARSE.getCode(), "The mainframe returned a customer record that could " +
-                    "not be read.", e);
+                    Customer.Status.fromCode(item.getStatus())));
+        } catch (IllegalArgumentException | DateTimeParseException e) {
+            return Optional.empty();
         }
     }
 

@@ -29,6 +29,17 @@ public class EmployerGateway {
                 page, size, message.getTotal());
     }
 
+    public java.util.List<Employer.Summary> all(CustomerNumber customer) {
+        return Pages.readAll(adapter,
+                        page -> new List(customer.value(), page, Pages.SIZE),
+                        List::getItems,
+                        List::getTotal)
+                .stream()
+                .map(item -> new Employer.Summary(
+                        item.getId(), customer, Employer.Type.fromCode(item.getType()), item.getName()))
+                .toList();
+    }
+
     public Employer retrieve(CustomerNumber customer, long id) {
         Retrieve message = adapter.send(new Retrieve(id, customer.value()));
         return new Employer(
