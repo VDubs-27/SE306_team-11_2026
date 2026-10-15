@@ -8,11 +8,8 @@
            fx:controller="lavs.ui.loan.wizard.NewLoanWizardController">
     <fx:define>
         <fx:include fx:id="loanDetails" source="loan-details-step.fxml"/>
+        <fx:include fx:id="upload" source="upload-step.fxml"/>
         <!-- Placeholders until each step is built -->
-        <VBox fx:id="uploadStep" styleClass="card">
-            <Label text="Upload &amp; review" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
         <fx:include fx:id="coborrowers" source="coborrowers-step.fxml"/>
         <VBox fx:id="submitStep" styleClass="card">
             <Label text="Submit" styleClass="section-heading"/>

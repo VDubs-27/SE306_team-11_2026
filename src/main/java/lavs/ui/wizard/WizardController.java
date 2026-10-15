@@ -78,6 +78,16 @@ public class WizardController {
         showStep(0);
     }
 
+    /**
+     * Jumps back to an earlier step, e.g. from a "Change" link on a review. Going forward isn't
+     * allowed this way, so each step's check still runs before moving past it.
+     */
+    public void goBackTo(int index) {
+        if (index >= 0 && index < current) {
+            showStep(index);
+        }
+    }
+
     @FXML
     private void handleBack() {
         if (current == 0) {
