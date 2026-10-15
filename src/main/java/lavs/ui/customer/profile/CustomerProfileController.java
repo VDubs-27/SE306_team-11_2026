@@ -3,9 +3,11 @@ package lavs.ui.customer.profile;
 import static lavs.logic.model.Validation.isBlank;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.HBox;
 
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
@@ -26,6 +28,8 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private Label customerNumberLabel;
     @FXML private Label dateOfBirthLabel;
     @FXML private Label suburbLabel;
+    @FXML private HBox dateOfBirthFact;
+    @FXML private HBox suburbFact;
     @FXML private TabPane tabPane;
     @FXML private Tab addressesTab;
     @FXML private Tab contactsTab;
@@ -97,15 +101,13 @@ public class CustomerProfileController implements NavigatorAware {
         statusBadge.setText(customer.status().code());
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
-        showIfPresent(statusBadge);
+        showIfPresent(statusBadge, statusBadge);
 
-        dateOfBirthLabel.setText(customer.dateOfBirth() == null
-                ? ""
-                : "Born " + DisplayFormat.date(customer.dateOfBirth()));
-        showIfPresent(dateOfBirthLabel);
+        dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
+        showIfPresent(dateOfBirthLabel, dateOfBirthFact);
 
         suburbLabel.setText(primarySuburb(profile));
-        showIfPresent(suburbLabel);
+        showIfPresent(suburbLabel, suburbFact);
     }
 
     private static String primarySuburb(CustomerProfile profile) {
@@ -117,10 +119,10 @@ public class CustomerProfileController implements NavigatorAware {
                 .orElse("");
     }
 
-    /** Hides a label with no text so it leaves no gap. */
-    private static void showIfPresent(Label label) {
+    /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */
+    private static void showIfPresent(Label label, Node holder) {
         boolean present = !isBlank(label.getText());
-        label.setVisible(present);
-        label.setManaged(present);
+        holder.setVisible(present);
+        holder.setManaged(present);
     }
 }

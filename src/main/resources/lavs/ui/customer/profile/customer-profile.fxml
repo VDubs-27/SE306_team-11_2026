@@ -11,25 +11,36 @@
 
             <Hyperlink text="‹  Back to search results" onAction="#handleBack"/>
 
-            <!-- Summary card -->
-            <HBox styleClass="card" alignment="CENTER_LEFT">
+            <!-- Summary card: who the customer is, then key facts separated by thin lines -->
+            <HBox styleClass="card, profile-summary" alignment="CENTER_LEFT">
                 <Label fx:id="initialsAvatar" styleClass="avatar, avatar-large"/>
-                <VBox spacing="4" alignment="CENTER_LEFT">
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label fx:id="nameLabel" styleClass="heading-1"/>
-                        <Label fx:id="statusBadge" styleClass="badge"/>
-                    </HBox>
-                    <HBox spacing="16" alignment="BASELINE_LEFT">
-                        <HBox spacing="6" alignment="BASELINE_LEFT">
-                            <Label text="Customer number" styleClass="text-muted"/>
-                            <Label fx:id="customerNumberLabel" styleClass="mono"/>
-                        </HBox>
-                        <Label fx:id="dateOfBirthLabel" styleClass="text-muted"/>
-                        <Label fx:id="suburbLabel" styleClass="text-muted"/>
-                    </HBox>
+                <VBox spacing="6" alignment="CENTER_LEFT">
+                    <Label fx:id="nameLabel" styleClass="summary-name"/>
+                    <Label fx:id="statusBadge" styleClass="badge"/>
                 </VBox>
+                <HBox styleClass="summary-fact">
+                    <Region styleClass="summary-divider"/>
+                    <VBox styleClass="summary-fact-text">
+                        <Label text="CUSTOMER NUMBER" styleClass="summary-caption"/>
+                        <Label fx:id="customerNumberLabel" styleClass="summary-value, summary-number, mono"/>
+                    </VBox>
+                </HBox>
+                <HBox fx:id="dateOfBirthFact" styleClass="summary-fact">
+                    <Region styleClass="summary-divider"/>
+                    <VBox styleClass="summary-fact-text">
+                        <Label text="DATE OF BIRTH" styleClass="summary-caption"/>
+                        <Label fx:id="dateOfBirthLabel" styleClass="summary-value"/>
+                    </VBox>
+                </HBox>
+                <HBox fx:id="suburbFact" styleClass="summary-fact">
+                    <Region styleClass="summary-divider"/>
+                    <VBox styleClass="summary-fact-text">
+                        <Label text="SUBURB" styleClass="summary-caption"/>
+                        <Label fx:id="suburbLabel" styleClass="summary-value"/>
+                    </VBox>
+                </HBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="+  New loan" styleClass="button-primary" onAction="#handleNewLoan"/>
+                <Button text="+  New loan" styleClass="button-primary, button-large" onAction="#handleNewLoan"/>
             </HBox>
 
             <!-- Tabs card -->
