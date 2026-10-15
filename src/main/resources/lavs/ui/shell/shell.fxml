@@ -16,10 +16,10 @@
                 <Label text="Loan Application and Verification System" styleClass="app-subtitle"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="accountButton" text="Bob Ross" styleClass="account-button"
+            <Button fx:id="accountButton" styleClass="account-button"
                     onAction="#handleAccountMenu">
                 <graphic>
-                    <Label fx:id="accountInitials" text="BR"
+                    <Label fx:id="accountInitials"
                            styleClass="avatar, avatar-small, avatar-user"/>
                 </graphic>
             </Button>

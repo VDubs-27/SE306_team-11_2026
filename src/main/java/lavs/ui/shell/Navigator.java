@@ -23,28 +23,49 @@ import lavs.ui.loan.wizard.NewLoanWizardController;
 public class Navigator {
 
     private final Stage stage;
+    private final Services services;
     private final Deque<Parent> history = new ArrayDeque<>();
     private ShellController shell;
     private Parent currentScreen;
 
-    public Navigator(Stage stage) {
+    public Navigator(Stage stage, Services services) {
         this.stage = stage;
+        this.services = services;
+    }
+
+    /** The services built at start-up, for screens that need them. */
+    public Services services() {
+        return services;
     }
 
     /** Replaces the whole window with the shell (header + empty content area). */
     public void showShell() {
         FXMLLoader loader = load("/lavs/ui/shell/shell.fxml");
         shell = loader.getController();
+        if (services.session().isLoggedIn()) {
+            shell.showUser(services.session().currentUser());
+        }
         stage.getScene().setRoot(loader.getRoot());
         history.clear();
         currentScreen = null;
     }
 
-    /** Replaces the whole window with the login screen (no header). */
+    /**
+     * Replaces the whole window with the login screen (no header), forgetting the screens before it.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
     public void showLogin() {
-        // Your teammate's screen. Until it exists, just print a message.
-        // Later: load the login FXML and setRoot, like showShell().
-        System.out.println("will load login");
+        FXMLLoader loader = load("/lavs/ui/login/login.fxml");
+        stage.getScene().setRoot(loader.getRoot());
+        shell = null;
+        history.clear();
+        currentScreen = null;
+    }
+
+    /** Signs out of the mainframe and goes back to the login screen. */
+    public void logOut() {
+        services.login().logout();
+        showLogin();
     }
 
     /** Shows customer search below the header. */

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Objects;
 import lavs.logic.model.constants.Constants;
 import mainframe.client.Connection;
+import mainframe.client.HttpConnection;
 import mainframe.client.Message;
 import mainframe.client.Status;
 import mainframe.client.StatusMessage;
@@ -17,6 +18,11 @@ public class MainframeAdapter {
 
     public MainframeAdapter(Connection connection) {
         this.connection = Objects.requireNonNull(connection, "connection");
+    }
+
+    // Connects to the mainframe over HTTP; the app starts here, since only the adapter may use mainframe.client
+    public static MainframeAdapter connect(String baseUrl) {
+        return new MainframeAdapter(new HttpConnection(baseUrl));
     }
 
     // Goes through Connection.Login rather than sending a Login message, because the

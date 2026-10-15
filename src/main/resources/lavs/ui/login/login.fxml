@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+
+<!-- The whole window before signing in: a card on the brand blue, with the red line along the top. -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="lavs.ui.login.LoginController"
+           styleClass="login-page">
+    <VBox alignment="CENTER" spacing="18">
+        <VBox styleClass="login-card" maxWidth="400" spacing="16">
+            <ImageView fitHeight="46" preserveRatio="true">
+                <Image url="@../images/countrywide-logo.jpg"/>
+            </ImageView>
+
+            <VBox spacing="4">
+                <Label text="LAVS · Loan Application and Verification System" styleClass="login-eyebrow"/>
+                <Label text="Sign in" styleClass="login-title"/>
+                <Label text="Use your Countrywide username and password." styleClass="text-muted"/>
+            </VBox>
+
+            <HBox fx:id="errorBanner" styleClass="banner-error">
+                <Label text="ⓘ" minWidth="-Infinity"/>
+                <Label fx:id="errorText" wrapText="true"/>
+            </HBox>
+
+            <VBox styleClass="field">
+                <Label text="Username"/>
+                <TextField fx:id="userNameField" maxWidth="Infinity"/>
+                <Label fx:id="userNameError" styleClass="field-error-message"/>
+            </VBox>
+
+            <VBox styleClass="field">
+                <Label text="Password"/>
+                <StackPane alignment="CENTER_RIGHT">
+                    <PasswordField fx:id="passwordField" styleClass="password-input" maxWidth="Infinity"/>
+                    <TextField fx:id="passwordShownField" styleClass="password-input" maxWidth="Infinity"/>
+                    <ToggleButton fx:id="showPasswordButton" styleClass="password-toggle" focusTraversable="false"
+                                  onAction="#handleShowPassword">
+                        <StackPane.margin>
+                            <Insets right="8"/>
+                        </StackPane.margin>
+                        <graphic>
+                            <SVGPath fx:id="eyeIcon" styleClass="password-eye"/>
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Show or hide the password"/>
+                        </tooltip>
+                    </ToggleButton>
+                </StackPane>
+                <Label fx:id="passwordError" styleClass="field-error-message"/>
+            </VBox>
+
+            <Button fx:id="signInButton" text="Sign in" defaultButton="true" styleClass="button-primary, login-button"
+                    maxWidth="Infinity" onAction="#handleSignIn"/>
+        </VBox>
+        <Label text="Authorised Countrywide Bank staff only" styleClass="login-footnote"/>
+    </VBox>
+</StackPane>

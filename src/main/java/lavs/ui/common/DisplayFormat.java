@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import lavs.logic.model.customer.Customer;
@@ -66,6 +68,30 @@ public final class DisplayFormat {
     /** A customer's initials for an avatar, e.g. "JS" for John Smith. */
     public static String initials(Customer customer) {
         return customer.firstName().substring(0, 1) + customer.familyName().substring(0, 1);
+    }
+
+    /** A sign-in name as a person's name, e.g. "bob.ross" as "Bob Ross". */
+    public static String userName(String userName) {
+        return String.join(" ", userNameParts(userName));
+    }
+
+    /** Initials for a sign-in name, e.g. "bob.ross" as "BR", or "admin" as "A". */
+    public static String userInitials(String userName) {
+        StringBuilder initials = new StringBuilder();
+        for (String part : userNameParts(userName)) {
+            if (initials.length() < 2) {
+                initials.append(part.charAt(0));
+            }
+        }
+        return initials.toString();
+    }
+
+    /** The words in a sign-in name, split at dots, underscores, dashes and spaces, each capitalised. */
+    private static List<String> userNameParts(String userName) {
+        return Arrays.stream(userName.trim().split("[._\\s-]+"))
+                .filter(part -> !part.isEmpty())
+                .map(part -> part.substring(0, 1).toUpperCase(Locale.ROOT) + part.substring(1))
+                .toList();
     }
 
     /** e.g. "Mr John Smith", or just "John Smith" when there's no title. */
