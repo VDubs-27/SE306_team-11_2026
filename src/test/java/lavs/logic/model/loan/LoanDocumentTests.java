@@ -21,6 +21,15 @@ class LoanDocumentTests {
     }
 
     @Test
+    void detailsCopiesEveryEditableField() {
+        LoanDocument document = new LoanDocument(42, LOAN, "Proof of Identity", "passport.pdf", "application/pdf", 123);
+
+        Assertions.assertEquals(
+                new LoanDocument.Details("Proof of Identity", "passport.pdf", "application/pdf", 123),
+                document.details());
+    }
+
+    @Test
     void documentRequiresLoanNumber() {
         Assertions.assertThrows(NullPointerException.class, () -> new LoanDocument(
                 42, null, "Proof of Identity", "passport.pdf", "application/pdf", 123));

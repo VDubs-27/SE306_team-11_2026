@@ -74,3 +74,13 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Justification:** the mainframe's add document message sends all four fields, and a document without a type or file name cannot be identified in the documents list.
   The fields follow the `loan.addDocument` message, as Section 3.1 says field names follow the mainframe interface messages.
 - **Introduced in:** PR #23.
+
+## 10. Loan document update adds a replacement and deletes the original
+
+- **Proposal:** Section 3.1 says each domain object maps directly to a mainframe message.
+- **Code:** `LoanDocumentService.update` checks the original still exists, adds the new details as a new document, then deletes the original. It returns the new document, which has a new id.
+- **Justification:** the brief requires adding, updating and deleting loan documents, but the mainframe has no update message for them.
+  Tested against the live mainframe, `loan.updateDocument` and `loanDocument.update` are both rejected as unknown transactions.
+  This follows the proposal's approach for co-borrowers in Table 1, where changes are made by deleting and re-adding.
+  Adding before deleting means a failure can leave a duplicate, which the user is told to delete, but never loses a document.
+- **Introduced in:** PR #23.

@@ -17,6 +17,10 @@ public record LoanDocument(
         Objects.requireNonNull(loanNumber, "loanNumber");
     }
 
+    public Details details() {
+        return new Details(type, fileName, fileType, size);
+    }
+
     public record Summary(
         long id,
         LoanNumber loanNumber,
