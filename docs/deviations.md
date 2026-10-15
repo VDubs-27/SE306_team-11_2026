@@ -66,3 +66,11 @@ Add an entry here whenever a change knowingly departs from the proposal.
   `PhoneNumberList` sends the same `customerPhoneNumber.list` request and reads each item's own number.
   The provided code is left unedited, as the readme requires.
 - **Introduced in:** PR #19.
+
+## 9. Loan document fields are validated
+
+- **Proposal:** Table 1 has no rules for loan documents, and Figure 2 lists documents as an optional entity without fields.
+- **Code:** `LoanDocument.Details` requires a document type, file name and file type, and rejects a negative file size.
+- **Justification:** the mainframe's add document message sends all four fields, and a document without a type or file name cannot be identified in the documents list.
+  The fields follow the `loan.addDocument` message, as Section 3.1 says field names follow the mainframe interface messages.
+- **Introduced in:** PR #22.

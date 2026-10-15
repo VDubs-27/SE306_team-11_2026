@@ -1,0 +1,41 @@
+package lavs.logic.service;
+
+import java.util.List;
+import java.util.Objects;
+import lavs.logic.adapter.LoanDocumentGateway;
+import lavs.logic.model.FieldError;
+import lavs.logic.model.Page;
+import lavs.logic.model.loan.LoanDocument;
+import lavs.logic.model.loan.LoanNumber;
+
+public class LoanDocumentService {
+
+    private final LoanDocumentGateway documents;
+
+    public LoanDocumentService(LoanDocumentGateway documents) {
+        this.documents = Objects.requireNonNull(documents, "documents");
+    }
+
+    public Result<Page<LoanDocument.Summary>> list(LoanNumber loan, long page, long size) {
+        return Result.attempt(() -> Result.success(documents.list(loan, page, size)));
+    }
+
+    public Result<LoanDocument> get(LoanNumber loan, long id) {
+        return Result.attempt(() -> Result.success(documents.retrieve(loan, id)));
+    }
+
+    public Result<LoanDocument> add(LoanNumber loan, LoanDocument.Details details) {
+        List<FieldError> errors = details.validate();
+        if (!errors.isEmpty()) {
+            return Result.invalid(errors);
+        }
+        return Result.attempt(() -> Result.success(documents.add(loan, details)));
+    }
+
+    public Result<Void> delete(LoanNumber loan, long id) {
+        return Result.attempt(() -> {
+            documents.delete(loan, id);
+            return Result.success(null);
+        });
+    }
+}
