@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.view.ScheduleTabController"
+      spacing="12">
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Repayment schedule" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" styleClass="text-muted, text-small"/>
+    </HBox>
+    <!-- Rounded box around the table -->
+    <StackPane fx:id="tableBox" styleClass="table-box">
+        <TableView fx:id="scheduleTable">
+            <columns>
+                <TableColumn fx:id="numberColumn" text="#" sortable="false" resizable="false"
+                             minWidth="64" maxWidth="64" prefWidth="64"/>
+                <TableColumn fx:id="dateColumn" text="Due" sortable="false"/>
+                <TableColumn fx:id="repaymentColumn" text="Repayment" sortable="false" styleClass="number-column"/>
+                <TableColumn fx:id="principalColumn" text="Principal" sortable="false" styleClass="number-column"/>
+                <TableColumn fx:id="interestColumn" text="Interest" sortable="false" styleClass="number-column"/>
+                <TableColumn fx:id="balanceColumn" text="Balance after" sortable="false" styleClass="number-column"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
+        </TableView>
+    </StackPane>
+    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
+    <Label fx:id="emptyState" text="No repayments are due on this loan." styleClass="text-muted"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Worked out from the loan's terms, so it changes if they do. Payments actually received are on the Payments tab."/>
+    </HBox>
+</VBox>

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.ScheduledRepayment;
 
@@ -47,6 +48,14 @@ final class SampleLoans {
             date = nextDate(date, loan.paymentFrequency());
         }
         return payments;
+    }
+
+    /** One page of the schedule, the way the mainframe returns it a page at a time. */
+    static Page<ScheduledRepayment> schedulePage(Loan loan, long page, long size) {
+        List<ScheduledRepayment> schedule = schedule(loan);
+        int from = (int) Math.min((page - 1) * size, schedule.size());
+        int to = (int) Math.min(from + size, schedule.size());
+        return new Page<>(schedule.subList(from, to), page, size, schedule.size());
     }
 
     /** Totals over the whole schedule: everything repaid, the interest in it, and the last payment. */

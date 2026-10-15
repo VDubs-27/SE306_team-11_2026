@@ -17,6 +17,7 @@ import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.PagerController;
+import lavs.ui.common.Tables;
 
 /**
  * The Loans tab: a table of the customer's loans, a page at a time.
@@ -67,13 +68,13 @@ public class LoansTabController {
             }
         });
 
-        ProfileTables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
-        ProfileTables.fitInsideBox(loansTable);
+        Tables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
+        Tables.fitInsideBox(loansTable);
     }
 
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Loan>> loadPage) {
-        return pagerController.show(loadPage, items -> ProfileTables.show(loansTable, tableBox, emptyState, items));
+        return pagerController.show(loadPage, items -> Tables.show(loansTable, tableBox, emptyState, items));
     }
 
     /** What clicking a loan does: the profile opens the loan screen. */

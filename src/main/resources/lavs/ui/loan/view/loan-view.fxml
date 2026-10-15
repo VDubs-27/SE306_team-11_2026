@@ -57,10 +57,10 @@
                     <Tab text="Details">
                         <fx:include fx:id="details" source="details-tab.fxml"/>
                     </Tab>
-                    <!-- Placeholders until each tab is built -->
                     <Tab text="Schedule">
-                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                        <fx:include fx:id="schedule" source="schedule-tab.fxml"/>
                     </Tab>
+                    <!-- Placeholders until each tab is built -->
                     <Tab text="Payments">
                         <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
                     </Tab>
