@@ -2,6 +2,7 @@ package lavs.logic.adapter;
 
 import java.io.IOException;
 import java.util.Objects;
+import lavs.logic.model.constants.Constants;
 import mainframe.client.Connection;
 import mainframe.client.Message;
 import mainframe.client.Status;
@@ -18,17 +19,35 @@ public class MainframeAdapter {
         this.connection = Objects.requireNonNull(connection, "connection");
     }
 
+    // Goes through Connection.Login rather than sending a Login message, because the
+    // connection keeps the session token and transaction number from a successful login.
+    public void login(String userName, String password) {
+        check(() -> connection.Login(userName, password));
+    }
+
+    public void logout() {
+        connection.Logout();
+    }
+
+    public Constants loadConstants() {
+        return new ConstantsReader(this).read();
+    }
+
     <T extends Message> T send(T message) {
+        check(() -> message.send(connection));
+        return message;
+    }
+
+    private static void check(MainframeCall call) {
         Status status;
         try {
-            status = message.send(connection);
+            status = call.run();
         } catch (IOException e) {
             throw new MainframeException(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode(), NETWORK_FAILURE_TEXT, e);
         }
         if (!status.getWasSuccessful()) {
             throw new MainframeException(status.getErrorCode(), describe(status));
         }
-        return message;
     }
 
     private static String describe(Status status) {
@@ -38,5 +57,10 @@ public class MainframeAdapter {
         }
         String message = status.getErrorMessage();
         return message == null || message.isBlank() ? REJECTED_TEXT : message;
+    }
+
+    @FunctionalInterface
+    private interface MainframeCall {
+        Status run() throws IOException;
     }
 }

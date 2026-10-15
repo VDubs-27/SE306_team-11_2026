@@ -1,24 +1,25 @@
 package lavs.logic.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import lavs.logic.adapter.MainframeAdapter;
+import lavs.logic.adapter.MainframeException;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
-import mainframe.client.Connection;
-import mainframe.client.Status;
-import mainframe.client.StatusMessage;
+import lavs.logic.model.constants.Constants;
 
 public class LoginService {
 
-    static final String NETWORK_FAILURE_MESSAGE = "Could not reach the mainframe. Check the connection and try again.";
     static final String REJECTED_MESSAGE = "The user name or password is incorrect.";
+    static final String CONSTANTS_FAILED_MESSAGE =
+            "Could not load the list values from the mainframe. Try signing in again.";
 
-    private final Connection connection;
-    private volatile String currentUser;
+    private final MainframeAdapter mainframe;
+    private final Session session;
 
-    public LoginService(Connection connection) {
-        this.connection = Objects.requireNonNull(connection, "connection");
+    public LoginService(MainframeAdapter mainframe, Session session) {
+        this.mainframe = Objects.requireNonNull(mainframe, "mainframe");
+        this.session = Objects.requireNonNull(session, "session");
     }
 
     public LoginResult login(String userName, String password) {
@@ -30,37 +31,26 @@ public class LoginService {
             return LoginResult.invalid(errors);
         }
 
-        Status status;
         try {
-            status = connection.Login(userName, password);
-        } catch (IOException e) {
-            return LoginResult.failed(NETWORK_FAILURE_MESSAGE);
-        }
-        if (!status.getWasSuccessful()) {
-            return LoginResult.failed(describe(status));
+            mainframe.login(userName, password);
+        } catch (MainframeException e) {
+            return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : REJECTED_MESSAGE);
         }
 
-        currentUser = userName;
+        Constants constants;
+        try {
+            constants = mainframe.loadConstants();
+        } catch (MainframeException e) {
+            logout();
+            return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : CONSTANTS_FAILED_MESSAGE);
+        }
+
+        session.start(userName, constants);
         return LoginResult.success();
     }
 
     public void logout() {
-        connection.Logout();
-        currentUser = null;
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
-    }
-
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    private static String describe(Status status) {
-        if (status.getErrorCode().equals(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode())) {
-            return NETWORK_FAILURE_MESSAGE;
-        }
-        return REJECTED_MESSAGE;
+        mainframe.logout();
+        session.end();
     }
 }
