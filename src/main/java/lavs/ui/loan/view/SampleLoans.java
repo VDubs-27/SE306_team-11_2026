@@ -12,13 +12,15 @@ import lavs.logic.model.customer.CustomerNumber;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.ScheduledRepayment;
+import lavs.ui.common.DocumentFile;
+import lavs.ui.common.NoteRow;
 import lavs.ui.customer.profile.SampleProfiles;
 import lavs.ui.loan.people.LoanPerson;
 
 /**
- * Temporary sample data for the loan screen: who else is on each loan, and, worked out from a
+ * Temporary sample data for the loan screen: who else is on each loan, its documents and notes, and, worked out from a
  * loan's own details, a standard repayment schedule and its totals. Replaced by LoanService results
- * (the mainframe's co-borrowers, repayment schedule and loan summary) once that exists.
+ * (the mainframe's co-borrowers, documents, notes, repayment schedule and loan summary) once that exists.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 final class SampleLoans {
@@ -66,9 +68,37 @@ final class SampleLoans {
         return new Page<>(items.subList(from, to), page, size, items.size());
     }
 
+    /** The documents recorded for the loan: John's new loan has the ones a mortgage application needs. */
+    static List<DocumentFile> documents(Loan loan) {
+        if (!isJohnsNewLoan(loan)) {
+            return List.of();
+        }
+        return List.of(
+                new DocumentFile("Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
+                new DocumentFile("Bank statement", "Statement-Q3-2026.pdf", "application/pdf", 611_328),
+                new DocumentFile("Other", "Sale-and-purchase-agreement.pdf", "application/pdf", 1_048_576));
+    }
+
+    /** Notes about the loan, newest first. */
+    static List<NoteRow> notes(Loan loan) {
+        if (!isJohnsNewLoan(loan)) {
+            return List.of();
+        }
+        return List.of(
+                new NoteRow(2, "Application", "Bob Ross", LocalDate.of(2026, 10, 14),
+                        "Sale and purchase agreement received for the Papamoa property. Settlement is set for "
+                                + "1 November, which matches the start date."),
+                new NoteRow(1, "Loan", "Bob Ross", LocalDate.of(2026, 10, 12),
+                        "Loan set up with Sarah Smith as co-borrower. Fixed for two years at 6.29%, then to be reviewed."));
+    }
+
+    private static boolean isJohnsNewLoan(Loan loan) {
+        return loan.loanNumber().value().equals("01-0013-5810482-001");
+    }
+
     /** Everyone on the loan besides the applicant: John's new loan has his partner Sarah as a co-borrower. */
     static List<LoanPerson> coborrowers(Loan loan) {
-        List<Coborrower> coborrowers = loan.loanNumber().value().equals("01-0013-5810482-001")
+        List<Coborrower> coborrowers = isJohnsNewLoan(loan)
                 ? List.of(new Coborrower(1, loan.loanNumber(), Coborrower.Type.COBORROWER,
                         new CustomerNumber("01-0013-5810233"), "Sarah Smith"))
                 : List.of();

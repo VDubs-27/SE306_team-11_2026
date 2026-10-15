@@ -41,9 +41,13 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Label finalAmountValue;
     @FXML private TabPane tabPane;
     @FXML private Tab coborrowersTab;
+    @FXML private Tab documentsTab;
+    @FXML private Tab notesTab;
     @FXML private DetailsTabController detailsController;
     @FXML private ScheduleTabController scheduleController;
     @FXML private CoborrowersTabController coborrowersController;
+    @FXML private DocumentsTabController documentsController;
+    @FXML private NotesTabController notesController;
 
     private Navigator navigator;
     private Loan loan;
@@ -59,6 +63,8 @@ public class LoanViewController implements NavigatorAware {
         TabBars.setUp(tabPane);
         detailsController.setOnSaved(this::saveDetails);
         coborrowersController.setOnChanged(this::showCoborrowers);
+        documentsController.setOnChanged(this::showDocuments);
+        notesController.setOnChanged(this::showNotes);
     }
 
     /** Fills the screen for one of a customer's loans. */
@@ -66,6 +72,8 @@ public class LoanViewController implements NavigatorAware {
         this.loan = loan;
         this.customer = customer;
         coborrowersController.use(LoanPerson.lookUp(customer, null), SampleLoans.coborrowers(loan));
+        documentsController.use(SampleLoans.documents(loan));
+        notesController.use(SampleLoans.notes(loan));
         refresh();
     }
 
@@ -118,10 +126,20 @@ public class LoanViewController implements NavigatorAware {
         detailsController.show(loan);
         scheduleController.show(loan);
         showCoborrowers();
+        showDocuments();
+        showNotes();
     }
 
     private void showCoborrowers() {
         TabBars.setCount(coborrowersTab, coborrowersController.show(loan));
+    }
+
+    private void showDocuments() {
+        TabBars.setCount(documentsTab, documentsController.show(loan));
+    }
+
+    private void showNotes() {
+        TabBars.setCount(notesTab, notesController.show(loan));
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

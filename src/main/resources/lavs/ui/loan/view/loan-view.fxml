@@ -63,12 +63,11 @@
                     <Tab fx:id="coborrowersTab" text="Co-borrowers">
                         <fx:include fx:id="coborrowers" source="coborrowers-tab.fxml"/>
                     </Tab>
-                    <!-- Placeholders until each tab is built -->
-                    <Tab text="Documents">
-                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    <Tab fx:id="documentsTab" text="Documents">
+                        <fx:include fx:id="documents" source="documents-tab.fxml"/>
                     </Tab>
-                    <Tab text="Notes">
-                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    <Tab fx:id="notesTab" text="Notes">
+                        <fx:include fx:id="notes" source="notes-tab.fxml"/>
                     </Tab>
                 </TabPane>
             </VBox>

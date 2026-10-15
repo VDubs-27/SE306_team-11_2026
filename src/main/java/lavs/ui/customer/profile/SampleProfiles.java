@@ -16,6 +16,7 @@ import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
+import lavs.ui.common.NoteRow;
 
 /**
  * Temporary sample data for designing. Replaced by CustomerService results. Public so the

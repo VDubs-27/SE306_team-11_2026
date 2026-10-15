@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One note: what kind it is and what it says, shown in a pop-up when adding or editing. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.common.NoteFormController"
+      spacing="12" prefWidth="560">
+
+    <VBox styleClass="field">
+        <Label text="Note type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field">
+        <Label text="Note"/>
+        <TextArea fx:id="textArea" wrapText="true" prefRowCount="6"
+                  promptText="What happened, who you spoke to, and anything still to do"/>
+        <Label fx:id="textError" styleClass="field-error-message"/>
+    </VBox>
+</VBox>
