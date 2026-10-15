@@ -610,7 +610,6 @@
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
-.loan-terms { -fx-font-weight: bold; -fx-text-fill: -text; }
 .stat-tile { -fx-spacing: 4; -fx-padding: 14 18 14 18; }
 .stat-value { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -text; }
 
@@ -838,14 +837,18 @@
     -fx-font-weight: bold;
 }
 
-/* ===================== Profile summary ===================== */
-/* Name and status, then labelled facts each set off by a thin vertical line */
-.profile-summary { -fx-spacing: 20; }
-.profile-summary .avatar-large {
+/* ===================== Summary cards ===================== */
+/* The card at the top of the profile and loan screens: who or which loan, its status, then
+   labelled facts each set off by a thin vertical line */
+.summary-card { -fx-spacing: 20; }
+.summary-card .avatar-large,
+.summary-card .loan-icon {
     -fx-min-width: 60; -fx-min-height: 60;
     -fx-max-width: 60; -fx-max-height: 60;
-    -fx-font-size: 19px;
 }
+.summary-card .avatar-large { -fx-font-size: 19px; }
+.summary-card .loan-icon { -fx-font-size: 24px; }
+.summary-loan-number { -fx-font-size: 19px; }
 .summary-name { -fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: -text; }
 .summary-fact { -fx-spacing: 22; -fx-alignment: center-left; }
 .summary-fact-text { -fx-spacing: 4; -fx-alignment: center-left; }

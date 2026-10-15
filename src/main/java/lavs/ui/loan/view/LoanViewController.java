@@ -29,8 +29,9 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Hyperlink backLink;
     @FXML private Label loanNumberLabel;
     @FXML private Label statusBadge;
-    @FXML private Label customerLabel;
-    @FXML private Label termsLabel;
+    @FXML private Label customerValue;
+    @FXML private Label principalValue;
+    @FXML private Label interestValue;
     @FXML private Button submitButton;
     @FXML private Label totalPaidValue;
     @FXML private Label paymentCountValue;
@@ -117,8 +118,9 @@ public class LoanViewController implements NavigatorAware {
         Label badge = LoanText.statusBadge(loan.status());
         statusBadge.setText(badge.getText());
         statusBadge.getStyleClass().setAll(badge.getStyleClass());
-        customerLabel.setText("for " + customer.fullName() + " · " + customer.number().value());
-        termsLabel.setText(DisplayFormat.money(loan.principal()) + " · " + LoanText.interest(details));
+        customerValue.setText("for " + customer.fullName());
+        principalValue.setText(DisplayFormat.money(loan.principal()));
+        interestValue.setText(LoanText.interest(details));
         boolean isNew = loan.status() == Loan.Status.NEW;
         submitButton.setVisible(isNew);
         submitButton.setManaged(isNew);

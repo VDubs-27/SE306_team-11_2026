@@ -12,7 +12,7 @@
             <Hyperlink text="‹  Back to search results" onAction="#handleBack"/>
 
             <!-- Summary card: who the customer is, then key facts separated by thin lines -->
-            <HBox styleClass="card, profile-summary" alignment="CENTER_LEFT">
+            <HBox styleClass="card, summary-card" alignment="CENTER_LEFT">
                 <Label fx:id="initialsAvatar" styleClass="avatar, avatar-large"/>
                 <VBox spacing="6" alignment="CENTER_LEFT">
                     <Label fx:id="nameLabel" styleClass="summary-name"/>

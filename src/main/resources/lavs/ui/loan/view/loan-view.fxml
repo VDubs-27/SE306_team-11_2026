@@ -11,19 +11,32 @@
 
             <Hyperlink fx:id="backLink" onAction="#handleBack"/>
 
-            <!-- Summary card: which loan, its status, who it's for and its terms -->
-            <HBox styleClass="card" alignment="CENTER_LEFT">
+            <!-- Summary card, styled like the profile's: which loan and its status, then key facts -->
+            <HBox styleClass="card, summary-card" alignment="CENTER_LEFT">
                 <Label text="\$" styleClass="loan-icon"/>
-                <VBox spacing="4" alignment="CENTER_LEFT">
+                <VBox spacing="6" alignment="CENTER_LEFT">
+                    <Label fx:id="loanNumberLabel" minWidth="-Infinity" styleClass="summary-name, summary-loan-number, mono"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label fx:id="loanNumberLabel" styleClass="heading-2, mono"/>
                         <Label fx:id="statusBadge"/>
+                        <Label fx:id="customerValue" minWidth="-Infinity" styleClass="text-muted"/>
                     </HBox>
-                    <Label fx:id="customerLabel" styleClass="text-muted"/>
-                    <Label fx:id="termsLabel" styleClass="loan-terms"/>
                 </VBox>
+                <HBox styleClass="summary-fact">
+                    <Region styleClass="summary-divider"/>
+                    <VBox styleClass="summary-fact-text">
+                        <Label text="PRINCIPAL" styleClass="summary-caption"/>
+                        <Label fx:id="principalValue" minWidth="-Infinity" styleClass="summary-value"/>
+                    </VBox>
+                </HBox>
+                <HBox styleClass="summary-fact">
+                    <Region styleClass="summary-divider"/>
+                    <VBox styleClass="summary-fact-text">
+                        <Label text="INTEREST" styleClass="summary-caption"/>
+                        <Label fx:id="interestValue" minWidth="-Infinity" styleClass="summary-value"/>
+                    </VBox>
+                </HBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="submitButton" text="Submit for approval" styleClass="button-primary"
+                <Button fx:id="submitButton" minWidth="-Infinity" text="Submit for approval" styleClass="button-primary, button-large"
                         onAction="#handleSubmitForApproval"/>
             </HBox>
 
