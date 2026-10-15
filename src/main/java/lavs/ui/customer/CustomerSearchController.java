@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -31,12 +32,17 @@ public class CustomerSearchController implements NavigatorAware {
 
     /** Results shown at once; a search returning more is paged. */
     private static final long PAGE_SIZE = 10;
+    /** Corner radius of .card in app.css. */
+    private static final double CARD_RADIUS = 16;
 
     private static final String PROMPT_MESSAGE =
             "Search by name or customer number to find a customer";
     private static final String NO_RESULTS_MESSAGE =
             "No customers found. Check the spelling or search by customer number.";
 
+    @FXML private ScrollPane pageScroll;
+    @FXML private VBox page;
+    @FXML private VBox resultsCard;
     @FXML private TextField searchField;
     @FXML private Button searchButton;
     @FXML private Label resultsTitle;
@@ -69,6 +75,8 @@ public class CustomerSearchController implements NavigatorAware {
         // Clicking a result opens that customer's profile
         Tables.makeRowsOpenable(resultsTable, arrowColumn,
                 customer -> navigator.showCustomerProfile(customer.number().value()));
+        Nodes.fillViewport(pageScroll, page);
+        Nodes.roundCorners(resultsCard, CARD_RADIUS);
         showPrompt();
     }
 

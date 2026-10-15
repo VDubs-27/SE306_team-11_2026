@@ -32,6 +32,11 @@ public final class Tables {
 
     /** Draws the › in the last column and calls onOpen when a row is clicked, or Enter is pressed on it. */
     public static <T> void makeRowsOpenable(TableView<T> table, TableColumn<T, Void> arrowColumn, Consumer<T> onOpen) {
+        // Opening a row lets go of the selection, so the row isn't still highlighted on coming back
+        Consumer<T> open = item -> {
+            table.getSelectionModel().clearSelection();
+            onOpen.accept(item);
+        };
         arrowColumn.setCellFactory(column -> new TableCell<>() {
             private final Label chevron = new Label("›");
 
@@ -51,7 +56,7 @@ public final class Tables {
             TableRow<T> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty()) {
-                    onOpen.accept(row.getItem());
+                    open.accept(row.getItem());
                 }
             });
             return row;
@@ -60,7 +65,7 @@ public final class Tables {
             T selected = table.getSelectionModel().getSelectedItem();
             if (event.getCode() == KeyCode.ENTER && selected != null) {
                 event.consume();
-                onOpen.accept(selected);
+                open.accept(selected);
             }
         });
         fitToRows(table);
