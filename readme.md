@@ -33,6 +33,24 @@ Use these commands (or IntelliJ's Maven panel: **Plugins → javafx → javafx:r
 rather than IntelliJ's run arrow next to `main`, which fails with
 "JavaFX runtime components are missing".
 
+### Signing in
+
+The application opens on the login screen and signs in through the mainframe, so the
+mainframe server must be reachable before any other screen can be used.
+
+* **Test account:** username `test`, password `test`.
+* **Server:** by default the application uses the same test server as the tests. To use
+  another one, pass its address when starting:
+
+  | macOS / Linux | Windows |
+  |---|---|
+  | `./mvnw javafx:run -Dlavs.mainframe.url=https://example.com/` | `.\mvnw.cmd javafx:run "-Dlavs.mainframe.url=https://example.com/"` |
+
+* **"Could not reach the mainframe"** means the server is down or unreachable; nothing
+  past the login screen works until it is back.
+* **"Could not load the list values from the mainframe"** means the sign-in itself
+  worked but loading the mainframe's list values then failed; try signing in again.
+
 ## Continuous integration
 
 Every pull request runs two GitHub Actions jobs:
