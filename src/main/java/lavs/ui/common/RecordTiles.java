@@ -49,7 +49,7 @@ public final class RecordTiles {
         return lines;
     }
 
-    /** The parts every row shares: the given content, then badges and an Edit button on the right. */
+    /** The parts every row shares: the given content, then badges and, unless onEdit is null, an Edit button. */
     private static HBox tile(List<Label> badges, Runnable onEdit, Node... content) {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -58,11 +58,13 @@ public final class RecordTiles {
         badgeRow.setAlignment(Pos.CENTER_RIGHT);
         badgeRow.getChildren().setAll(badges);
 
-        Button edit = styled(new Button("Edit"), "button-secondary");
-        edit.setOnAction(event -> onEdit.run());
-
         HBox tile = new HBox(content);
-        tile.getChildren().addAll(spacer, badgeRow, edit);
+        tile.getChildren().addAll(spacer, badgeRow);
+        if (onEdit != null) {
+            Button edit = styled(new Button("Edit"), "button-secondary");
+            edit.setOnAction(event -> onEdit.run());
+            tile.getChildren().add(edit);
+        }
         tile.getStyleClass().add("record-tile");
         return tile;
     }

@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
 import lavs.ui.common.NoteCards;
+import lavs.ui.common.NoteRow;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordTiles;
 

@@ -31,7 +31,7 @@ public final class NoteCards {
     private NoteCards() {
     }
 
-    /** A card: labelled author, date and type along the top with Edit, then the note's text. */
+    /** A card: labelled author, date and type along the top with Edit (unless onEdit is null), then the note's text. */
     public static VBox card(String author, LocalDate dateAdded, String type, String text, Runnable onEdit) {
         Label typeLabel = isBlank(type)
                 ? new Label(DisplayFormat.NOT_RECORDED)
@@ -40,15 +40,17 @@ public final class NoteCards {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button edit = new Button("Edit");
-        edit.getStyleClass().add("button-secondary");
-        edit.setOnAction(event -> onEdit.run());
-
         HBox top = new HBox(16,
                 field("Author", new Label(DisplayFormat.orNotRecorded(author)), AUTHOR_WIDTH),
                 field("Added", new Label(DisplayFormat.date(dateAdded)), ADDED_WIDTH),
                 field("Type", typeLabel, Region.USE_COMPUTED_SIZE),
-                spacer, edit);
+                spacer);
+        if (onEdit != null) {
+            Button edit = new Button("Edit");
+            edit.getStyleClass().add("button-secondary");
+            edit.setOnAction(event -> onEdit.run());
+            top.getChildren().add(edit);
+        }
         top.setAlignment(Pos.CENTER_LEFT);
 
         Region divider = new Region();

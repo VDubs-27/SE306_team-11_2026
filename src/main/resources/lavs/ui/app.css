@@ -194,6 +194,20 @@
     -fx-font-size: 13px;
 }
 
+/* Multi-line input, such as a note: same border as the other inputs, with gentler corners */
+.text-area {
+    -fx-background-color: -input-border, white;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 14, 13;
+    -fx-padding: 8 10 8 10;
+    -fx-text-fill: -text;
+}
+.text-area > .scroll-pane,
+.text-area > .scroll-pane > .viewport,
+.text-area .content { -fx-background-color: transparent; }
+.text-area:focused { -fx-background-color: -brand-blue, white; -fx-background-insets: 0, 2; }
+.text-area.field-error { -fx-background-color: -error-red, -error-tint; -fx-background-insets: 0, 2; }
+
 .check-box { -fx-text-fill: -text; }
 .check-box > .box {
     -fx-background-color: -input-border, white;
