@@ -73,4 +73,4 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Code:** `LoanDocument.Details` requires a document type, file name and file type, and rejects a negative file size.
 - **Justification:** the mainframe's add document message sends all four fields, and a document without a type or file name cannot be identified in the documents list.
   The fields follow the `loan.addDocument` message, as Section 3.1 says field names follow the mainframe interface messages.
-- **Introduced in:** PR #22.
+- **Introduced in:** PR #23.
