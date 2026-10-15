@@ -338,7 +338,7 @@
 }
 .file-icon-glyph { -fx-fill: transparent; -fx-stroke: -brand-blue; -fx-stroke-width: 1.4; }
 
-/* Rounded, bordered box around a table inside a tab (the table is clipped in ProfileTables.fitInsideBox) */
+/* Rounded, bordered box around a table inside a tab (the table is clipped in Tables.fitInsideBox) */
 .table-box {
     -fx-border-color: -line;
     -fx-border-radius: 12;
@@ -409,6 +409,10 @@
     -fx-background-color: white;
     -fx-border-color: transparent;
 }
+/* Money columns line up on the right, header included */
+.table-view .number-column { -fx-alignment: CENTER-RIGHT; }
+.table-view .column-header.number-column .label { -fx-alignment: CENTER-RIGHT; -fx-max-width: infinity; }
+
 .table-cell {
     -fx-border-color: transparent;
     -fx-padding: 0 12 0 12;

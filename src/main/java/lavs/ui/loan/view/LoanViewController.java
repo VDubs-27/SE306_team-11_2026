@@ -39,6 +39,7 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Label finalAmountValue;
     @FXML private TabPane tabPane;
     @FXML private DetailsTabController detailsController;
+    @FXML private ScheduleTabController scheduleController;
 
     private Navigator navigator;
     private Loan loan;
@@ -87,7 +88,7 @@ public class LoanViewController implements NavigatorAware {
         refresh();
     }
 
-    /** Shows the loan as it is now: summary, totals and the Details tab. */
+    /** Shows the loan as it is now: summary, totals, details and schedule. */
     private void refresh() {
         Loan.Details details = loan.details();
         backLink.setText("‹  Back to " + customer.fullName());
@@ -102,6 +103,7 @@ public class LoanViewController implements NavigatorAware {
         submitButton.setManaged(isNew);
         showTotals(loan);
         detailsController.show(loan);
+        scheduleController.show(loan);
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */
