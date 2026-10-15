@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.Choices;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
@@ -60,6 +61,8 @@ public class Navigator {
         if (services.session().isLoggedIn()) {
             shell.showUser(services.session().currentUser());
         }
+        // Drop-downs offer the mainframe's lists, loaded when the user signed in
+        Choices.use(services.session().constants());
         showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
@@ -80,6 +83,7 @@ public class Navigator {
     /** Signs out of the mainframe and goes back to the login screen, saying it worked. */
     public void logOut() {
         services.login().logout();
+        Choices.use(null);
         showLogin();
         Toasts.show(stage.getScene(), Toasts.Kind.SUCCESS, "Signed out",
                 "You've signed out of LAVS. Sign in again to carry on.");

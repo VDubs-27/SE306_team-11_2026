@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Phone;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
@@ -40,7 +41,7 @@ public class PhoneFormController implements RecordForm<Phone.Details> {
 
     @FXML
     private void initialize() {
-        Choices.fill(typeBox, Phone.Type.values(), Phone.Type.UNKNOWN, Phone.Type::code);
+        Choices.fill(typeBox, ConstantCategory.PHONE_TYPE, Phone.Type.values(), Phone.Type.UNKNOWN, Phone.Type::code);
         // "Describe the phone" only applies to an Other phone
         typeBox.valueProperty().addListener((obs, oldType, type) -> showOtherType(type == Phone.Type.OTHER));
         errors = new FieldErrors()
