@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
+import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -20,13 +21,16 @@ import lavs.ui.wizard.WizardStep;
 public class NewLoanWizardController implements NavigatorAware {
 
     @FXML private WizardController wizardController;
-    @FXML private Node loanDetailsStep;
+    @FXML private Node wizard;
+    @FXML private Node loanDetails;
+    @FXML private LoanDetailsStepController loanDetailsController;
     @FXML private Node uploadStep;
     @FXML private Node coborrowers;
     @FXML private CoborrowersStepController coborrowersController;
     @FXML private Node submitStep;
 
     private Navigator navigator;
+    private NewLoanDraft draft;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -40,9 +44,10 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setOnCancel(this::handleCancel);
         wizardController.setOnFinish(this::handleSubmit);
         wizardController.setSteps(List.of(
-                new WizardStep("Loan details", loanDetailsStep),
+                new WizardStep("Loan details", loanDetails, () -> loanDetailsController.check(draft), null),
                 new WizardStep("Upload & review", uploadStep),
-                new WizardStep("Co-borrowers", coborrowers, coborrowersController::check, null),
+                new WizardStep("Co-borrowers", coborrowers, coborrowersController::check,
+                        () -> coborrowersController.showLoanSummary()),
                 new WizardStep("Submit", submitStep)));
     }
 
@@ -52,14 +57,17 @@ public class NewLoanWizardController implements NavigatorAware {
         avatar.getStyleClass().add("avatar");
         wizardController.setIcon(avatar);
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
-        NewLoanDraft draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
+        draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
         coborrowersController.use(draft);
         coborrowersController.setOnAddNewCustomer(navigator::showNewCustomerWizard);
     }
 
+    /** Leaves straight away if nothing has been entered; otherwise asks first. */
     private void handleCancel() {
-        // Later: once the loan details step exists, ask before discarding anything entered
-        navigator.back();
+        if (!loanDetailsController.hasInput() || Dialogs.confirm(wizard, "Discard this new loan?",
+                "Nothing has been sent to the mainframe yet, so anything entered will be lost.", "Discard")) {
+            navigator.back();
+        }
     }
 
     private void handleSubmit() {

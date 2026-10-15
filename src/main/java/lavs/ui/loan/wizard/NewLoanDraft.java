@@ -3,6 +3,8 @@ package lavs.ui.loan.wizard;
 import java.util.ArrayList;
 import java.util.List;
 
+import lavs.logic.model.loan.Loan;
+
 /**
  * What has been entered in the new loan wizard so far. Each step reads and fills its part;
  * nothing reaches the mainframe until the loan is submitted.
@@ -12,6 +14,7 @@ final class NewLoanDraft {
 
     private final LoanPerson applicant;
     private final List<LoanPerson> others = new ArrayList<>();
+    private Loan.Details details;
 
     NewLoanDraft(LoanPerson applicant) {
         this.applicant = applicant;
@@ -20,6 +23,15 @@ final class NewLoanDraft {
     /** The customer the loan is for. */
     LoanPerson applicant() {
         return applicant;
+    }
+
+    /** The amount, interest, repayments and dates, once the Loan details step has passed; null before. */
+    Loan.Details details() {
+        return details;
+    }
+
+    void setDetails(Loan.Details details) {
+        this.details = details;
     }
 
     /** Co-borrowers and guarantors, in the order they were added. The Co-borrowers step edits this list. */

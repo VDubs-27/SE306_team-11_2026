@@ -13,6 +13,7 @@ import lavs.logic.model.FieldError;
 import lavs.logic.model.customer.Employer;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.Numbers;
 
 /**
  * The form for one employer, used in a pop-up to add or edit. It checks itself with the model's
@@ -61,7 +62,7 @@ public class EmployerFormController {
     /** Checks the form, showing any problems. Returns true when it can be saved. */
     public boolean check() {
         List<FieldError> problems = new ArrayList<>(read().validate());
-        if (!salaryField.getText().isBlank() && salary() == null) {
+        if (Numbers.isInvalid(salaryField.getText()) || isNegative(salary())) {
             problems.add(new FieldError("salary", BAD_SALARY));
         }
         return errors.show(problems);
@@ -78,15 +79,10 @@ public class EmployerFormController {
 
     /** The salary typed, allowing "$" and thousands commas, or null when blank or not a number. */
     private BigDecimal salary() {
-        String text = salaryField.getText().replace("$", "").replace(",", "").trim();
-        if (text.isEmpty()) {
-            return null;
-        }
-        try {
-            BigDecimal value = new BigDecimal(text);
-            return value.signum() < 0 ? null : value;
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return Numbers.parse(salaryField.getText());
+    }
+
+    private static boolean isNegative(BigDecimal value) {
+        return value != null && value.signum() < 0;
     }
 }
