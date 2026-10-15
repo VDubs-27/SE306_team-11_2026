@@ -56,3 +56,10 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Justification:** they are read-only display types for the required loan summary and repayment schedule screens, not entities.
   They have no identity, validation or create, update and delete operations, and exist so the UI receives typed values instead of raw mainframe strings.
 - **Introduced in:** PR #5.
+
+## 8. DIT excludes JDK library classes
+
+- **Proposal:** Section 6 sets DIT ≤ 3 "within the team's own classes, excluding JavaFX library classes".
+- **Code:** the CI metrics step works out DIT from source, counting only classes declared under `src/main/java/lavs`. The depth stops at the first parent that isn't a team class, so JDK ancestors are excluded as well as JavaFX ones. CK's own DIT is still shown alongside in the CI summary.
+- **Justification:** CK counts every ancestor, so any custom exception extending `RuntimeException` scores DIT 4 from JDK depth the team can't change (e.g. `MainframeException`). Excluding the JDK follows the same reasoning as excluding JavaFX: the target measures hierarchies the team designs, not library ones.
+- **Introduced in:** PR #11.
