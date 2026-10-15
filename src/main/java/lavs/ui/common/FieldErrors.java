@@ -34,7 +34,7 @@ public final class FieldErrors {
         // Let a long message wrap onto more lines instead of being cut off in a narrow column
         message.setWrapText(true);
         message.setMinHeight(Region.USE_PREF_SIZE);
-        hide(message);
+        Nodes.show(message, false);
         if (input instanceof TextInputControl text) {
             text.textProperty().addListener((obs, oldText, newText) -> clear(field));
         } else if (input instanceof ComboBoxBase<?> picker) {
@@ -62,8 +62,7 @@ public final class FieldErrors {
             input.getStyleClass().add(ERROR_STYLE);
             Label message = messages.get(error.field());
             message.setText("ⓘ  " + error.message());
-            message.setVisible(true);
-            message.setManaged(true);
+            Nodes.show(message, true);
             first = first == null ? input : first;
         }
         if (first != null) {
@@ -74,11 +73,6 @@ public final class FieldErrors {
 
     private void clear(String field) {
         inputs.get(field).getStyleClass().remove(ERROR_STYLE);
-        hide(messages.get(field));
-    }
-
-    private static void hide(Label message) {
-        message.setVisible(false);
-        message.setManaged(false);
+        Nodes.show(messages.get(field), false);
     }
 }

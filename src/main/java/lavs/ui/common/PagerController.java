@@ -78,8 +78,7 @@ public class PagerController {
         nextButton.setDisable(!page.hasNext());
 
         boolean needed = page.totalPages() > 1;
-        pager.setVisible(needed);
-        pager.setManaged(needed);
+        Nodes.show(pager, needed);
     }
 
     /** Loads the page, then resizes and scrolls to suit it. */

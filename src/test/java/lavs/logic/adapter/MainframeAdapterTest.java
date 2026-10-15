@@ -40,6 +40,17 @@ class MainframeAdapterTest {
     }
 
     @Test
+    void connectSendsOverHttpToTheGivenAddress() {
+        // Nothing listens on port 1, so the connection is refused straight away without a real server
+        MainframeAdapter connected = MainframeAdapter.connect("http://localhost:1/");
+
+        MainframeException e = assertThrows(MainframeException.class,
+                () -> connected.login("alice", "secret"));
+
+        assertTrue(e.isNetworkFailure());
+    }
+
+    @Test
     void sendReturnsMessageWithResponseValuesOnSuccess() {
         HashMap<String, String> values = new HashMap<>();
         values.put("number", "12345");

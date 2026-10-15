@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
+import lavs.ui.common.Nodes;
 import lavs.ui.customer.profile.SampleProfiles;
 
 /**
@@ -99,7 +100,6 @@ public class FindCustomerController {
 
     private void showError(String message) {
         selectionError.setText(message == null ? "" : message);
-        selectionError.setVisible(message != null);
-        selectionError.setManaged(message != null);
+        Nodes.show(selectionError, message != null);
     }
 }

@@ -11,13 +11,14 @@ import javafx.scene.layout.HBox;
 
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
-import lavs.ui.shell.Navigator;
-import lavs.ui.shell.NavigatorAware;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
+import lavs.ui.common.Nodes;
 import lavs.ui.common.NotesTabController;
 import lavs.ui.common.Pages;
 import lavs.ui.common.TabBars;
+import lavs.ui.shell.Navigator;
+import lavs.ui.shell.NavigatorAware;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
 public class CustomerProfileController implements NavigatorAware {
@@ -127,8 +128,6 @@ public class CustomerProfileController implements NavigatorAware {
 
     /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */
     private static void showIfPresent(Label label, Node holder) {
-        boolean present = !isBlank(label.getText());
-        holder.setVisible(present);
-        holder.setManaged(present);
+        Nodes.show(holder, !isBlank(label.getText()));
     }
 }

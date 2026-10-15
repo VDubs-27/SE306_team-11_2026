@@ -8,10 +8,13 @@ import java.util.Objects;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
@@ -23,28 +26,56 @@ import lavs.ui.loan.wizard.NewLoanWizardController;
 public class Navigator {
 
     private final Stage stage;
+    private final Services services;
+    /** The window's root for good: the current screen first, then the layer that short messages appear in. */
+    private final StackPane windowRoot = new StackPane();
     private final Deque<Parent> history = new ArrayDeque<>();
     private ShellController shell;
     private Parent currentScreen;
 
-    public Navigator(Stage stage) {
+    public Navigator(Stage stage, Services services) {
         this.stage = stage;
+        this.services = services;
+        windowRoot.getChildren().add(new Region());
+        stage.getScene().setRoot(windowRoot);
+        Toasts.install(stage.getScene(), windowRoot);
+    }
+
+    /** The services built at start-up, for screens that need them. */
+    public Services services() {
+        return services;
     }
 
     /** Replaces the whole window with the shell (header + empty content area). */
     public void showShell() {
         FXMLLoader loader = load("/lavs/ui/shell/shell.fxml");
         shell = loader.getController();
-        stage.getScene().setRoot(loader.getRoot());
+        if (services.session().isLoggedIn()) {
+            shell.showUser(services.session().currentUser());
+        }
+        showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
     }
 
-    /** Replaces the whole window with the login screen (no header). */
+    /**
+     * Replaces the whole window with the login screen (no header), forgetting the screens before it.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
     public void showLogin() {
-        // Your teammate's screen. Until it exists, just print a message.
-        // Later: load the login FXML and setRoot, like showShell().
-        System.out.println("will load login");
+        FXMLLoader loader = load("/lavs/ui/login/login.fxml");
+        showWindow(loader.getRoot());
+        shell = null;
+        history.clear();
+        currentScreen = null;
+    }
+
+    /** Signs out of the mainframe and goes back to the login screen, saying it worked. */
+    public void logOut() {
+        services.login().logout();
+        showLogin();
+        Toasts.show(stage.getScene(), Toasts.Kind.SUCCESS, "Signed out",
+                "You've signed out of LAVS. Sign in again to carry on.");
     }
 
     /** Shows customer search below the header. */
@@ -102,6 +133,11 @@ public class Navigator {
         }
         currentScreen = history.pop();
         shell.setContent(currentScreen);
+    }
+
+    /** Fills the whole window with a screen (the shell, or the login screen), under any messages. */
+    private void showWindow(Parent screen) {
+        windowRoot.getChildren().set(0, screen);
     }
 
     /** Shows a screen below the header, remembering the current one for back(). */
