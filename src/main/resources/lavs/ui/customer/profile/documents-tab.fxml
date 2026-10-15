@@ -6,6 +6,10 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.customer.profile.DocumentsTabController"
       spacing="12">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing -->
+        <fx:include fx:id="documentForm" source="/lavs/ui/common/document-form.fxml"/>
+    </fx:define>
     <Label text="Documents" styleClass="section-heading"/>
     <VBox fx:id="documentList" spacing="12"/>
     <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>

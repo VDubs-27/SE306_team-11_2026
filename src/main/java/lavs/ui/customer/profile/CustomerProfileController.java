@@ -12,17 +12,13 @@ import lavs.logic.model.customer.Customer;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.TabBars;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
 public class CustomerProfileController implements NavigatorAware {
 
     /** How many items each paged tab shows at once. */
     private static final int PAGE_SIZE = 5;
-
-    /** Horizontal padding of the tab header area (app.css). */
-    private static final double TAB_BAR_PADDING = 24;
-    /** Horizontal padding inside each tab (app.css). */
-    private static final double TAB_PADDING = 16;
 
     @FXML private Label initialsAvatar;
     @FXML private Label nameLabel;
@@ -55,20 +51,8 @@ public class CustomerProfileController implements NavigatorAware {
 
     @FXML
     private void initialize() {
-        tabPane.widthProperty().addListener((obs, oldWidth, width) -> spreadTabs(width.doubleValue()));
-        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, tab) -> sizeToTab(tab));
-        sizeToTab(tabPane.getSelectionModel().getSelectedItem());
-    }
-
-    /**
-     * A TabPane is as tall as its tallest tab, even when that tab isn't showing. Only the selected
-     * tab's content counts towards the size, so the card fits whichever tab is open. Uses the tab
-     * passed in, because each tab's own isSelected() hasn't caught up yet when selection changes.
-     */
-    private void sizeToTab(Tab selected) {
-        for (Tab tab : tabPane.getTabs()) {
-            tab.getContent().setManaged(tab == selected);
-        }
+        TabBars.setUp(tabPane);
+        loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
     }
 
     /** Fills the screen for one customer. */
@@ -78,18 +62,18 @@ public class CustomerProfileController implements NavigatorAware {
         customer = profile.customer();
         showSummary(profile);
         detailsController.show(profile.customer());
-        setCount(addressesTab, addressesController.show(
+        TabBars.setCount(addressesTab, addressesController.show(
                 page -> SampleProfiles.pageOf(profile.addresses(), page, PAGE_SIZE)));
-        setCount(contactsTab, contactsController.show(
+        TabBars.setCount(contactsTab, contactsController.show(
                 page -> SampleProfiles.pageOf(profile.phones(), page, PAGE_SIZE),
                 page -> SampleProfiles.pageOf(profile.emails(), page, PAGE_SIZE)));
-        setCount(employmentTab, employmentController.show(
+        TabBars.setCount(employmentTab, employmentController.show(
                 page -> SampleProfiles.pageOf(profile.employers(), page, PAGE_SIZE)));
-        setCount(loansTab, loansController.show(
+        TabBars.setCount(loansTab, loansController.show(
                 page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE)));
-        setCount(documentsTab, documentsController.show(
+        TabBars.setCount(documentsTab, documentsController.show(
                 page -> SampleProfiles.pageOf(profile.documents(), page, PAGE_SIZE)));
-        setCount(notesTab, notesController.show(
+        TabBars.setCount(notesTab, notesController.show(
                 page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE)));
     }
 
@@ -138,20 +122,5 @@ public class CustomerProfileController implements NavigatorAware {
         boolean present = !isBlank(label.getText());
         label.setVisible(present);
         label.setManaged(present);
-    }
-
-    /** Gives every tab the same width, so the bar fills the card and doesn't shift on selection. */
-    private void spreadTabs(double width) {
-        // Half a pixel spare, so rounding never pushes the last tab into the overflow menu
-        double tabWidth = (width - TAB_BAR_PADDING - 0.5) / tabPane.getTabs().size() - TAB_PADDING;
-        tabPane.setTabMinWidth(tabWidth);
-        tabPane.setTabMaxWidth(tabWidth);
-    }
-
-    /** Puts a small count pill beside the tab name. */
-    private static void setCount(Tab tab, long count) {
-        Label countLabel = new Label(String.valueOf(count));
-        countLabel.getStyleClass().add("tab-count");
-        tab.setGraphic(countLabel);
     }
 }

@@ -194,6 +194,20 @@
     -fx-font-size: 13px;
 }
 
+/* Multi-line input, such as a note: same border as the other inputs, with gentler corners */
+.text-area {
+    -fx-background-color: -input-border, white;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 14, 13;
+    -fx-padding: 8 10 8 10;
+    -fx-text-fill: -text;
+}
+.text-area > .scroll-pane,
+.text-area > .scroll-pane > .viewport,
+.text-area .content { -fx-background-color: transparent; }
+.text-area:focused { -fx-background-color: -brand-blue, white; -fx-background-insets: 0, 2; }
+.text-area.field-error { -fx-background-color: -error-red, -error-tint; -fx-background-insets: 0, 2; }
+
 .check-box { -fx-text-fill: -text; }
 .check-box > .box {
     -fx-background-color: -input-border, white;
@@ -324,7 +338,7 @@
 /* Note cards: labelled details along the top, a thin line, then the note itself */
 .note-card { -fx-padding: 10 16 10 16; -fx-spacing: 8; -fx-alignment: top-left; }
 .note-divider { -fx-min-height: 1; -fx-max-height: 1; -fx-background-color: -line-soft; }
-/* Limited to three lines in NotesTabController.limitLines */
+/* Limited to three lines in NoteCards.limitLines */
 .note-text { -fx-text-fill: -text; -fx-font-size: 15px; }
 
 /* Prev / page / Next under a paged list in a profile tab */
@@ -338,7 +352,7 @@
 }
 .file-icon-glyph { -fx-fill: transparent; -fx-stroke: -brand-blue; -fx-stroke-width: 1.4; }
 
-/* Rounded, bordered box around a table inside a tab (the table is clipped in ProfileTables.fitInsideBox) */
+/* Rounded, bordered box around a table inside a tab (the table is clipped in Tables.fitInsideBox) */
 .table-box {
     -fx-border-color: -line;
     -fx-border-radius: 12;
@@ -409,6 +423,10 @@
     -fx-background-color: white;
     -fx-border-color: transparent;
 }
+/* Money columns line up on the right, header included */
+.table-view .number-column { -fx-alignment: CENTER-RIGHT; }
+.table-view .column-header.number-column .label { -fx-alignment: CENTER-RIGHT; -fx-max-width: infinity; }
+
 .table-cell {
     -fx-border-color: transparent;
     -fx-padding: 0 12 0 12;
@@ -580,6 +598,21 @@
     -fx-cursor: hand;
 }
 .modal-close:hover { -fx-background-color: -subtle-bg; -fx-text-fill: -text; }
+/* Loan screen: the $ beside the loan number, its terms, and the totals tiles */
+.loan-icon {
+    -fx-min-width: 52; -fx-min-height: 52;
+    -fx-max-width: 52; -fx-max-height: 52;
+    -fx-background-color: -brand-blue-tint;
+    -fx-background-radius: 999;
+    -fx-text-fill: -brand-blue;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+.loan-terms { -fx-font-weight: bold; -fx-text-fill: -text; }
+.stat-tile { -fx-spacing: 4; -fx-padding: 14 18 14 18; }
+.stat-value { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -text; }
+
 /* People on a loan: avatar colours, the customer number beside a name, and search results */
 .avatar.avatar-tone-0 { -fx-background-color: -brand-blue; }
 .avatar.avatar-tone-1 { -fx-background-color: #5b4b8a; }

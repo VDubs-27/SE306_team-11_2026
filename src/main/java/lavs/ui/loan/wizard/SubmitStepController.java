@@ -13,7 +13,9 @@ import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentFile;
+import lavs.ui.common.LoanText;
 import lavs.ui.common.ReviewRows;
+import lavs.ui.loan.people.LoanPerson;
 
 /**
  * Step 4 of the new loan wizard: a checklist of what has been entered and a summary of the loan,

@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import lavs.logic.model.customer.Customer;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 import lavs.ui.wizard.WizardController;

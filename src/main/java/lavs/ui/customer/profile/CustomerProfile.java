@@ -8,6 +8,7 @@ import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.NoteRow;
 
 /**
  * Everything the profile screen shows for one customer.

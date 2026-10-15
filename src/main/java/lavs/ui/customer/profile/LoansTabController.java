@@ -1,6 +1,6 @@
 package lavs.ui.customer.profile;
 
-import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.LongFunction;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,8 +15,9 @@ import javafx.scene.layout.StackPane;
 import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.LoanText;
 import lavs.ui.common.PagerController;
-import lavs.ui.common.RecordTiles;
+import lavs.ui.common.Tables;
 
 /**
  * The Loans tab: a table of the customer's loans, a page at a time.
@@ -34,6 +35,8 @@ public class LoansTabController {
     @FXML private Label emptyState;
     @FXML private PagerController pagerController;
 
+    private Consumer<Loan> onOpenLoan = loan -> { };
+
     @FXML
     private void initialize() {
         loanNumberColumn.setCellValueFactory(
@@ -41,7 +44,7 @@ public class LoansTabController {
         principalColumn.setCellValueFactory(
                 cell -> new SimpleStringProperty(DisplayFormat.money(cell.getValue().principal())));
         repaymentColumn.setCellValueFactory(
-                cell -> new SimpleStringProperty(repayment(cell.getValue())));
+                cell -> new SimpleStringProperty(LoanText.repayment(cell.getValue().details())));
         statusColumn.setCellValueFactory(
                 cell -> new SimpleObjectProperty<>(cell.getValue().status()));
 
@@ -61,42 +64,25 @@ public class LoansTabController {
             @Override
             protected void updateItem(Loan.Status status, boolean empty) {
                 super.updateItem(status, empty);
-                setGraphic(empty || status == null ? null : statusBadge(status));
+                setGraphic(empty || status == null ? null : LoanText.statusBadge(status));
             }
         });
 
-        ProfileTables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
-        ProfileTables.fitInsideBox(loansTable);
+        Tables.makeRowsOpenable(loansTable, arrowColumn, this::handleOpenLoan);
+        Tables.fitInsideBox(loansTable);
     }
 
     /** Shows the first page and returns how many there are altogether, for the tab's count. */
     long show(LongFunction<Page<Loan>> loadPage) {
-        return pagerController.show(loadPage, items -> ProfileTables.show(loansTable, tableBox, emptyState, items));
+        return pagerController.show(loadPage, items -> Tables.show(loansTable, tableBox, emptyState, items));
+    }
+
+    /** What clicking a loan does: the profile opens the loan screen. */
+    void setOnOpenLoan(Consumer<Loan> onOpenLoan) {
+        this.onOpenLoan = onOpenLoan;
     }
 
     private void handleOpenLoan(Loan loan) {
-        // Later: navigator.showLoan(loan.loanNumber())
-    }
-
-    /** e.g. "$1,312.14 fortnightly". */
-    private static String repayment(Loan loan) {
-        if (loan.paymentAmount() == null) {
-            return DisplayFormat.NOT_RECORDED;
-        }
-        String amount = DisplayFormat.moneyWithCents(loan.paymentAmount());
-        return switch (loan.paymentFrequency()) {
-            case ON_RENEWAL -> amount + " on renewal";
-            case UNKNOWN -> amount;
-            default -> amount + " " + loan.paymentFrequency().code().toLowerCase(Locale.ROOT);
-        };
-    }
-
-    private static Label statusBadge(Loan.Status status) {
-        return RecordTiles.badge(status.code(), switch (status) {
-            case ACTIVE -> "badge-active";
-            case DEFAULTED -> "badge-error";
-            case NEW, PENDING -> "badge-warning";
-            default -> "badge-neutral";
-        });
+        onOpenLoan.accept(loan);
     }
 }
