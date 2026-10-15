@@ -16,10 +16,7 @@
             <Label text="Upload &amp; review" styleClass="section-heading"/>
             <Label text="Coming soon." styleClass="text-muted"/>
         </VBox>
-        <VBox fx:id="coborrowersStep" styleClass="card">
-            <Label text="Co-borrowers and guarantors" styleClass="section-heading"/>
-            <Label text="Coming soon." styleClass="text-muted"/>
-        </VBox>
+        <fx:include fx:id="coborrowers" source="coborrowers-step.fxml"/>
         <VBox fx:id="submitStep" styleClass="card">
             <Label text="Submit" styleClass="section-heading"/>
             <Label text="Coming soon." styleClass="text-muted"/>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Find an existing customer to add to a loan, shown in a pop-up. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.wizard.FindCustomerController"
+      spacing="12" prefWidth="560">
+    <fx:define>
+        <ToggleGroup fx:id="roleChoice"/>
+    </fx:define>
+
+    <VBox styleClass="field">
+        <Label text="Add them as"/>
+        <HBox styleClass="segmented" maxWidth="-Infinity">
+            <ToggleButton fx:id="coborrowerButton" text="Co-borrower" toggleGroup="$roleChoice"/>
+            <ToggleButton fx:id="guarantorButton" text="Guarantor" toggleGroup="$roleChoice"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" HBox.hgrow="ALWAYS" promptText="Search by name or customer number"
+                   onAction="#handleSearch"/>
+        <Button text="Search" styleClass="button-secondary" onAction="#handleSearch"/>
+    </HBox>
+
+    <VBox fx:id="results" spacing="8"/>
+    <Label fx:id="selectionError" styleClass="field-error-message"/>
+</VBox>

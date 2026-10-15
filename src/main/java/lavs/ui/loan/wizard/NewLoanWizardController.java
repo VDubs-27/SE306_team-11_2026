@@ -22,7 +22,8 @@ public class NewLoanWizardController implements NavigatorAware {
     @FXML private WizardController wizardController;
     @FXML private Node loanDetailsStep;
     @FXML private Node uploadStep;
-    @FXML private Node coborrowersStep;
+    @FXML private Node coborrowers;
+    @FXML private CoborrowersStepController coborrowersController;
     @FXML private Node submitStep;
 
     private Navigator navigator;
@@ -41,7 +42,7 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setSteps(List.of(
                 new WizardStep("Loan details", loanDetailsStep),
                 new WizardStep("Upload & review", uploadStep),
-                new WizardStep("Co-borrowers", coborrowersStep),
+                new WizardStep("Co-borrowers", coborrowers, coborrowersController::check, null),
                 new WizardStep("Submit", submitStep)));
     }
 
@@ -51,6 +52,9 @@ public class NewLoanWizardController implements NavigatorAware {
         avatar.getStyleClass().add("avatar");
         wizardController.setIcon(avatar);
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
+        NewLoanDraft draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
+        coborrowersController.use(draft);
+        coborrowersController.setOnAddNewCustomer(navigator::showNewCustomerWizard);
     }
 
     private void handleCancel() {
