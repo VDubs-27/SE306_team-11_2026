@@ -77,10 +77,10 @@
                         <fx:include fx:id="coborrowers" source="coborrowers-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="documentsTab" text="Documents">
-                        <fx:include fx:id="documents" source="documents-tab.fxml"/>
+                        <fx:include fx:id="documents" source="/lavs/ui/common/documents-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="notesTab" text="Notes">
-                        <fx:include fx:id="notes" source="notes-tab.fxml"/>
+                        <fx:include fx:id="notes" source="/lavs/ui/common/notes-tab.fxml"/>
                     </Tab>
                 </TabPane>
             </VBox>

@@ -74,9 +74,9 @@ final class SampleLoans {
             return List.of();
         }
         return List.of(
-                new DocumentFile("Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
-                new DocumentFile("Bank statement", "Statement-Q3-2026.pdf", "application/pdf", 611_328),
-                new DocumentFile("Other", "Sale-and-purchase-agreement.pdf", "application/pdf", 1_048_576));
+                new DocumentFile(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
+                new DocumentFile(2, "Bank statement", "Statement-Q3-2026.pdf", "application/pdf", 611_328),
+                new DocumentFile(3, "Other", "Sale-and-purchase-agreement.pdf", "application/pdf", 1_048_576));
     }
 
     /** Notes about the loan, newest first. */

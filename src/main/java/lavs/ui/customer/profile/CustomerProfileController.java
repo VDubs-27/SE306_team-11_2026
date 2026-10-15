@@ -14,6 +14,8 @@ import lavs.logic.model.customer.Customer;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.DocumentsTabController;
+import lavs.ui.common.NotesTabController;
 import lavs.ui.common.TabBars;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
@@ -57,6 +59,9 @@ public class CustomerProfileController implements NavigatorAware {
     private void initialize() {
         TabBars.setUp(tabPane);
         loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
+        // Later: save document and note changes through CustomerService; until then they only show on this screen
+        documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
+        notesController.setOnChanged(() -> TabBars.setCount(notesTab, notesController.count()));
     }
 
     /** Fills the screen for one customer. */
@@ -75,10 +80,10 @@ public class CustomerProfileController implements NavigatorAware {
                 page -> SampleProfiles.pageOf(profile.employers(), page, PAGE_SIZE)));
         TabBars.setCount(loansTab, loansController.show(
                 page -> SampleProfiles.pageOf(profile.loans(), page, PAGE_SIZE)));
-        TabBars.setCount(documentsTab, documentsController.show(
-                page -> SampleProfiles.pageOf(profile.documents(), page, PAGE_SIZE)));
-        TabBars.setCount(notesTab, notesController.show(
-                page -> SampleProfiles.pageOf(profile.notes(), page, PAGE_SIZE)));
+        documentsController.use(profile.documents());
+        TabBars.setCount(documentsTab, documentsController.count());
+        notesController.use(profile.notes());
+        TabBars.setCount(notesTab, notesController.count());
     }
 
     @FXML

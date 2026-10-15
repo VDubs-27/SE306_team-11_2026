@@ -13,7 +13,9 @@ import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.LoanText;
+import lavs.ui.common.NotesTabController;
 import lavs.ui.common.TabBars;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
@@ -64,6 +66,7 @@ public class LoanViewController implements NavigatorAware {
         TabBars.setUp(tabPane);
         detailsController.setOnSaved(this::saveDetails);
         coborrowersController.setOnChanged(this::showCoborrowers);
+        // Later: save document and note changes through LoanService; until then they only show on this screen
         documentsController.setOnChanged(this::showCounts);
         notesController.setOnChanged(this::showCounts);
     }

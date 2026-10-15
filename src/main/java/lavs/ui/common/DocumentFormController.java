@@ -49,6 +49,8 @@ public class DocumentFormController implements RecordForm<DocumentFile> {
     private String fileName;
     private String fileType;
     private long size;
+    /** The document being edited, kept so saving it keeps its id; 0 for a new one. */
+    private long id;
 
     @FXML
     private void initialize() {
@@ -61,12 +63,13 @@ public class DocumentFormController implements RecordForm<DocumentFile> {
     /** Empties the form for a new document; first is ignored, as documents have no primary. */
     @Override
     public void clear(boolean first) {
-        fill(new DocumentFile(null, null, null, 0));
+        fill(new DocumentFile(0, null, null, null, 0));
     }
 
     /** Puts an existing document into the form for editing. */
     @Override
     public void fill(DocumentFile document) {
+        id = document.id();
         typeBox.setValue(document.type());
         showFile(document.fileName(), document.fileType(), document.size());
         errors.show(List.of());
@@ -94,7 +97,7 @@ public class DocumentFormController implements RecordForm<DocumentFile> {
     /** What the form holds now. */
     @Override
     public DocumentFile read() {
-        return new DocumentFile(typeBox.getValue(), fileName, fileType, size);
+        return new DocumentFile(id, typeBox.getValue(), fileName, fileType, size);
     }
 
     /** Records a file's name, type and size; used by Choose file, and by tests with a known file. */
