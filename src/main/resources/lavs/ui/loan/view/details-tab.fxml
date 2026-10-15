@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.loan.view.DetailsTabController"
+      spacing="16">
+    <fx:define>
+        <!-- Shown in a pop-up when editing a new loan's details -->
+        <fx:include fx:id="detailsForm" source="/lavs/ui/loan/forms/loan-details-form.fxml"/>
+    </fx:define>
+
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Loan details" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="editButton" text="Edit" styleClass="button-secondary, button-small" onAction="#handleEdit"/>
+    </HBox>
+    <GridPane fx:id="detailGrid" hgap="28" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+    </GridPane>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label fx:id="lockNote"/>
+    </HBox>
+</VBox>

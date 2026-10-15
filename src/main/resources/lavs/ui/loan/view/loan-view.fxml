@@ -23,6 +23,8 @@
                     <Label fx:id="termsLabel" styleClass="loan-terms"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="submitButton" text="Submit for approval" styleClass="button-primary"
+                        onAction="#handleSubmitForApproval"/>
             </HBox>
 
             <!-- Totals over the life of the loan -->
@@ -52,10 +54,10 @@
             <!-- Tabs card -->
             <VBox styleClass="card, card-flush">
                 <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-                    <!-- Placeholders until each tab is built -->
                     <Tab text="Details">
-                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                        <fx:include fx:id="details" source="details-tab.fxml"/>
                     </Tab>
+                    <!-- Placeholders until each tab is built -->
                     <Tab text="Schedule">
                         <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
                     </Tab>

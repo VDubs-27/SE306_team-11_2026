@@ -1,0 +1,84 @@
+package lavs.ui.loan.view;
+
+import java.util.Locale;
+import java.util.function.Consumer;
+
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+
+import lavs.logic.model.loan.Loan;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.FormDialog;
+import lavs.ui.common.LoanText;
+import lavs.ui.loan.forms.LoanDetailsFormController;
+
+/**
+ * The loan screen's Details tab: the loan's terms, read-only. While the loan is New they can be
+ * changed with Edit, which opens the same form as the new loan wizard; after that they're locked.
+ * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ */
+public class DetailsTabController {
+
+    @FXML private Node detailsForm;
+    @FXML private LoanDetailsFormController detailsFormController;
+    @FXML private Button editButton;
+    @FXML private GridPane detailGrid;
+    @FXML private Label lockNote;
+
+    private Loan loan;
+    private Consumer<Loan.Details> onSaved = details -> { };
+
+    /** What happens after Edit is saved: the loan screen updates itself. */
+    void setOnSaved(Consumer<Loan.Details> onSaved) {
+        this.onSaved = onSaved;
+    }
+
+    /** Shows the loan's details, with Edit only while it's New. */
+    void show(Loan loan) {
+        this.loan = loan;
+        Loan.Details details = loan.details();
+        detailGrid.getChildren().clear();
+        add(0, 0, "Loan number", loan.loanNumber().value());
+        add(1, 0, "Status", loan.status().code());
+        add(0, 1, "Principal", DisplayFormat.money(details.principal()));
+        add(1, 1, "Rate type", LoanText.rateTypeName(details.rateType()));
+        add(0, 2, "Interest rate", details.rateAmount().stripTrailingZeros().toPlainString() + "%");
+        add(1, 2, "Rate applies", details.rateFrequency().code());
+        add(0, 3, "Repayment amount", DisplayFormat.moneyWithCents(details.paymentAmount()));
+        add(1, 3, "Repayment frequency", LoanText.paymentFrequencyName(details.paymentFrequency()));
+        add(0, 4, "Start date", DisplayFormat.date(details.startDate()));
+        add(1, 4, "Renewal date", DisplayFormat.date(details.renewalDate()));
+
+        boolean editable = loan.status() == Loan.Status.NEW;
+        editButton.setVisible(editable);
+        editButton.setManaged(editable);
+        lockNote.setText(editable
+                ? "These details can be changed until the loan is submitted for approval."
+                : "This loan is " + loan.status().code().toLowerCase(Locale.ROOT)
+                        + ", so its details can no longer be changed.");
+    }
+
+    @FXML
+    private void handleEdit() {
+        detailsFormController.fill(loan.details());
+        if (FormDialog.show(detailGrid, "Edit loan details", detailsForm, detailsFormController::check, false)
+                == FormDialog.Result.SAVED) {
+            onSaved.accept(detailsFormController.read());
+        }
+    }
+
+    /** One read-only field: a small label with its value under it. */
+    private void add(int column, int row, String name, String value) {
+        Label label = new Label(name);
+        label.getStyleClass().add("detail-label");
+        Label valueLabel = new Label(value);
+        valueLabel.getStyleClass().add("detail-value");
+        VBox field = new VBox(label, valueLabel);
+        field.getStyleClass().add("detail");
+        detailGrid.add(field, column, row);
+    }
+}

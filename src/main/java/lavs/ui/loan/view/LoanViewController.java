@@ -3,12 +3,14 @@ package lavs.ui.loan.view;
 import java.util.Locale;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.TabBars;
@@ -27,6 +29,7 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Label statusBadge;
     @FXML private Label customerLabel;
     @FXML private Label termsLabel;
+    @FXML private Button submitButton;
     @FXML private Label totalPaidValue;
     @FXML private Label paymentCountValue;
     @FXML private Label totalInterestValue;
@@ -35,8 +38,11 @@ public class LoanViewController implements NavigatorAware {
     @FXML private Label finalDateValue;
     @FXML private Label finalAmountValue;
     @FXML private TabPane tabPane;
+    @FXML private DetailsTabController detailsController;
 
     private Navigator navigator;
+    private Loan loan;
+    private Customer customer;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -46,10 +52,43 @@ public class LoanViewController implements NavigatorAware {
     @FXML
     private void initialize() {
         TabBars.setUp(tabPane);
+        detailsController.setOnSaved(this::saveDetails);
     }
 
     /** Fills the screen for one of a customer's loans. */
     public void showLoan(Loan loan, Customer customer) {
+        this.loan = loan;
+        this.customer = customer;
+        refresh();
+    }
+
+    @FXML
+    private void handleBack() {
+        navigator.back();
+    }
+
+    /** Moves a New loan to Pending, after checking; its details are locked from then on. */
+    @FXML
+    private void handleSubmitForApproval() {
+        if (Dialogs.confirm(submitButton, "Submit this loan for approval?",
+                "It will move to Pending, and its details can no longer be changed.", "Submit for approval")) {
+            // Later: LoanService.updateStatus(loan, PENDING); until then the change only shows on this screen
+            loan = loan.withStatus(Loan.Status.PENDING);
+            refresh();
+        }
+    }
+
+    /** Keeps the loan's number, customer and status, with the edited terms. */
+    private void saveDetails(Loan.Details changed) {
+        // Later: LoanService.update(loan, changed); until then the change only shows on this screen
+        loan = new Loan(loan.loanNumber(), loan.customerNumber(), loan.status(), changed.principal(),
+                changed.rateType(), changed.rateAmount(), changed.rateFrequency(), changed.startDate(),
+                changed.paymentAmount(), changed.paymentFrequency(), changed.renewalDate());
+        refresh();
+    }
+
+    /** Shows the loan as it is now: summary, totals and the Details tab. */
+    private void refresh() {
         Loan.Details details = loan.details();
         backLink.setText("‹  Back to " + customer.fullName());
         loanNumberLabel.setText(loan.loanNumber().value());
@@ -58,12 +97,11 @@ public class LoanViewController implements NavigatorAware {
         statusBadge.getStyleClass().setAll(badge.getStyleClass());
         customerLabel.setText("for " + customer.fullName() + " · " + customer.number().value());
         termsLabel.setText(DisplayFormat.money(loan.principal()) + " · " + LoanText.interest(details));
+        boolean isNew = loan.status() == Loan.Status.NEW;
+        submitButton.setVisible(isNew);
+        submitButton.setManaged(isNew);
         showTotals(loan);
-    }
-
-    @FXML
-    private void handleBack() {
-        navigator.back();
+        detailsController.show(loan);
     }
 
     /** The four tiles: total to repay, total interest, the repayment, and the final payment. */

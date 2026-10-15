@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- A loan's amount, interest, repayments and dates: on the new loan wizard, and in the Edit pop-up. -->
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="lavs.ui.loan.forms.LoanDetailsFormController"
+          hgap="16" vgap="14" prefWidth="640">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="50"/>
+        <ColumnConstraints percentWidth="50"/>
+    </columnConstraints>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Label text="Principal ($)"/>
+        <TextField fx:id="principalField" promptText="e.g. 450,000"/>
+        <Label fx:id="principalError" styleClass="field-error-message"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Label text="Rate type"/>
+        <ComboBox fx:id="rateTypeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="rateTypeError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <Label text="Interest rate (%)"/>
+        <TextField fx:id="rateField" promptText="e.g. 6.29"/>
+        <Label fx:id="rateAmountError" styleClass="field-error-message"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label text="Rate applies"/>
+        <ComboBox fx:id="rateFrequencyBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="rateFrequencyError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <Label text="Repayment amount ($)"/>
+        <TextField fx:id="paymentField" promptText="e.g. 1,312.14"/>
+        <Label fx:id="paymentAmountError" styleClass="field-error-message"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Label text="Repayment frequency"/>
+        <ComboBox fx:id="paymentFrequencyBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="paymentFrequencyError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Label text="Start date"/>
+        <DatePicker fx:id="startDatePicker" maxWidth="Infinity"/>
+        <Label fx:id="startDateError" styleClass="field-error-message"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Label text="Renewal date"/>
+        <DatePicker fx:id="renewalDatePicker" maxWidth="Infinity"/>
+        <Label fx:id="renewalDateError" styleClass="field-error-message"/>
+    </VBox>
+</GridPane>

@@ -118,7 +118,7 @@ public final class SampleProfiles {
                 new Employer(1, JOHN, Employer.Type.PRIMARY, "Harbour Engineering Ltd",
                         "Project Manager", new BigDecimal("98000")));
         List<Loan> loans = List.of(
-                new Loan(new LoanNumber("01-0013-5810482-001"), JOHN, Loan.Status.PENDING,
+                new Loan(new LoanNumber("01-0013-5810482-001"), JOHN, Loan.Status.NEW,
                         new BigDecimal("450000"), Loan.RateType.FIXED, new BigDecimal("6.29"),
                         Loan.RateFrequency.YEARLY, LocalDate.of(2026, 11, 1), new BigDecimal("1312.14"),
                         Loan.PaymentFrequency.FORTNIGHTLY, LocalDate.of(2028, 11, 1)),
