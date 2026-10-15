@@ -2,7 +2,9 @@ package lavs.ui.customer.profile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import lavs.logic.model.Page;
@@ -16,10 +18,11 @@ import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
 
 /**
- * Temporary sample data for designing. Replaced by CustomerService results.
+ * Temporary sample data for designing. Replaced by CustomerService results. Public so the
+ * new loan wizard can look up co-borrowers the same way.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-final class SampleProfiles {
+public final class SampleProfiles {
 
     private static final CustomerNumber JOHN = new CustomerNumber("01-0013-5810482");
 
@@ -36,7 +39,7 @@ final class SampleProfiles {
     }
 
     /** The sample profile for a customer number; John Smith has every section filled in. */
-    static CustomerProfile find(String customerNumber) {
+    public static CustomerProfile find(String customerNumber) {
         Customer customer = CUSTOMERS.get(customerNumber);
         if (customer == null) {
             throw new IllegalArgumentException("No sample customer " + customerNumber);
@@ -44,7 +47,24 @@ final class SampleProfiles {
         if (customer.number().equals(JOHN)) {
             return johnSmith(customer);
         }
+        if (customerNumber.equals("01-0013-5810233")) {
+            return withHomeAndJob(customer, "14 Valley Road", "Mt Eden", "Auckland City Hospital", "Nurse");
+        }
+        if (customerNumber.equals("01-0013-5811408")) {
+            return withHomeAndJob(customer, "3 Hurstmere Road", "Takapuna", "North Shore Marine", "Engineer");
+        }
         return new CustomerProfile(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+    }
+
+    /** Sample customers whose name or customer number contains the term, ignoring case. */
+    public static List<Customer> search(String term) {
+        String lower = term.trim().toLowerCase(Locale.ROOT);
+        return CUSTOMERS.values().stream()
+                .filter(customer -> customer.fullName().toLowerCase(Locale.ROOT).contains(lower)
+                        || customer.number().value().contains(term.trim()))
+                .sorted(Comparator.comparing((Customer customer) -> customer.familyName())
+                        .thenComparing(Customer::firstName))
+                .toList();
     }
 
     /** One page of a sample list, the way the mainframe returns lists a page at a time. */
@@ -52,6 +72,18 @@ final class SampleProfiles {
         int from = (int) Math.min((page - 1) * size, items.size());
         int to = (int) Math.min(from + size, items.size());
         return new Page<>(items.subList(from, to), page, size, items.size());
+    }
+
+    /** A customer with just a home address and one job, enough to show them as a co-borrower. */
+    private static CustomerProfile withHomeAndJob(Customer customer, String street, String suburb,
+            String employer, String position) {
+        CustomerNumber number = customer.number();
+        return new CustomerProfile(customer,
+                List.of(new Address(1, number, Address.Type.RESIDENTIAL, null, street, null, suburb,
+                        "Auckland", null, "New Zealand", true, true)),
+                List.of(), List.of(),
+                List.of(new Employer(1, number, Employer.Type.PRIMARY, employer, position, null)),
+                List.of(), List.of(), List.of());
     }
 
     /** A simpler sample loan for John, so the Loans tab has enough to page through. */

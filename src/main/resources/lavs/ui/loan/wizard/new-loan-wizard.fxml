@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- The shared wizard frame, plus this wizard's steps. The frame shows one step at a time. -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="lavs.ui.loan.wizard.NewLoanWizardController">
+    <fx:define>
+        <fx:include fx:id="loanDetails" source="loan-details-step.fxml"/>
+        <fx:include fx:id="upload" source="upload-step.fxml"/>
+        <fx:include fx:id="coborrowers" source="coborrowers-step.fxml"/>
+        <fx:include fx:id="submit" source="submit-step.fxml"/>
+    </fx:define>
+    <fx:include fx:id="wizard" source="/lavs/ui/wizard/wizard.fxml"/>
+</StackPane>

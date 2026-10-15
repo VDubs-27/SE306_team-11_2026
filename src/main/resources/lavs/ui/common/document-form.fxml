@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One document: what it is and which file, shown in a pop-up when adding or editing. -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.common.DocumentFormController"
+      spacing="12" prefWidth="520">
+
+    <VBox styleClass="field">
+        <Label text="Document type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field">
+        <Label text="File"/>
+        <HBox spacing="14" alignment="CENTER_LEFT">
+            <Button fx:id="chooseButton" text="Choose file…" styleClass="button-secondary" onAction="#handleChooseFile"/>
+            <VBox spacing="2">
+                <Label fx:id="fileNameLabel" styleClass="tile-line1"/>
+                <Label fx:id="fileDetailsLabel" styleClass="text-muted, text-small"/>
+            </VBox>
+        </HBox>
+        <Label fx:id="fileError" styleClass="field-error-message"/>
+    </VBox>
+
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="LAVS records the file's name, type and size. The file itself stays with the customer's paperwork."/>
+    </HBox>
+</VBox>

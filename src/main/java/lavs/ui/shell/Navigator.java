@@ -10,7 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 
+import lavs.logic.model.customer.Customer;
 import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.loan.wizard.NewLoanWizardController;
 
 /**
  * Owns all screen switching. Controllers ask the navigator to move;
@@ -66,6 +68,17 @@ public class Navigator {
      */
     public void showNewCustomerWizard() {
         FXMLLoader loader = load("/lavs/ui/customer/wizard/new-customer-wizard.fxml");
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows the new loan wizard for a customer below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showNewLoanWizard(Customer customer) {
+        FXMLLoader loader = load("/lavs/ui/loan/wizard/new-loan-wizard.fxml");
+        NewLoanWizardController controller = loader.getController();
+        controller.start(customer);
         show(loader.getRoot());
     }
 
