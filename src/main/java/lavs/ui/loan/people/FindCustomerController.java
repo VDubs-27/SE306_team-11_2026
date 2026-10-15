@@ -1,4 +1,4 @@
-package lavs.ui.loan.wizard;
+package lavs.ui.loan.people;
 
 import java.util.List;
 import java.util.Set;
@@ -45,7 +45,7 @@ public class FindCustomerController {
     }
 
     /** Starts afresh, leaving out the customer numbers already on the loan. */
-    void reset(Set<String> customerNumbersOnLoan) {
+    public void reset(Set<String> customerNumbersOnLoan) {
         alreadyOnLoan = customerNumbersOnLoan;
         coborrowerButton.setSelected(true);
         searchField.clear();
@@ -55,16 +55,16 @@ public class FindCustomerController {
     }
 
     /** True once someone has been picked; otherwise says to pick someone. */
-    boolean check() {
+    public boolean check() {
         showError(selected == null ? "ⓘ  Search, then click the customer to add." : null);
         return selected != null;
     }
 
-    Customer selected() {
+    public Customer selected() {
         return selected;
     }
 
-    Coborrower.Type role() {
+    public Coborrower.Type role() {
         return guarantorButton.isSelected() ? Coborrower.Type.GUARANTOR : Coborrower.Type.COBORROWER;
     }
 

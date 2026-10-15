@@ -8,7 +8,7 @@
       styleClass="card, card-flush">
     <fx:define>
         <!-- Shown in a pop-up when finding an existing customer -->
-        <fx:include fx:id="findCustomer" source="find-customer.fxml"/>
+        <fx:include fx:id="findCustomer" source="/lavs/ui/loan/people/find-customer.fxml"/>
     </fx:define>
 
     <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
