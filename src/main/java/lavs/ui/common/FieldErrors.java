@@ -71,6 +71,11 @@ public final class FieldErrors {
         return errors.isEmpty();
     }
 
+    /** The errors for fields this form has no input for, e.g. a service's rule about the whole record. */
+    public List<FieldError> unplaced(List<FieldError> errors) {
+        return errors.stream().filter(error -> !inputs.containsKey(error.field())).toList();
+    }
+
     private void clear(String field) {
         inputs.get(field).getStyleClass().remove(ERROR_STYLE);
         Nodes.show(messages.get(field), false);

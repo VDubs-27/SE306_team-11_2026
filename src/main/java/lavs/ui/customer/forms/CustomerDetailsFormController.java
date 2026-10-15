@@ -99,4 +99,9 @@ public class CustomerDetailsFormController implements RecordForm<Customer.Detail
                 dateOfBirth.value(),
                 nationalityBox.getValue());
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

@@ -107,15 +107,21 @@ public final class Toasts {
         layer.getChildren().clear();
     }
 
-    /** The card: a round icon on the left, then the title over the message. */
-    private static HBox toast(Kind kind, String title, String message) {
+    /** The round icon for a kind of message, e.g. a red disc with a white cross for errors. */
+    public static StackPane icon(Kind kind) {
         Circle disc = new Circle(ICON_RADIUS);
-        disc.getStyleClass().add("toast-icon-disc");
+        disc.getStyleClass().addAll("toast-icon-disc", kind.styleClass + "-disc");
         SVGPath glyph = new SVGPath();
         glyph.setContent(kind.glyph);
         glyph.getStyleClass().add("toast-icon-glyph");
         StackPane icon = new StackPane(disc, glyph);
         icon.setMinSize(ICON_RADIUS * 2, ICON_RADIUS * 2);
+        return icon;
+    }
+
+    /** The card: a round icon on the left, then the title over the message. */
+    private static HBox toast(Kind kind, String title, String message) {
+        StackPane icon = icon(kind);
 
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("toast-title");

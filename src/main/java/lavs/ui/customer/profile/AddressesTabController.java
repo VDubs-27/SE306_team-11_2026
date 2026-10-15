@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
+import lavs.logic.service.Result;
 import lavs.ui.common.AddressRows;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordEditor;
@@ -42,16 +43,19 @@ public class AddressesTabController {
 
     @FXML
     private void handleAddAddress() {
-        editor.add(false, address -> {
-            // Later: CustomerService.addAddress(customerNumber, address), then reload the tab
+        editor.addAndSave(false, address -> {
+            // Later: return addressService.add(customerNumber, address), then reload the tab
+            return Result.success(null);
         });
     }
 
     private void handleEditAddress(Address address) {
-        editor.edit(address.details(), changed -> {
-            // Later: CustomerService.updateAddress(address.id(), changed), then reload the tab
+        editor.editAndSave(address.details(), changed -> {
+            // Later: return addressService.update(customerNumber, address.id(), changed), then reload the tab
+            return Result.success(null);
         }, () -> {
-            // Later: CustomerService.removeAddress(address.id()), then reload the tab
+            // Later: return addressService.delete(customerNumber, address.id()), then reload the tab
+            return Result.success(null);
         });
     }
 }

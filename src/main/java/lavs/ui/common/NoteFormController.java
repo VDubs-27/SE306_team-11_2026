@@ -83,4 +83,9 @@ public class NoteFormController implements RecordForm<NoteRow> {
     private String text() {
         return textArea.getText() == null ? "" : textArea.getText().strip();
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

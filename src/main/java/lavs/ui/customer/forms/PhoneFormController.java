@@ -95,4 +95,9 @@ public class PhoneFormController implements RecordForm<Phone.Details> {
     private static String text(String value) {
         return value == null ? "" : value;
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

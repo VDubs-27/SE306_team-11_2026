@@ -81,4 +81,9 @@ public class EmailFormController implements RecordForm<Email.Details> {
     private void showOtherType(boolean show) {
         Nodes.show(otherTypeFieldBox, show);
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

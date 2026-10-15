@@ -4,6 +4,7 @@ import static lavs.ui.common.DisplayFormat.date;
 import static lavs.ui.common.DisplayFormat.orNotRecorded;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -11,6 +12,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
+import lavs.logic.service.Result;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.RecordEditor;
@@ -35,7 +37,7 @@ public class DetailsTabController {
 
     private Customer customer;
     private RecordEditor<Customer.Details> editor;
-    private Consumer<Customer.Details> onSaved = details -> { };
+    private Function<Customer.Details, Result<?>> onSaved = details -> Result.success(null);
     private Consumer<Customer.Status> onStatusChanged = status -> { };
 
     @FXML
@@ -44,8 +46,8 @@ public class DetailsTabController {
                 .withoutRemove();
     }
 
-    /** What happens after Edit is saved: the profile updates itself. */
-    void setOnSaved(Consumer<Customer.Details> onSaved) {
+    /** How Edit saves: the profile saves the change and says whether it worked; the pop-up stays open if not. */
+    void setOnSaved(Function<Customer.Details, Result<?>> onSaved) {
         this.onSaved = onSaved;
     }
 
@@ -70,7 +72,7 @@ public class DetailsTabController {
 
     @FXML
     private void handleEditDetails() {
-        editor.edit(customer.details(), changed -> onSaved.accept(changed), () -> { });
+        editor.editAndSave(customer.details(), changed -> onSaved.apply(changed), () -> Result.success(null));
     }
 
     @FXML

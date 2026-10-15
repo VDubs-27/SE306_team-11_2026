@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Employer;
+import lavs.logic.service.Result;
 import lavs.ui.common.EmployerRows;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordEditor;
@@ -42,16 +43,19 @@ public class EmploymentTabController {
 
     @FXML
     private void handleAddEmployer() {
-        editor.add(false, employer -> {
-            // Later: CustomerService.addEmployer(customerNumber, employer), then reload the tab
+        editor.addAndSave(false, employer -> {
+            // Later: return employerService.add(customerNumber, employer), then reload the tab
+            return Result.success(null);
         });
     }
 
     private void handleEditEmployer(Employer employer) {
-        editor.edit(employer.details(), changed -> {
-            // Later: CustomerService.updateEmployer(employer.id(), changed), then reload the tab
+        editor.editAndSave(employer.details(), changed -> {
+            // Later: return employerService.update(customerNumber, employer.id(), changed), then reload the tab
+            return Result.success(null);
         }, () -> {
-            // Later: CustomerService.removeEmployer(employer.id()), then reload the tab
+            // Later: return employerService.delete(customerNumber, employer.id()), then reload the tab
+            return Result.success(null);
         });
     }
 }

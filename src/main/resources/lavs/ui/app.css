@@ -922,16 +922,23 @@
 
 .toast-info { -fx-background-color: -info-tint; -fx-border-color: -info-border; }
 .toast-info .label { -fx-text-fill: -info-blue; }
-.toast-info .toast-icon-disc { -fx-fill: -info-blue; }
+.toast-info-disc { -fx-fill: -info-blue; }
 
 .toast-success { -fx-background-color: -success-tint; -fx-border-color: -success-border; }
 .toast-success .label { -fx-text-fill: -success-text; }
-.toast-success .toast-icon-disc { -fx-fill: -success-green; }
+.toast-success-disc { -fx-fill: -success-green; }
 
 .toast-warning { -fx-background-color: -warning-tint; -fx-border-color: -warning-border; }
 .toast-warning .label { -fx-text-fill: -warning-text; }
-.toast-warning .toast-icon-disc { -fx-fill: #8a7400; }
+.toast-warning-disc { -fx-fill: #8a7400; }
 
 .toast-error { -fx-background-color: -error-tint; -fx-border-color: -error-red; }
 .toast-error .label { -fx-text-fill: -error-red-text; }
-.toast-error .toast-icon-disc { -fx-fill: -error-red; }
+.toast-error-disc { -fx-fill: -error-red; }
+
+/* ===================== Error panel ===================== */
+/* A screen that couldn't load: the error icon, what failed and why, then Try again and Back */
+.error-panel { -fx-padding: 36 40 32 40; -fx-spacing: 12; }
+.error-panel-icon { -fx-scale-x: 1.6; -fx-scale-y: 1.6; -fx-padding: 6 0 10 0; }
+.error-panel-title { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: -text; }
+.error-panel-message { -fx-text-fill: -text-muted; -fx-text-alignment: center; -fx-padding: 0 0 8 0; }

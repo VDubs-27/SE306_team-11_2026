@@ -156,4 +156,9 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
             problems.add(new FieldError(name, message));
         }
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

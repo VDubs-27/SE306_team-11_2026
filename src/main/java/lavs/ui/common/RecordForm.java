@@ -23,4 +23,7 @@ public interface RecordForm<T> {
 
     /** What the form holds now. */
     T read();
+
+    /** The form's error messages, so problems found when saving (e.g. by a service) show under their fields. */
+    FieldErrors fieldErrors();
 }

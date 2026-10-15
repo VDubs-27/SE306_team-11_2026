@@ -90,4 +90,9 @@ public class EmployerFormController implements RecordForm<Employer.Details> {
     private static boolean isNegative(BigDecimal value) {
         return value != null && value.signum() < 0;
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

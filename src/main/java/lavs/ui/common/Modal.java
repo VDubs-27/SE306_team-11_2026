@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -44,6 +45,8 @@ public final class Modal {
     private final VBox body;
     private final HBox leftButtons = new HBox(10);
     private final HBox rightButtons = new HBox(10);
+    private final Label errorText = new Label();
+    private final HBox errorBanner;
     private final Object loopKey = new Object();
     private boolean open;
 
@@ -70,7 +73,16 @@ public final class Modal {
         footer.setAlignment(Pos.CENTER_LEFT);
         footer.getStyleClass().add("modal-footer");
 
-        card = new VBox(header, body, footer);
+        // Why the last try failed, e.g. the mainframe couldn't be reached; hidden until then
+        Label errorIcon = new Label("ⓘ");
+        errorIcon.setMinWidth(Region.USE_PREF_SIZE);
+        errorText.setWrapText(true);
+        errorBanner = new HBox(errorIcon, errorText);
+        errorBanner.getStyleClass().add("banner-error");
+        VBox.setMargin(errorBanner, new Insets(6, 24, 2, 24));
+        Nodes.show(errorBanner, false);
+
+        card = new VBox(header, errorBanner, body, footer);
         card.getStyleClass().add("modal-card");
         card.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
     }
@@ -79,6 +91,12 @@ public final class Modal {
     public Modal content(Node content) {
         body.getChildren().add(content);
         return this;
+    }
+
+    /** Shows why something failed in a red banner under the title, or hides it when message is null. */
+    public void showError(String message) {
+        errorText.setText(message == null ? "" : message);
+        Nodes.show(errorBanner, message != null);
     }
 
     /** Adds a line of explanation, for confirmations. */

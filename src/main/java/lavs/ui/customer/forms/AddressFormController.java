@@ -114,4 +114,9 @@ public class AddressFormController implements RecordForm<Address.Details> {
     private static String text(String value) {
         return value == null ? "" : value;
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

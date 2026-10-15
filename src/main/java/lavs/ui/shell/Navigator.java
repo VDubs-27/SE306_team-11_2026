@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
 import lavs.ui.loan.view.LoanViewController;
@@ -124,6 +125,14 @@ public class Navigator {
         LoanViewController controller = loader.getController();
         controller.showLoan(loan, customer);
         show(loader.getRoot());
+    }
+
+    /**
+     * Shows that a screen couldn't load, in its place below the header: what failed and why, with
+     * Try again (retry, e.g. load it again) and Back. For loads that fail, e.g. the mainframe is down.
+     */
+    public void showLoadFailed(String title, String message, Runnable retry) {
+        show(ErrorPanel.create(title, message, retry, this::back));
     }
 
     /** Returns to the previous screen, if there is one. */

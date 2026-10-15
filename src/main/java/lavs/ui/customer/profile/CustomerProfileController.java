@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
+import lavs.logic.service.Result;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.Nodes;
@@ -74,7 +75,8 @@ public class CustomerProfileController implements NavigatorAware {
 
     /** Fills the screen for one customer. */
     public void showCustomer(String customerNumber) {
-        // Later: load the profile from CustomerService in the background
+        // Later: load the profile from CustomerService in the background; if that fails,
+        // navigator.showLoadFailed("Couldn't load this customer", reason, () -> showCustomer(customerNumber))
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         customer = profile.customer();
         suburb = primarySuburb(profile);
@@ -105,15 +107,16 @@ public class CustomerProfileController implements NavigatorAware {
         navigator.showNewLoanWizard(customer);
     }
 
-    /** Keeps the customer's number and status, with the edited details. */
-    private void saveDetails(Customer.Details changed) {
-        // Later: CustomerService.update(customer.number(), changed); until then the change only shows on this screen
+    /** Saves the edited details, keeping the customer's number and status; the edit pop-up shows any failure. */
+    private Result<?> saveDetails(Customer.Details changed) {
+        // Later: Result<?> saved = customerService.update(customer.number(), changed); if it failed, return it
         customer = new Customer(customer.number(), changed.title(), changed.firstName(), changed.familyName(),
                 customer.status(), changed.dateOfBirth(), changed.nationality());
         showSummary();
         detailsController.show(customer);
         Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
                 DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
+        return Result.success(null);
     }
 
     /** Makes the customer active or inactive, once confirmed on the Details tab. */
