@@ -9,7 +9,8 @@ import mainframe.client.Message;
 
 final class Pages {
 
-    static final long SIZE = 100;
+    // The mainframe returns at most 50 items a page, whatever size is asked for
+    static final long SIZE = 50;
 
     private Pages() {
     }

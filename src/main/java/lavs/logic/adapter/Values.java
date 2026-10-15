@@ -4,6 +4,7 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 final class Values {
 
@@ -20,6 +21,12 @@ final class Values {
 
     static BigDecimal decimal(String value) {
         return isBlank(value) ? null : new BigDecimal(value.trim());
+    }
+
+    // For required amounts, which validation has already checked are present: a missing one is a bug, so it fails
+    // here rather than being sent to the mainframe as 0
+    static double amount(BigDecimal value) {
+        return Objects.requireNonNull(value, "amount").doubleValue();
     }
 
     // Salary is optional in LAVS, but the employer messages always send a number

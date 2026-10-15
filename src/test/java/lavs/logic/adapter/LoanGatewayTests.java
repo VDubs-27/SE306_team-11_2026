@@ -4,6 +4,7 @@ import static lavs.logic.adapter.ScriptedConnection.row;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,8 @@ import lavs.logic.model.loan.LoanNumber;
 import mainframe.client.MessageRequest;
 import mainframe.client.StatusMessage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class LoanGatewayTests {
 
@@ -57,16 +60,23 @@ class LoanGatewayTests {
         );
     }
 
-    @Test
-    void listLeavesOutRowsThatCannotBeRead() {
-        connection.replyList("loan.list", 3,
-                row("loanNumber", "01-0013-001", "startDate", "2026-01-15", "status", "New"),
-                row("loanNumber", "01-0013-002", "startDate", "15/01/2026", "status", "New"),
-                row("loanNumber", "", "status", "New"));
+    @ParameterizedTest
+    @CsvSource({
+        "01-0013-002, 15/01/2026, 8000",
+        "'', 2026-01-15, 8000",
+        "01-0013-002, 2026-01-15, lots"
+    })
+    void listRowThatCannotBeReadFailsThePage(String loanNumber, String startDate, String principal) {
+        connection.replyList("loan.list", 2,
+                row("loanNumber", "01-0013-001", "principal", "1000", "startDate", "2026-01-15", "status", "New"),
+                row("loanNumber", loanNumber, "principal", principal, "startDate", startDate, "status", "New"));
 
-        Page<Loan.Summary> page = gateway.list(CUSTOMER, 1, 10);
+        MainframeException e = assertThrows(MainframeException.class, () -> gateway.list(CUSTOMER, 1, 10));
 
-        assertEquals(List.of(LOAN_NUMBER), page.items().stream().map(Loan.Summary::loanNumber).toList());
+        assertAll(
+                () -> assertEquals(StatusMessage.UNABLE_TO_PARSE.getCode(), e.errorCode()),
+                () -> assertEquals("The mainframe returned a loan record that could not be read.", e.getMessage())
+        );
     }
 
     @Test
@@ -145,6 +155,19 @@ class LoanGatewayTests {
                 () -> assertEquals("01-0013", request.getValue("customerNumber")),
                 () -> assertEquals("Fixed", request.getValue("rateType")),
                 () -> assertEquals("2027-01-15", request.getValue("renewalDate"))
+        );
+    }
+
+    @Test
+    void missingAmountFailsBeforeAnythingIsSent() {
+        Loan.Details noPrincipal = new Loan.Details(null, DETAILS.rateType(), DETAILS.rateAmount(),
+                DETAILS.rateFrequency(), DETAILS.startDate(), DETAILS.paymentAmount(), DETAILS.paymentFrequency(),
+                DETAILS.renewalDate());
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class, () -> gateway.create(CUSTOMER, noPrincipal)),
+                () -> assertThrows(NullPointerException.class, () -> gateway.update(LOAN, noPrincipal)),
+                () -> assertTrue(connection.requestTypes().isEmpty())
         );
     }
 

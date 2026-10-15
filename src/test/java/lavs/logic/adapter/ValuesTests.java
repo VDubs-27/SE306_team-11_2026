@@ -3,6 +3,7 @@ package lavs.logic.adapter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -74,5 +75,15 @@ class ValuesTests {
     @Test
     void missingDateIsSentAsNothing() {
         assertNull(Values.text(null));
+    }
+
+    @Test
+    void requiredAmountIsSentAsADouble() {
+        assertEquals(250000.5, Values.amount(new BigDecimal("250000.5")));
+    }
+
+    @Test
+    void missingRequiredAmountFails() {
+        assertThrows(NullPointerException.class, () -> Values.amount(null));
     }
 }

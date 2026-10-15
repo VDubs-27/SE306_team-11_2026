@@ -14,7 +14,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class LoanGateway {
 
@@ -29,7 +28,7 @@ public class LoanGateway {
                 adapter.send(new mainframe.client.messages.loan.List(customerNumber.value(), page, size));
         List<Loan.Summary> summaries = new ArrayList<>();
         for (mainframe.client.messages.loan.List.Item item : list.getItems()) {
-            toSummary(customerNumber, item).ifPresent(summaries::add);
+            summaries.add(toSummary(customerNumber, item));
         }
         return new Page<>(summaries, page, size, list.getTotal());
     }
@@ -44,9 +43,9 @@ public class LoanGateway {
 
     public LoanNumber create(CustomerNumber customerNumber, Loan.Details loanDetails) {
         Create create = adapter.send(new Create(
-                customerNumber.value(), Values.toDouble(loanDetails.paymentAmount()),
-                loanDetails.paymentFrequency().code(), Values.toDouble(loanDetails.principal()),
-                Values.toDouble(loanDetails.rateAmount()), loanDetails.rateFrequency().code(),
+                customerNumber.value(), Values.amount(loanDetails.paymentAmount()),
+                loanDetails.paymentFrequency().code(), Values.amount(loanDetails.principal()),
+                Values.amount(loanDetails.rateAmount()), loanDetails.rateFrequency().code(),
                 loanDetails.rateType().code(), Values.text(loanDetails.renewalDate()),
                 Values.text(loanDetails.startDate())));
         return new LoanNumber(create.getLoanNumber());
@@ -56,9 +55,9 @@ public class LoanGateway {
     // the customer and loan numbers and always reports the status as New, even for a Pending loan
     public Loan update(Loan loan, Loan.Details loanDetails) {
         adapter.send(new Update(
-                loan.customerNumber().value(), loan.loanNumber().value(), Values.toDouble(loanDetails.paymentAmount()),
-                loanDetails.paymentFrequency().code(), Values.toDouble(loanDetails.principal()),
-                Values.toDouble(loanDetails.rateAmount()), loanDetails.rateFrequency().code(),
+                loan.customerNumber().value(), loan.loanNumber().value(), Values.amount(loanDetails.paymentAmount()),
+                loanDetails.paymentFrequency().code(), Values.amount(loanDetails.principal()),
+                Values.amount(loanDetails.rateAmount()), loanDetails.rateFrequency().code(),
                 loanDetails.rateType().code(), Values.text(loanDetails.renewalDate()),
                 Values.text(loanDetails.startDate())));
         return new Loan(loan.loanNumber(), loan.customerNumber(), loan.status(), loanDetails.principal(),
@@ -70,14 +69,15 @@ public class LoanGateway {
         adapter.send(new UpdateStatus(loanNumber.value(), status.code()));
     }
 
-    private static Optional<Loan.Summary> toSummary(
+    // A row that cannot be read fails the whole page, so the page never claims more loans than it shows
+    private static Loan.Summary toSummary(
             CustomerNumber customerNumber, mainframe.client.messages.loan.List.Item item) {
         try {
-            return Optional.of(new Loan.Summary(new LoanNumber(item.getLoanNumber()), customerNumber,
+            return new Loan.Summary(new LoanNumber(item.getLoanNumber()), customerNumber,
                     Loan.Status.fromCode(item.getStatus()), Values.decimal(item.getPrincipal()),
-                    Values.date(item.getStartDate())));
+                    Values.date(item.getStartDate()));
         } catch (IllegalArgumentException | DateTimeParseException e) {
-            return Optional.empty();
+            throw unreadable(e);
         }
     }
 
@@ -90,9 +90,13 @@ public class LoanGateway {
                     Loan.RateFrequency.fromCode(rateFrequency), Values.date(startDate), Values.decimal(paymentAmount),
                     Loan.PaymentFrequency.fromCode(paymentFrequency), Values.date(renewalDate));
         } catch (IllegalArgumentException | DateTimeParseException e) {
-            throw new MainframeException(
-                    StatusMessage.UNABLE_TO_PARSE.getCode(), "The mainframe returned a loan record that could " +
-                    "not be read.", e);
+            throw unreadable(e);
         }
+    }
+
+    private static MainframeException unreadable(RuntimeException cause) {
+        return new MainframeException(
+                StatusMessage.UNABLE_TO_PARSE.getCode(), "The mainframe returned a loan record that could " +
+                "not be read.", cause);
     }
 }

@@ -13,6 +13,7 @@ import lavs.logic.model.customer.CustomerNumber;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.LoanNumber;
 import mainframe.client.MessageRequest;
+import mainframe.client.StatusMessage;
 import org.junit.jupiter.api.Test;
 
 class CoborrowerGatewayTests {
@@ -120,6 +121,30 @@ class CoborrowerGatewayTests {
         connection.fail("customer.retrieve", 10, "Unavailable");
 
         assertThrows(MainframeException.class, () -> gateway.isCustomer(PERSON));
+    }
+
+    @Test
+    void coborrowerWithoutANumberIsAMainframeError() {
+        connection.reply("loanCoborrower.retrieve", row("id", "7", "type", "Guarantor", "coborrowerNumber", ""));
+
+        MainframeException e = assertThrows(MainframeException.class, () -> gateway.retrieve(LOAN, 7));
+
+        assertAll(
+                () -> assertEquals(StatusMessage.UNABLE_TO_PARSE.getCode(), e.errorCode()),
+                () -> assertEquals("The mainframe returned a co-borrower record that could not be read.",
+                        e.getMessage())
+        );
+    }
+
+    @Test
+    void listRowWithoutANumberFailsThePage() {
+        connection.replyList("loanCoborrower.list", 2,
+                row("id", "1", "type", "Coborrower", "coborrowerNumber", "01-0020"),
+                row("id", "2", "type", "Guarantor"));
+
+        MainframeException e = assertThrows(MainframeException.class, () -> gateway.list(LOAN, 1, 10));
+
+        assertEquals(StatusMessage.UNABLE_TO_PARSE.getCode(), e.errorCode());
     }
 
     @Test

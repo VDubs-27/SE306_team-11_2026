@@ -7,6 +7,7 @@ import lavs.logic.model.Page;
 import lavs.logic.model.customer.CustomerNumber;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.LoanNumber;
+import mainframe.client.StatusMessage;
 import mainframe.client.messages.loan.AddCoborrower;
 import mainframe.client.messages.loan.DeleteCoborrower;
 import mainframe.client.messages.loanCoborrower.Retrieve;
@@ -34,9 +35,8 @@ public class CoborrowerGateway {
 
     public Coborrower retrieve(LoanNumber loan, long id) {
         Retrieve message = adapter.send(new Retrieve(id, loan.value()));
-        return new Coborrower(
-                message.getId(), loan, Coborrower.Type.fromCode(message.getType()),
-                new CustomerNumber(message.getCoborrowerNumber()), message.getCoborrowerName());
+        return toCoborrower(loan, message.getId(), message.getType(), message.getCoborrowerNumber(),
+                message.getCoborrowerName());
     }
 
     // The add message does not return the co-borrower's name, so the new record is read back
@@ -67,9 +67,34 @@ public class CoborrowerGateway {
     private static List<Coborrower.Summary> summaries(
             LoanNumber loan, List<mainframe.client.messages.loanCoborrower.List.Item> items) {
         return items.stream()
-                .map(item -> new Coborrower.Summary(
-                        item.getId(), loan, Coborrower.Type.fromCode(item.getType()),
-                        new CustomerNumber(item.getCoborrowerNumber()), item.getCoborrowerName()))
+                .map(item -> toSummary(loan, item))
                 .toList();
+    }
+
+    // A blank co-borrower number cannot become a CustomerNumber; like the loan gateway, that is reported as a record
+    // the mainframe sent that could not be read, rather than escaping as an IllegalArgumentException
+    private static Coborrower.Summary toSummary(
+            LoanNumber loan, mainframe.client.messages.loanCoborrower.List.Item item) {
+        try {
+            return new Coborrower.Summary(item.getId(), loan, Coborrower.Type.fromCode(item.getType()),
+                    new CustomerNumber(item.getCoborrowerNumber()), item.getCoborrowerName());
+        } catch (IllegalArgumentException e) {
+            throw unreadable(e);
+        }
+    }
+
+    private static Coborrower toCoborrower(LoanNumber loan, long id, String type, String coborrowerNumber,
+                                           String coborrowerName) {
+        try {
+            return new Coborrower(id, loan, Coborrower.Type.fromCode(type), new CustomerNumber(coborrowerNumber),
+                    coborrowerName);
+        } catch (IllegalArgumentException e) {
+            throw unreadable(e);
+        }
+    }
+
+    private static MainframeException unreadable(RuntimeException cause) {
+        return new MainframeException(StatusMessage.UNABLE_TO_PARSE.getCode(),
+                "The mainframe returned a co-borrower record that could not be read.", cause);
     }
 }
