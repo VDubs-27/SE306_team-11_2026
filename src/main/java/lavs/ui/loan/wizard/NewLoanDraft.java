@@ -5,6 +5,7 @@ import java.util.List;
 
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DocumentFile;
+import lavs.ui.loan.people.LoanPerson;
 
 /**
  * What has been entered in the new loan wizard so far. Each step reads and fills its part;

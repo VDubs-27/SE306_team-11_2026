@@ -1,4 +1,4 @@
-package lavs.ui.loan.wizard;
+package lavs.ui.loan.people;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ import lavs.ui.common.RecordTiles;
  * detail, their role and (except for the applicant) a Remove button.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-final class PersonRows {
+public final class PersonRows {
 
     /** Avatar colours for people other than the applicant (avatar-tone-1 and -2 in app.css). */
     private static final int OTHER_TONES = 2;
@@ -31,7 +31,7 @@ final class PersonRows {
     }
 
     /** A person already on the loan. onRemove is null for the applicant, who can't be removed. */
-    static HBox tile(LoanPerson person, Runnable onRemove) {
+    public static HBox tile(LoanPerson person, Runnable onRemove) {
         String detail = Stream.of(
                         bornOn(person.customer()),
                         person.suburb(),
@@ -53,7 +53,7 @@ final class PersonRows {
     }
 
     /** A search result: avatar, name and number, and date of birth. */
-    static HBox result(Customer customer) {
+    public static HBox result(Customer customer) {
         HBox row = row(customer, bornOn(customer), false);
         row.getStyleClass().add("person-result");
         return row;

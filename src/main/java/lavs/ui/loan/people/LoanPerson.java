@@ -1,4 +1,4 @@
-package lavs.ui.loan.wizard;
+package lavs.ui.loan.people;
 
 import static lavs.logic.model.Validation.isBlank;
 
@@ -9,14 +9,14 @@ import lavs.ui.customer.profile.CustomerProfile;
 import lavs.ui.customer.profile.SampleProfiles;
 
 /**
- * Someone on a new loan: the applicant (role null), or a co-borrower or guarantor, with what the
- * Co-borrowers step shows about them.
+ * Someone on a loan: the applicant (role null), or a co-borrower or guarantor, with what the
+ * Co-borrowers step and the loan screen show about them.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-record LoanPerson(Customer customer, Coborrower.Type role, String suburb, boolean employed) {
+public record LoanPerson(Customer customer, Coborrower.Type role, String suburb, boolean employed) {
 
     /** Looks up where the customer lives and whether they work, to show beside their name. */
-    static LoanPerson lookUp(Customer customer, Coborrower.Type role) {
+    public static LoanPerson lookUp(Customer customer, Coborrower.Type role) {
         // Later: read these from CustomerService instead of the sample profiles
         CustomerProfile profile = SampleProfiles.find(customer.number().value());
         String suburb = profile.addresses().stream()
@@ -29,7 +29,7 @@ record LoanPerson(Customer customer, Coborrower.Type role, String suburb, boolea
     }
 
     /** True for the customer the loan is for. */
-    boolean isApplicant() {
+    public boolean isApplicant() {
         return role == null;
     }
 }
