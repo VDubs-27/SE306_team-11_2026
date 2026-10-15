@@ -9,7 +9,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -158,13 +161,26 @@ public final class Modal {
         }
     }
 
-    /** Puts the cursor in the first field, or on the card so Escape works straight away. */
+    /** Puts the cursor in the first field on the card, or on the card so Escape works straight away. */
     private void focusFirstInput() {
-        Node first = null;
-        for (String input : new String[] {".combo-box", ".text-field", ".check-box"}) {
-            first = first != null ? first : card.lookup(input);
-        }
+        Node first = firstInput(card);
         Node target = first != null ? first : card;
         Platform.runLater(target::requestFocus);
+    }
+
+    /** The first text box, drop-down or tick box, in the order they appear. */
+    private static Node firstInput(Node node) {
+        if (node instanceof TextInputControl || node instanceof ComboBoxBase<?> || node instanceof CheckBox) {
+            return node;
+        }
+        if (node instanceof Parent parent) {
+            for (Node child : parent.getChildrenUnmodifiable()) {
+                Node found = firstInput(child);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }
