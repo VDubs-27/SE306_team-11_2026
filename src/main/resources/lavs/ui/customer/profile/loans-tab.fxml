@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.LoansTabController"
+      spacing="12">
+    <Label text="Loans" styleClass="section-heading"/>
+    <!-- Rounded box around the table -->
+    <StackPane fx:id="tableBox" styleClass="table-box">
+        <TableView fx:id="loansTable">
+            <columns>
+                <TableColumn fx:id="loanNumberColumn" text="Loan number"/>
+                <TableColumn fx:id="principalColumn" text="Principal"/>
+                <TableColumn fx:id="repaymentColumn" text="Repayment"/>
+                <TableColumn fx:id="statusColumn" text="Status"/>
+                <TableColumn fx:id="arrowColumn" sortable="false" resizable="false"
+                             reorderable="false" minWidth="48" maxWidth="48" prefWidth="48"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
+        </TableView>
+    </StackPane>
+    <fx:include fx:id="pager" source="pager.fxml"/>
+    <Label fx:id="emptyState" text="No loans yet." styleClass="text-muted"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Open a loan to see its repayments, co-borrowers, documents and notes. Start a new loan from the button at the top of the profile."/>
+    </HBox>
+</VBox>

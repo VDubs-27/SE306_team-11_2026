@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.ContactsTabController"
+      spacing="16">
+    <!-- Phones on the left, emails on the right -->
+    <GridPane hgap="20">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+        <VBox spacing="12" GridPane.columnIndex="0" GridPane.valignment="TOP">
+            <Label text="Phone numbers" styleClass="section-heading"/>
+            <VBox fx:id="phoneList" spacing="12"/>
+            <fx:include fx:id="phonePager" source="pager.fxml"/>
+            <Button text="+  Add phone" styleClass="button-add" onAction="#handleAddPhone"/>
+        </VBox>
+        <VBox spacing="12" GridPane.columnIndex="1" GridPane.valignment="TOP">
+            <Label text="Email addresses" styleClass="section-heading"/>
+            <VBox fx:id="emailList" spacing="12"/>
+            <fx:include fx:id="emailPager" source="pager.fxml"/>
+            <Button text="+  Add email" styleClass="button-add" onAction="#handleAddEmail"/>
+        </VBox>
+    </GridPane>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="A loan can only start once the customer has at least one phone number or email address."/>
+    </HBox>
+</VBox>

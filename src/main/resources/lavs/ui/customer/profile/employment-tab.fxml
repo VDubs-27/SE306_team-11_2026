@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.EmploymentTabController"
+      spacing="12">
+    <Label text="Employment" styleClass="section-heading"/>
+    <VBox fx:id="employerList" spacing="12"/>
+    <fx:include fx:id="pager" source="pager.fxml"/>
+    <Button text="+  Add employer" styleClass="button-add" onAction="#handleAddEmployer"/>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Employment and salary are used to check the customer can afford a loan. Keep the primary employer up to date before starting a new loan."/>
+    </HBox>
+</VBox>

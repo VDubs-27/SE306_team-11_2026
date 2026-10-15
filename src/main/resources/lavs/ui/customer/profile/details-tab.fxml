@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lavs.ui.customer.profile.DetailsTabController"
+      spacing="16">
+    <HBox alignment="CENTER_LEFT">
+        <Label text="Customer details" styleClass="section-heading"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Edit" styleClass="button-secondary, button-small" onAction="#handleEditDetails"/>
+    </HBox>
+    <GridPane hgap="28" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label text="Title" styleClass="detail-label"/>
+            <Label fx:id="titleValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label text="First name" styleClass="detail-label"/>
+            <Label fx:id="firstNameValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="Surname" styleClass="detail-label"/>
+            <Label fx:id="familyNameValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Date of birth" styleClass="detail-label"/>
+            <Label fx:id="dateOfBirthValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <Label text="Nationality" styleClass="detail-label"/>
+            <Label fx:id="nationalityValue" styleClass="detail-value"/>
+        </VBox>
+        <VBox styleClass="detail" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label text="Status" styleClass="detail-label"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="statusBadge" styleClass="badge"/>
+                <Hyperlink text="Change status" styleClass="link-strong" onAction="#handleChangeStatus"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+    <HBox styleClass="note">
+        <Label text="ⓘ" minWidth="-Infinity"/>
+        <Label text="Details are read-only until you choose Edit, so nothing changes by accident while you review them with the customer."/>
+    </HBox>
+</VBox>

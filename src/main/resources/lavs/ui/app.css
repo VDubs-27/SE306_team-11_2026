@@ -243,6 +243,11 @@
     -fx-padding: 0;
 }
 .hyperlink:hover { -fx-underline: true; }
+/* A link that reads as an action next to a value, e.g. "Change status" */
+.link-strong { -fx-underline: true; -fx-font-weight: bold; -fx-font-size: 13px; }
+
+/* Smaller pill button, e.g. Edit beside a section heading */
+.button-small { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
 
 /* ===================== Badges and chips ===================== */
 .badge {
@@ -257,6 +262,10 @@
 .badge-outline  { -fx-background-color: white; -fx-border-color: -brand-blue; -fx-text-fill: -brand-blue; }
 .badge-active   { -fx-background-color: -success-tint; -fx-border-color: -success-border; -fx-text-fill: -success-text; }
 .badge-neutral  { -fx-background-color: -subtle-bg; -fx-text-fill: #3a3d52; }
+.badge-error    { -fx-background-color: -error-tint; -fx-border-color: -error-red; -fx-text-fill: -error-red-text; }
+.badge-warning  { -fx-background-color: -warning-tint; -fx-border-color: -warning-border; -fx-text-fill: -warning-text; }
+.badge .badge-icon { -fx-fill: transparent; -fx-stroke-width: 1.2; }
+.badge-mailing .badge-icon { -fx-stroke: -brand-blue; }
 
 .chip-met {
     -fx-background-color: -success-tint;
@@ -300,9 +309,47 @@
     -fx-spacing: 16;
     -fx-alignment: center-left;
 }
-.record-tile .tile-type { -fx-text-fill: -text-muted; -fx-min-width: 140; }
+.record-tile .tile-type { -fx-text-fill: -text-muted; -fx-font-weight: bold; -fx-min-width: 140; }
 .record-tile .tile-line1 { -fx-font-weight: bold; }
 .record-tile .tile-line2 { -fx-text-fill: -text-muted; }
+.record-tile .tile-caption { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
+.record-tile .tile-value { -fx-font-size: 15px; -fx-text-fill: -text; }
+.record-tile-compact { -fx-padding: 10 14 10 14; -fx-spacing: 10; }
+/* Note cards: labelled details along the top, a thin line, then the note itself */
+.note-card { -fx-padding: 10 16 10 16; -fx-spacing: 8; -fx-alignment: top-left; }
+.note-divider { -fx-min-height: 1; -fx-max-height: 1; -fx-background-color: -line-soft; }
+/* Limited to three lines in NotesTabController.limitLines */
+.note-text { -fx-text-fill: -text; -fx-font-size: 15px; }
+
+/* Prev / page / Next under a paged list in a profile tab */
+.pager { -fx-padding: 4 0 4 0; }
+/* Rounded square holding a file icon, at the start of a document row */
+.file-icon {
+    -fx-background-color: -brand-blue-tint;
+    -fx-background-radius: 8;
+    -fx-min-width: 36; -fx-min-height: 36;
+    -fx-max-width: 36; -fx-max-height: 36;
+}
+.file-icon-glyph { -fx-fill: transparent; -fx-stroke: -brand-blue; -fx-stroke-width: 1.4; }
+
+/* Rounded, bordered box around a table inside a tab (the table is clipped in ProfileTables.fitInsideBox) */
+.table-box {
+    -fx-border-color: -line;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+/* The box draws the outside edge, so the table has none of its own. Each row draws its line
+   on top instead of underneath, so the first row's line sits under the header and the last
+   row doesn't double up with the bottom of the box. */
+.table-box .table-view { -fx-border-width: 0; }
+.table-box .table-view .column-header,
+.table-box .table-view .filler { -fx-border-width: 0; }
+.table-box .table-row-cell { -fx-border-color: -line transparent transparent transparent; }
+/* Smaller Edit/View buttons inside rows */
+.record-tile .button-secondary { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
+
+/* Small heading above a group of tiles, e.g. "Phone numbers" */
+.section-heading { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: -text; }
 
 .empty-state {
     -fx-text-fill: -text-soft;
@@ -382,17 +429,24 @@
 }
 
 /* ===================== Tabs (pill style) ===================== */
-.tab-pane > .tab-header-area { -fx-padding: 12 12 0 12; }
+.tab-pane > .tab-header-area {
+    -fx-padding: 12 12 12 12;
+    -fx-border-color: -line-soft;
+    -fx-border-width: 0 0 1 0;
+}
 .tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
 .tab-pane > .tab-header-area > .headers-region {
     -fx-background-color: -subtle-bg;
     -fx-background-radius: 999;
-    -fx-padding: 4;
+    /* Tabs are laid out from the edge regardless of padding, so the gap comes from the tab insets */
+    -fx-padding: 0;
 }
 .tab-pane .tab {
     -fx-background-color: transparent;
     -fx-background-radius: 999;
-    -fx-padding: 6 14 6 14;
+    /* Inset the pill so the grey bar shows around the selected tab */
+    -fx-background-insets: 4;
+    -fx-padding: 10 8 10 8;
     -fx-cursor: hand;
 }
 .tab-pane .tab:selected { -fx-background-color: -brand-blue; }
@@ -400,7 +454,52 @@
 .tab-pane .tab:selected .tab-label { -fx-text-fill: white; -fx-font-weight: bold; }
 .tab-pane .tab:selected .focus-indicator { -fx-border-color: transparent; }
 .tab-pane .tab:disabled .tab-label { -fx-text-fill: #8a8ca0; }
-.tab-pane > .tab-content-area { -fx-background-color: white; -fx-padding: 16; }
+.tab-pane > .tab-content-area {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 16 16;
+    -fx-padding: 16;
+}
+
+/* Tabs are sized to fit, so hide the overflow menu; zero size so no space is kept for it.
+   The skin sets its visibility itself, so opacity is used instead. */
+.tab-pane > .tab-header-area > .control-buttons-tab {
+    -fx-opacity: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
+.tab-pane > .tab-header-area > .control-buttons-tab .tab-down-button,
+.tab-pane > .tab-header-area > .control-buttons-tab .arrow {
+    -fx-padding: 0;
+}
+
+/* Read-only label/value pairs (customer profile Details tab) */
+.detail {
+    -fx-spacing: 4;
+    -fx-padding: 0 0 12 0;
+    -fx-border-color: transparent transparent -line-soft transparent;
+}
+.detail-label { -fx-text-fill: -text-muted; -fx-font-size: 13px; }
+.detail-value { -fx-font-size: 15px; -fx-font-weight: bold; }
+
+/* Count pill shown after the tab name */
+.tab-pane .tab .tab-label { -fx-content-display: right; -fx-graphic-text-gap: 8; }
+.tab-count {
+    -fx-background-color: #e4e4ec;
+    -fx-background-radius: 999;
+    -fx-padding: 0 7 0 7;
+    -fx-font-size: 12px;
+    -fx-text-fill: -text-muted;
+}
+.tab-pane .tab:selected .tab-count { -fx-background-color: #5a5b98; -fx-text-fill: white; }
+
+/* Scrolling page: no border, same background as the page */
+.page-scroll, .page-scroll > .viewport {
+    -fx-background-color: -page-bg;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
 
 /* ===================== Wizard stepper ===================== */
 .step-circle {
@@ -492,21 +591,36 @@
     -fx-text-fill: #393A7B;
 }
 
-.table-view .scroll-bar:vertical {
+/* Slim scrollbars: a rounded grey thumb, no track and no arrow buttons.
+   Used by tables and by scrolling pages such as the customer profile. */
+.table-view .scroll-bar:vertical,
+.page-scroll > .scroll-bar:vertical {
     -fx-background-color: transparent;
     -fx-pref-width: 10;
 }
-.table-view .scroll-bar .thumb {
+.table-view .scroll-bar .thumb,
+.page-scroll > .scroll-bar .thumb {
     -fx-background-color: #c9cad8;
     -fx-background-radius: 999;
 }
+.page-scroll > .scroll-bar .thumb:hover,
+.page-scroll > .scroll-bar .thumb:pressed {
+    -fx-background-color: #a9abc0;
+}
 .table-view .scroll-bar .increment-button,
-.table-view .scroll-bar .decrement-button {
+.table-view .scroll-bar .decrement-button,
+.page-scroll > .scroll-bar .increment-button,
+.page-scroll > .scroll-bar .decrement-button {
     -fx-pref-height: 0;
     -fx-padding: 0;
 }
 .table-view .scroll-bar .increment-arrow,
-.table-view .scroll-bar .decrement-arrow {
+.table-view .scroll-bar .decrement-arrow,
+.page-scroll > .scroll-bar .increment-arrow,
+.page-scroll > .scroll-bar .decrement-arrow {
     -fx-shape: "";
     -fx-padding: 0;
 }
+/* Keep the page's thumb off the window edge */
+.page-scroll > .scroll-bar:vertical { -fx-padding: 4 2 4 0; }
+.page-scroll > .corner { -fx-background-color: transparent; }
