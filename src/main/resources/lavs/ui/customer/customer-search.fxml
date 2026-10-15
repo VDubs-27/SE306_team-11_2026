@@ -3,65 +3,60 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="lavs.ui.customer.CustomerSearchController"
-      styleClass="page" alignment="TOP_CENTER">
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.customer.CustomerSearchController"
+            styleClass="page-scroll" fitToWidth="true">
+    <VBox styleClass="page" alignment="TOP_CENTER">
 
-    <!-- Search card -->
-    <VBox styleClass="card" maxWidth="960">
-        <Label text="Find a customer"/>
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <TextField fx:id="searchField" HBox.hgrow="ALWAYS"
-                       promptText="Search by name or customer number"/>
-            <Button fx:id="searchButton" text="Search" styleClass="button-secondary"
-                    defaultButton="true" onAction="#handleSearch"/>
-            <Button text="+ Add customer" styleClass="button-primary"
-                    onAction="#handleAddCustomer"/>
-        </HBox>
+        <!-- Search card -->
+        <VBox styleClass="card" maxWidth="960">
+            <Label text="Find a customer"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" HBox.hgrow="ALWAYS"
+                           promptText="Search by name or customer number"/>
+                <Button fx:id="searchButton" text="Search" styleClass="button-secondary"
+                        defaultButton="true" onAction="#handleSearch"/>
+                <Button text="+ Add customer" styleClass="button-primary"
+                        onAction="#handleAddCustomer"/>
+            </HBox>
+        </VBox>
+
+        <!-- Results card: no padding, so the table spans the full width -->
+        <VBox styleClass="card, card-flush" maxWidth="960">
+
+            <!-- Title row -->
+            <HBox styleClass="card-section" alignment="CENTER_LEFT">
+                <Label fx:id="resultsTitle" text="Customers" styleClass="heading-2"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="resultCount" styleClass="text-muted"/>
+            </HBox>
+
+            <!-- The table, just tall enough for this page of results -->
+            <StackPane fx:id="tableBox">
+                <VBox.margin>
+                    <Insets left="-1" right="-1"/>
+                </VBox.margin>
+                <TableView fx:id="resultsTable" styleClass="search-table">
+                    <columns>
+                        <TableColumn fx:id="nameColumn" text="Name"/>
+                        <TableColumn fx:id="customerNumberColumn" text="Customer number"/>
+                        <TableColumn fx:id="dateOfBirthColumn" text="Date of birth"/>
+                        <TableColumn fx:id="arrowColumn" sortable="false" resizable="false"
+                                     reorderable="false" minWidth="48" maxWidth="48" prefWidth="48"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+                    </columnResizePolicy>
+                </TableView>
+            </StackPane>
+            <!-- Shown instead of the table before searching, or when nothing matches -->
+            <Label fx:id="emptyState" styleClass="empty-state, search-empty-state" wrapText="true"
+                   maxWidth="Infinity"/>
+
+            <!-- Prev / page / Next, only when the results run over more than one page -->
+            <VBox fx:id="pagerSection" styleClass="card-section">
+                <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
+            </VBox>
+        </VBox>
     </VBox>
-
-    <!-- Results card: no padding, so the table spans the full width -->
-    <VBox styleClass="card, card-flush" maxWidth="960" VBox.vgrow="ALWAYS">
-
-        <!-- Title row -->
-        <HBox styleClass="card-section" alignment="CENTER_LEFT">
-            <Label fx:id="resultsTitle" text="Customers" styleClass="heading-2"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="resultCount" styleClass="text-muted"/>
-        </HBox>
-
-        <!-- Table, message and spinner share one space -->
-        <StackPane VBox.vgrow="ALWAYS">
-            <VBox.margin>
-                <Insets left="-1" right="-1"/>
-            </VBox.margin>
-            <TableView fx:id="resultsTable">
-                <columns>
-                    <TableColumn fx:id="nameColumn" text="Name"/>
-                    <TableColumn fx:id="customerNumberColumn" text="Customer number"/>
-                    <TableColumn fx:id="dateOfBirthColumn" text="Date of birth"/>
-                    <TableColumn fx:id="arrowColumn" sortable="false" resizable="false"
-                                 reorderable="false" minWidth="48" maxWidth="48" prefWidth="48"/>
-                </columns>
-                <columnResizePolicy>
-                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
-                </columnResizePolicy>
-            </TableView>
-            <Label fx:id="emptyState" styleClass="empty-state" visible="false"
-                   wrapText="true"/>
-            <ProgressIndicator fx:id="loadingIndicator" visible="false"
-                               maxWidth="40" maxHeight="40"/>
-        </StackPane>
-
-        <!-- Pagination row -->
-        <HBox styleClass="card-section" alignment="CENTER_LEFT">
-            <Button fx:id="prevButton" text="‹ Prev" styleClass="button-secondary"
-                    onAction="#handlePrevPage"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="pageLabel" text="Page 1 of 1"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="nextButton" text="Next ›" styleClass="button-primary"
-                    onAction="#handleNextPage"/>
-        </HBox>
-    </VBox>
-</VBox>
+</ScrollPane>

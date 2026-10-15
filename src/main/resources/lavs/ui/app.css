@@ -380,6 +380,11 @@
     -fx-padding: 24;
     -fx-alignment: center;
 }
+/* Customer search before a search, or with no matches: enough room that the card doesn't collapse */
+.search-empty-state { -fx-min-height: 220; }
+/* The results card frames the table, so the table draws no border of its own (it would leave it a pixel
+   taller than its rows and show a scrollbar) */
+.search-table { -fx-border-width: 0; -fx-background-insets: 0; }
 
 /* ===================== Tables ===================== */
 .table-view {
