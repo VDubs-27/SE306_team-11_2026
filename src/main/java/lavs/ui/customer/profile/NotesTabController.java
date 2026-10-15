@@ -16,6 +16,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import lavs.logic.model.Page;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.PagerController;
+import lavs.ui.common.RecordTiles;
 
 /**
  * The Notes tab: notes staff have written about the customer, a page at a time.
@@ -51,7 +54,7 @@ public class NotesTabController {
     /** A card: labelled author, date and type along the top with Edit, then the note's text. */
     private VBox card(NoteRow note) {
         Label type = isBlank(note.type())
-                ? new Label(ProfileFormat.NOT_RECORDED)
+                ? new Label(DisplayFormat.NOT_RECORDED)
                 : RecordTiles.badge(note.type(), "badge-neutral");
 
         Region spacer = new Region();
@@ -62,8 +65,8 @@ public class NotesTabController {
         edit.setOnAction(event -> handleEditNote(note));
 
         HBox top = new HBox(16,
-                field("Author", new Label(ProfileFormat.orNotRecorded(note.author())), AUTHOR_WIDTH),
-                field("Added", new Label(ProfileFormat.date(note.dateAdded())), ADDED_WIDTH),
+                field("Author", new Label(DisplayFormat.orNotRecorded(note.author())), AUTHOR_WIDTH),
+                field("Added", new Label(DisplayFormat.date(note.dateAdded())), ADDED_WIDTH),
                 field("Type", type, Region.USE_COMPUTED_SIZE),
                 spacer, edit);
         top.setAlignment(Pos.CENTER_LEFT);
@@ -71,7 +74,7 @@ public class NotesTabController {
         Region divider = new Region();
         divider.getStyleClass().add("note-divider");
 
-        Label text = new Label(ProfileFormat.orNotRecorded(note.text()));
+        Label text = new Label(DisplayFormat.orNotRecorded(note.text()));
         text.getStyleClass().add("note-text");
         text.setWrapText(true);
         limitLines(text);

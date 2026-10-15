@@ -5,7 +5,7 @@
 
 <!-- Prev / page number / Next under a list. Hidden when everything fits on one page. -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="lavs.ui.customer.profile.PagerController"
+      fx:controller="lavs.ui.common.PagerController"
       fx:id="pager" styleClass="pager" alignment="CENTER_LEFT">
     <Button fx:id="prevButton" text="‹ Prev" styleClass="button-secondary, button-small"
             onAction="#handlePrev"/>

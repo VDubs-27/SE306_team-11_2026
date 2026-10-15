@@ -6,8 +6,12 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.customer.profile.AddressesTabController"
       spacing="12">
+    <fx:define>
+        <!-- Shown in a pop-up when adding or editing -->
+        <fx:include fx:id="addressForm" source="/lavs/ui/customer/forms/address-form.fxml"/>
+    </fx:define>
     <VBox fx:id="addressList" spacing="12"/>
-    <fx:include fx:id="pager" source="pager.fxml"/>
+    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
     <Button text="+  Add address" styleClass="button-add" onAction="#handleAddAddress"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>

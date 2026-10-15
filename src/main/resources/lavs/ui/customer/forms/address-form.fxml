@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One address, shown in a pop-up when adding or editing. -->
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="lavs.ui.customer.forms.AddressFormController"
+          hgap="16" vgap="12" prefWidth="560">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="50"/>
+        <ColumnConstraints percentWidth="50"/>
+    </columnConstraints>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Label text="Address type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox fx:id="otherTypeFieldBox" styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Label text="Describe the address"/>
+        <TextField fx:id="otherTypeField" promptText="e.g. Holiday home"/>
+        <Label fx:id="otherTypeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+        <Label text="Address line 1"/>
+        <TextField fx:id="line1Field" promptText="e.g. 27 Kowhai Street or PO Box 1187"/>
+        <Label fx:id="line1Error" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+        <Label text="Address line 2 (optional)"/>
+        <TextField fx:id="line2Field"/>
+        <Label fx:id="line2Error" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Label text="Suburb (optional)"/>
+        <TextField fx:id="suburbField"/>
+        <Label fx:id="suburbError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Label text="City (optional)"/>
+        <TextField fx:id="cityField"/>
+        <Label fx:id="cityError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="4">
+        <Label text="Post code (optional)"/>
+        <TextField fx:id="postCodeField"/>
+        <Label fx:id="postCodeError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <Label text="Country"/>
+        <TextField fx:id="countryField"/>
+        <Label fx:id="countryError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+        <CheckBox fx:id="primaryBox" text="Primary address"/>
+        <CheckBox fx:id="mailingBox" text="Mailing address — loan documents are sent here"/>
+    </VBox>
+</GridPane>

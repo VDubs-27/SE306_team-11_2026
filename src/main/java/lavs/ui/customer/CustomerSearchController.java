@@ -109,7 +109,7 @@ public class CustomerSearchController implements NavigatorAware {
 
     @FXML
     private void handleAddCustomer() {
-        // Later: navigator.showNewCustomerWizard()
+        navigator.showNewCustomerWizard();
     }
 
     @FXML

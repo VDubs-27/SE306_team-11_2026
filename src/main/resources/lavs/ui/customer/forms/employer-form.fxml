@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- One employer, shown in a pop-up when adding or editing. -->
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="lavs.ui.customer.forms.EmployerFormController"
+          hgap="16" vgap="12" prefWidth="520">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="50"/>
+        <ColumnConstraints percentWidth="50"/>
+    </columnConstraints>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Label text="Employer type"/>
+        <ComboBox fx:id="typeBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="typeError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+        <Label text="Employer name"/>
+        <TextField fx:id="nameField" promptText="e.g. Papamoa Primary School"/>
+        <Label fx:id="nameError" styleClass="field-error-message"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <Label text="Job title (optional)"/>
+        <TextField fx:id="positionField" promptText="e.g. Teacher"/>
+        <Label fx:id="positionError" styleClass="field-error-message"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Label text="Salary a year (optional)"/>
+        <TextField fx:id="salaryField" promptText="e.g. 78,000"/>
+        <Label fx:id="salaryError" styleClass="field-error-message"/>
+    </VBox>
+</GridPane>
