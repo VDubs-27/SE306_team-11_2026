@@ -6,16 +6,20 @@ import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.adapter.MainframeException;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
+import lavs.logic.model.constants.Constants;
 
 public class LoginService {
 
     static final String REJECTED_MESSAGE = "The user name or password is incorrect.";
+    static final String CONSTANTS_FAILED_MESSAGE =
+            "Could not load the list values from the mainframe. Try signing in again.";
 
     private final MainframeAdapter mainframe;
-    private volatile String currentUser;
+    private final Session session;
 
-    public LoginService(MainframeAdapter mainframe) {
+    public LoginService(MainframeAdapter mainframe, Session session) {
         this.mainframe = Objects.requireNonNull(mainframe, "mainframe");
+        this.session = Objects.requireNonNull(session, "session");
     }
 
     public LoginResult login(String userName, String password) {
@@ -33,20 +37,20 @@ public class LoginService {
             return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : REJECTED_MESSAGE);
         }
 
-        currentUser = userName;
+        Constants constants;
+        try {
+            constants = mainframe.loadConstants();
+        } catch (MainframeException e) {
+            logout();
+            return LoginResult.failed(e.isNetworkFailure() ? e.getMessage() : CONSTANTS_FAILED_MESSAGE);
+        }
+
+        session.start(userName, constants);
         return LoginResult.success();
     }
 
     public void logout() {
         mainframe.logout();
-        currentUser = null;
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
-    }
-
-    public String getCurrentUser() {
-        return currentUser;
+        session.end();
     }
 }
