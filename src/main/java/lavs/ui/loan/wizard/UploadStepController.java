@@ -1,15 +1,10 @@
 package lavs.ui.loan.wizard;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.IntStream;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lavs.logic.model.loan.Loan;
@@ -19,6 +14,7 @@ import lavs.ui.common.DocumentFormController;
 import lavs.ui.common.DocumentRows;
 import lavs.ui.common.FormDialog;
 import lavs.ui.common.RecordTiles;
+import lavs.ui.common.ReviewRows;
 
 /**
  * Step 2 of the new loan wizard: supporting documents (optional), and a read-only review of the
@@ -50,14 +46,11 @@ public class UploadStepController {
     void showSummary() {
         Loan.Details details = draft.details();
         summary.getChildren().setAll(
-                row("Principal", DisplayFormat.money(details.principal())),
-                row("Interest", details.rateAmount().stripTrailingZeros().toPlainString() + "% "
-                        + details.rateFrequency().code().toLowerCase(Locale.ROOT) + " · "
-                        + LoanDetailsStepController.rateTypeName(details.rateType())),
-                row("Repayments", DisplayFormat.moneyWithCents(details.paymentAmount()) + " "
-                        + frequencyName(details.paymentFrequency())),
-                row("Start date", DisplayFormat.date(details.startDate())),
-                row("Renewal date", DisplayFormat.date(details.renewalDate())));
+                ReviewRows.summaryRow("Principal", DisplayFormat.money(details.principal())),
+                ReviewRows.summaryRow("Interest", LoanText.interest(details)),
+                ReviewRows.summaryRow("Repayments", LoanText.repayment(details)),
+                ReviewRows.summaryRow("Start date", DisplayFormat.date(details.startDate())),
+                ReviewRows.summaryRow("Renewal date", DisplayFormat.date(details.renewalDate())));
     }
 
     @FXML
@@ -94,23 +87,5 @@ public class UploadStepController {
                 .mapToObj(i -> DocumentRows.tile(documents.get(i).type(), documents.get(i).fileName(),
                         documents.get(i).fileType(), documents.get(i).size(), () -> handleEditDocument(i)))
                 .toList(), "No documents added yet.");
-    }
-
-    /** e.g. "monthly", or "on renewal". */
-    private static String frequencyName(Loan.PaymentFrequency frequency) {
-        return frequency == Loan.PaymentFrequency.ON_RENEWAL ? "on renewal" : frequency.code().toLowerCase(Locale.ROOT);
-    }
-
-    /** "Principal ........ $450,000", with a line under it. */
-    private static HBox row(String name, String value) {
-        Label nameText = new Label(name);
-        nameText.getStyleClass().add("text-muted");
-        Label valueText = new Label(value);
-        valueText.getStyleClass().add("review-value");
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox row = new HBox(nameText, spacer, valueText);
-        row.getStyleClass().add("review-row");
-        return row;
     }
 }

@@ -53,7 +53,7 @@ public class CoborrowersStepController {
         loanSummary.setText(details == null
                 ? "New loan · not yet submitted"
                 : DisplayFormat.money(details.principal()) + " · "
-                        + LoanDetailsStepController.rateTypeName(details.rateType())
+                        + LoanText.rateTypeName(details.rateType())
                         + " · not yet submitted");
     }
 

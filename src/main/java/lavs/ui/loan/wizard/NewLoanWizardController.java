@@ -28,7 +28,8 @@ public class NewLoanWizardController implements NavigatorAware {
     @FXML private UploadStepController uploadController;
     @FXML private Node coborrowers;
     @FXML private CoborrowersStepController coborrowersController;
-    @FXML private Node submitStep;
+    @FXML private Node submit;
+    @FXML private SubmitStepController submitController;
 
     private Navigator navigator;
     private NewLoanDraft draft;
@@ -49,7 +50,7 @@ public class NewLoanWizardController implements NavigatorAware {
                 new WizardStep("Upload & review", upload, null, () -> uploadController.showSummary()),
                 new WizardStep("Co-borrowers", coborrowers, coborrowersController::check,
                         () -> coborrowersController.showLoanSummary()),
-                new WizardStep("Submit", submitStep)));
+                new WizardStep("Submit", submit, null, () -> submitController.show(draft))));
     }
 
     /** Sets the wizard up for the customer the loan is for: their initials and "for John Smith · number". */
