@@ -69,8 +69,8 @@ public class NewLoanWizardController implements NavigatorAware {
 
     /** Leaves straight away if nothing has been entered; otherwise asks first. */
     private void handleCancel() {
-        if (!loanDetailsController.hasInput() || Dialogs.confirm(wizard, "Discard this new loan?",
-                "Nothing has been sent to the mainframe yet, so anything entered will be lost.", "Discard")) {
+        if (!loanDetailsController.hasInput() || Dialogs.confirmDiscard(wizard, "Discard this new loan?",
+                "Nothing has been sent to the mainframe yet, so anything entered will be lost.")) {
             navigator.back();
         }
     }

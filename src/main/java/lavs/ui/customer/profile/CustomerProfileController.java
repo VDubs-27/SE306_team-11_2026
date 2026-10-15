@@ -2,6 +2,8 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
+import java.util.Locale;
+
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -64,6 +66,7 @@ public class CustomerProfileController implements NavigatorAware {
         TabBars.setUp(tabPane);
         loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
         detailsController.setOnSaved(this::saveDetails);
+        detailsController.setOnStatusChanged(this::changeStatus);
         // Later: save document and note changes through CustomerService; until then they only show on this screen
         documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
         notesController.setOnChanged(() -> TabBars.setCount(notesTab, notesController.count()));
@@ -111,6 +114,16 @@ public class CustomerProfileController implements NavigatorAware {
         detailsController.show(customer);
         Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
                 DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
+    }
+
+    /** Makes the customer active or inactive, once confirmed on the Details tab. */
+    private void changeStatus(Customer.Status status) {
+        // Later: CustomerService.updateStatus(customer.number(), status); until then the change only shows on this screen
+        customer = customer.withStatus(status);
+        showSummary();
+        detailsController.show(customer);
+        Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Status changed",
+                DisplayFormat.fullNameWithTitle(customer) + " is now " + status.code().toLowerCase(Locale.ROOT) + ".");
     }
 
     /** The card at the top: avatar, name, status and key facts. */

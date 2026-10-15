@@ -14,13 +14,25 @@ public final class Dialogs {
     }
 
     /**
-     * Asks the user to confirm something they can't undo, e.g. discarding a half-filled form.
-     * Returns true only if they choose the confirm button.
+     * Asks the user to confirm an action, e.g. removing someone from a loan, with Cancel beside the
+     * confirm button. Returns true only if they choose the confirm button.
      */
     public static boolean confirm(Node owner, String question, String detail, String confirmText) {
+        return ask(owner, question, detail, "Cancel", confirmText);
+    }
+
+    /**
+     * Asks before throwing away unsaved work, e.g. leaving a half-filled wizard: "Keep going" stays,
+     * "Discard" leaves. Returns true only if they choose to discard.
+     */
+    public static boolean confirmDiscard(Node owner, String question, String detail) {
+        return ask(owner, question, detail, "Keep going", "Discard");
+    }
+
+    private static boolean ask(Node owner, String question, String detail, String stayText, String confirmText) {
         String chosen = new Modal(owner, question)
                 .message(detail)
-                .button("keep", "Keep going", Modal.Kind.SECONDARY)
+                .button("stay", stayText, Modal.Kind.SECONDARY)
                 .button(CONFIRM, confirmText, Modal.Kind.PRIMARY)
                 .showAndWait();
         return CONFIRM.equals(chosen);

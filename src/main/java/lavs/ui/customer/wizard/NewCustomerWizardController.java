@@ -74,8 +74,8 @@ public class NewCustomerWizardController implements NavigatorAware {
 
     /** Leaves straight away if nothing has been entered; otherwise asks first. */
     private void handleCancel() {
-        if (!detailsController.hasInput() || Dialogs.confirm(wizard, "Discard this new customer?",
-                "Nothing has been saved to the mainframe yet, so anything entered will be lost.", "Discard")) {
+        if (!detailsController.hasInput() || Dialogs.confirmDiscard(wizard, "Discard this new customer?",
+                "Nothing has been saved to the mainframe yet, so anything entered will be lost.")) {
             navigator.back();
         }
     }

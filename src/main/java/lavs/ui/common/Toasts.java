@@ -19,7 +19,8 @@ import javafx.util.Duration;
 /**
  * Short messages that appear at the top of the window for a few seconds, such as "Signed out":
  * a tinted card with a round icon, a title and a line of detail. They don't block the screen,
- * and a click dismisses one straight away.
+ * a click dismisses one straight away, and a new one replaces any still showing, so an
+ * out-of-date message never sits beside the latest.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public final class Toasts {
@@ -41,6 +42,7 @@ public final class Toasts {
     }
 
     private static final String LAYER_KEY = "lavs.toasts.layer";
+    private static final String LIFE_KEY = "lavs.toasts.life";
     private static final Duration SHOW_FOR = Duration.seconds(4);
     private static final Duration FADE = Duration.millis(220);
     private static final double SLIDE = -12;
@@ -72,6 +74,7 @@ public final class Toasts {
         if (scene == null || !(scene.getProperties().get(LAYER_KEY) instanceof VBox layer)) {
             return;
         }
+        dismissAll(layer);
         HBox toast = toast(kind, title, message);
         layer.getChildren().add(toast);
 
@@ -86,11 +89,22 @@ public final class Toasts {
         SequentialTransition life = new SequentialTransition(
                 new ParallelTransition(fadeIn, slideIn), new PauseTransition(SHOW_FOR), fadeOut);
         life.setOnFinished(event -> layer.getChildren().remove(toast));
+        toast.getProperties().put(LIFE_KEY, life);
         toast.setOnMouseClicked(event -> {
             life.stop();
             layer.getChildren().remove(toast);
         });
         life.play();
+    }
+
+    /** Takes away any messages still showing, stopping their timers. */
+    private static void dismissAll(VBox layer) {
+        for (Node shown : layer.getChildren()) {
+            if (shown.getProperties().get(LIFE_KEY) instanceof SequentialTransition life) {
+                life.stop();
+            }
+        }
+        layer.getChildren().clear();
     }
 
     /** The card: a round icon on the left, then the title over the message. */

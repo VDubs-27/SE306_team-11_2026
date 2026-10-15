@@ -44,7 +44,7 @@
             <Label text="Status" styleClass="detail-label"/>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label fx:id="statusBadge" styleClass="badge"/>
-                <Hyperlink text="Change status" styleClass="link-strong" onAction="#handleChangeStatus"/>
+                <Hyperlink fx:id="statusLink" styleClass="link-strong" onAction="#handleChangeStatus"/>
             </HBox>
         </VBox>
     </GridPane>
