@@ -141,11 +141,6 @@
 .avatar-user { -fx-background-color: -brand-yellow; -fx-text-fill: -brand-blue-dark; }
 
 /* ===================== Login ===================== */
-.login-background {
-    -fx-background-color: -brand-blue;
-    -fx-border-color: -brand-red transparent transparent transparent;
-    -fx-border-width: 6 0 0 0;
-}
 .login-card {
     -fx-background-radius: 20;
     -fx-border-radius: 20;
@@ -944,3 +939,13 @@
 .error-panel-icon { -fx-scale-x: 1.6; -fx-scale-y: 1.6; -fx-padding: 6 0 10 0; }
 .error-panel-title { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: -text; }
 .error-panel-message { -fx-text-fill: -text-muted; -fx-text-alignment: center; -fx-padding: 0 0 8 0; }
+
+/* ===================== Keyboard focus ===================== */
+/* A ring around whatever Tab has reached, following its shape; not shown after a mouse click */
+.button:focus-visible,
+.toggle-button:focus-visible,
+.check-box:focus-visible > .box {
+    -fx-effect: dropshadow(three-pass-box, rgba(57, 58, 123, 0.85), 4, 1.0, 0, 0);
+}
+/* A link has no background for a ring to sit behind, so it gets a soft highlight instead */
+.hyperlink:focus-visible { -fx-background-color: -brand-blue-tint; -fx-background-radius: 6; }

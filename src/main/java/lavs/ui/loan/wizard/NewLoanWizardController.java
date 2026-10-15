@@ -4,11 +4,13 @@ import java.util.List;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.Toasts;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -78,6 +80,9 @@ public class NewLoanWizardController implements NavigatorAware {
 
     private void handleSubmit() {
         // Later: create the loan through LoanService, then open it
+        Scene scene = wizard.getScene();
         navigator.back();
+        Toasts.show(scene, Toasts.Kind.SUCCESS, "Loan submitted",
+                "The loan for " + draft.applicant().customer().fullName() + " has been sent for approval.");
     }
 }

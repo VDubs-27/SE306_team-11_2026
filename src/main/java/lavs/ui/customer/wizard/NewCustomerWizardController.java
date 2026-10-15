@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
@@ -12,6 +13,7 @@ import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.customer.CustomerNumber;
 import lavs.ui.common.Dialogs;
+import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 import lavs.ui.wizard.WizardController;
@@ -98,9 +100,12 @@ public class NewCustomerWizardController implements NavigatorAware {
         Customer.Details details = draft.details();
         Customer saved = new Customer(NUMBER_NOT_SAVED, details.title(), details.firstName(), details.familyName(),
                 Customer.Status.ACTIVE, details.dateOfBirth(), details.nationality());
+        Scene scene = wizard.getScene();
         navigator.back();
         if (onSaved != null) {
             onSaved.accept(new NewCustomer(saved, primarySuburb(), draft.isEmployed() && !draft.employers().isEmpty()));
+        } else {
+            Toasts.show(scene, Toasts.Kind.SUCCESS, "Customer saved", saved.fullName() + " has been added.");
         }
     }
 

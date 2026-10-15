@@ -11,6 +11,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
@@ -28,7 +30,7 @@ public final class Tables {
     private Tables() {
     }
 
-    /** Draws the › in the last column and calls onOpen when a row is clicked. */
+    /** Draws the › in the last column and calls onOpen when a row is clicked, or Enter is pressed on it. */
     public static <T> void makeRowsOpenable(TableView<T> table, TableColumn<T, Void> arrowColumn, Consumer<T> onOpen) {
         arrowColumn.setCellFactory(column -> new TableCell<>() {
             private final Label chevron = new Label("›");
@@ -53,6 +55,13 @@ public final class Tables {
                 }
             });
             return row;
+        });
+        table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            T selected = table.getSelectionModel().getSelectedItem();
+            if (event.getCode() == KeyCode.ENTER && selected != null) {
+                event.consume();
+                onOpen.accept(selected);
+            }
         });
         fitToRows(table);
     }

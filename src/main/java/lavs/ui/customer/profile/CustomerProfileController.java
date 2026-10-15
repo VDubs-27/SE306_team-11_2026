@@ -2,6 +2,8 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javafx.fxml.FXML;
@@ -55,6 +57,8 @@ public class CustomerProfileController implements NavigatorAware {
 
     private Customer customer;
     private String suburb;
+    /** What the customer still needs before a loan can start, e.g. "a mailing address"; empty when ready. */
+    private List<String> neededForLoan = List.of();
     private Navigator navigator;
 
     @Override
@@ -81,6 +85,7 @@ public class CustomerProfileController implements NavigatorAware {
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         customer = profile.customer();
         suburb = primarySuburb(profile);
+        neededForLoan = neededForLoan(profile);
         showSummary();
         detailsController.show(customer);
         TabBars.setCount(addressesTab, addressesController.show(
@@ -105,7 +110,25 @@ public class CustomerProfileController implements NavigatorAware {
 
     @FXML
     private void handleNewLoan() {
-        navigator.showNewLoanWizard(customer);
+        if (neededForLoan.isEmpty()) {
+            navigator.showNewLoanWizard(customer);
+            return;
+        }
+        Toasts.show(nameLabel, Toasts.Kind.WARNING, "Not ready for a loan yet",
+                DisplayFormat.fullNameWithTitle(customer) + " needs " + String.join(" and ", neededForLoan)
+                        + " first. Add them on the Addresses and Contacts tabs.");
+    }
+
+    /** A loan needs a mailing address to send documents to, and a phone or email to reach the customer. */
+    private static List<String> neededForLoan(CustomerProfile profile) {
+        List<String> needed = new ArrayList<>();
+        if (profile.addresses().stream().noneMatch(Address::isMailing)) {
+            needed.add("a mailing address");
+        }
+        if (profile.phones().isEmpty() && profile.emails().isEmpty()) {
+            needed.add("a phone number or email address");
+        }
+        return needed;
     }
 
     /** Saves the edited details, keeping the customer's number and status; the edit pop-up shows any failure. */
