@@ -49,12 +49,11 @@ public class LoanDetailsStepController {
 
     @FXML
     private void initialize() {
-        Choices.fill(rateTypeBox, Loan.RateType.values(), Loan.RateType.UNKNOWN,
-                LoanDetailsStepController::rateTypeName);
+        Choices.fill(rateTypeBox, Loan.RateType.values(), Loan.RateType.UNKNOWN, LoanText::rateTypeName);
         Choices.fill(rateFrequencyBox, Loan.RateFrequency.values(), Loan.RateFrequency.UNKNOWN,
                 Loan.RateFrequency::code);
         Choices.fill(paymentFrequencyBox, Loan.PaymentFrequency.values(), Loan.PaymentFrequency.UNKNOWN,
-                frequency -> frequency == Loan.PaymentFrequency.ON_RENEWAL ? "On renewal" : frequency.code());
+                LoanText::paymentFrequencyName);
         startDate = new DateInput(startDatePicker);
         renewalDate = new DateInput(renewalDatePicker);
 
@@ -116,11 +115,6 @@ public class LoanDetailsStepController {
             renewalDate.showTyped();
             problems.add(new FieldError("renewalDate", BAD_DATE));
         }
-    }
-
-    /** A rate type as people say it, e.g. "Interest only" rather than the code "InterestOnly". */
-    static String rateTypeName(Loan.RateType type) {
-        return type == Loan.RateType.INTEREST_ONLY ? "Interest only" : type.code();
     }
 
     private static void addIfInvalid(List<FieldError> problems, TextField field, String name, String message) {
