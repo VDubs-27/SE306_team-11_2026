@@ -24,7 +24,8 @@ public class NewLoanWizardController implements NavigatorAware {
     @FXML private Node wizard;
     @FXML private Node loanDetails;
     @FXML private LoanDetailsStepController loanDetailsController;
-    @FXML private Node uploadStep;
+    @FXML private Node upload;
+    @FXML private UploadStepController uploadController;
     @FXML private Node coborrowers;
     @FXML private CoborrowersStepController coborrowersController;
     @FXML private Node submitStep;
@@ -45,7 +46,7 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setOnFinish(this::handleSubmit);
         wizardController.setSteps(List.of(
                 new WizardStep("Loan details", loanDetails, () -> loanDetailsController.check(draft), null),
-                new WizardStep("Upload & review", uploadStep),
+                new WizardStep("Upload & review", upload, null, () -> uploadController.showSummary()),
                 new WizardStep("Co-borrowers", coborrowers, coborrowersController::check,
                         () -> coborrowersController.showLoanSummary()),
                 new WizardStep("Submit", submitStep)));
@@ -58,6 +59,8 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setIcon(avatar);
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
         draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
+        uploadController.use(draft);
+        uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
         coborrowersController.use(draft);
         coborrowersController.setOnAddNewCustomer(navigator::showNewCustomerWizard);
     }

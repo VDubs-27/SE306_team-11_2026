@@ -186,6 +186,8 @@
     -fx-background-color: -error-red, -error-tint;
     -fx-background-insets: 0, 2;
 }
+/* A button standing in for an input, such as Choose file, outlined in red when it's missing */
+.button-secondary.field-error { -fx-border-color: -error-red; -fx-text-fill: -error-red-text; }
 .field-error-message,
 .field > .label.field-error-message {
     -fx-text-fill: -error-red-text;
