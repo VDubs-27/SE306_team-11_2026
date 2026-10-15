@@ -11,7 +11,9 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
+import lavs.logic.model.loan.Loan;
 import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
 
 /**
@@ -79,6 +81,17 @@ public class Navigator {
         FXMLLoader loader = load("/lavs/ui/loan/wizard/new-loan-wizard.fxml");
         NewLoanWizardController controller = loader.getController();
         controller.start(customer);
+        show(loader.getRoot());
+    }
+
+    /**
+     * Shows one of a customer's loans below the header.
+     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     */
+    public void showLoan(Loan loan, Customer customer) {
+        FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
+        LoanViewController controller = loader.getController();
+        controller.showLoan(loan, customer);
         show(loader.getRoot());
     }
 

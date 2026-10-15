@@ -15,6 +15,7 @@ import lavs.logic.model.loan.Loan;
 import lavs.ui.common.Choices;
 import lavs.ui.common.DateInput;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.LoanText;
 import lavs.ui.common.Numbers;
 
 /**
