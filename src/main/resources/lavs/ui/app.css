@@ -580,6 +580,21 @@
     -fx-cursor: hand;
 }
 .modal-close:hover { -fx-background-color: -subtle-bg; -fx-text-fill: -text; }
+/* Loan screen: the $ beside the loan number, its terms, and the totals tiles */
+.loan-icon {
+    -fx-min-width: 52; -fx-min-height: 52;
+    -fx-max-width: 52; -fx-max-height: 52;
+    -fx-background-color: -brand-blue-tint;
+    -fx-background-radius: 999;
+    -fx-text-fill: -brand-blue;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+.loan-terms { -fx-font-weight: bold; -fx-text-fill: -text; }
+.stat-tile { -fx-spacing: 4; -fx-padding: 14 18 14 18; }
+.stat-value { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -text; }
+
 /* People on a loan: avatar colours, the customer number beside a name, and search results */
 .avatar.avatar-tone-0 { -fx-background-color: -brand-blue; }
 .avatar.avatar-tone-1 { -fx-background-color: #5b4b8a; }

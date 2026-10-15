@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="lavs.ui.loan.view.LoanViewController"
+            styleClass="page-scroll" fitToWidth="true">
+    <VBox styleClass="page" alignment="TOP_CENTER">
+        <VBox spacing="16" maxWidth="960">
+
+            <Hyperlink fx:id="backLink" onAction="#handleBack"/>
+
+            <!-- Summary card: which loan, its status, who it's for and its terms -->
+            <HBox styleClass="card" alignment="CENTER_LEFT">
+                <Label text="\$" styleClass="loan-icon"/>
+                <VBox spacing="4" alignment="CENTER_LEFT">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="loanNumberLabel" styleClass="heading-2, mono"/>
+                        <Label fx:id="statusBadge"/>
+                    </HBox>
+                    <Label fx:id="customerLabel" styleClass="text-muted"/>
+                    <Label fx:id="termsLabel" styleClass="loan-terms"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- Totals over the life of the loan -->
+            <HBox spacing="16">
+                <VBox styleClass="card, stat-tile" HBox.hgrow="ALWAYS" prefWidth="0">
+                    <Label text="Total to repay" styleClass="tile-caption"/>
+                    <Label fx:id="totalPaidValue" styleClass="stat-value"/>
+                    <Label fx:id="paymentCountValue" styleClass="text-muted, text-small"/>
+                </VBox>
+                <VBox styleClass="card, stat-tile" HBox.hgrow="ALWAYS" prefWidth="0">
+                    <Label text="Total interest" styleClass="tile-caption"/>
+                    <Label fx:id="totalInterestValue" styleClass="stat-value"/>
+                    <Label text="over the life of the loan" styleClass="text-muted, text-small"/>
+                </VBox>
+                <VBox styleClass="card, stat-tile" HBox.hgrow="ALWAYS" prefWidth="0">
+                    <Label text="Repayments" styleClass="tile-caption"/>
+                    <Label fx:id="repaymentValue" styleClass="stat-value"/>
+                    <Label fx:id="repaymentStartValue" styleClass="text-muted, text-small"/>
+                </VBox>
+                <VBox styleClass="card, stat-tile" HBox.hgrow="ALWAYS" prefWidth="0">
+                    <Label text="Final payment" styleClass="tile-caption"/>
+                    <Label fx:id="finalDateValue" styleClass="stat-value"/>
+                    <Label fx:id="finalAmountValue" styleClass="text-muted, text-small"/>
+                </VBox>
+            </HBox>
+
+            <!-- Tabs card -->
+            <VBox styleClass="card, card-flush">
+                <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+                    <!-- Placeholders until each tab is built -->
+                    <Tab text="Details">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                    <Tab text="Schedule">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                    <Tab text="Payments">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                    <Tab text="Co-borrowers">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                    <Tab text="Documents">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                    <Tab text="Notes">
+                        <VBox spacing="12"><Label text="Coming soon." styleClass="text-muted"/></VBox>
+                    </Tab>
+                </TabPane>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
