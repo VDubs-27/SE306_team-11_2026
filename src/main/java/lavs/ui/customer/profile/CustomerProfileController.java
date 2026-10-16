@@ -65,7 +65,6 @@ public class CustomerProfileController implements NavigatorAware {
     @Override
     public void setNavigator(Navigator navigator) {
         this.navigator = navigator;
-        notesController.setAuthor(navigator.signedInName());
     }
 
     @FXML

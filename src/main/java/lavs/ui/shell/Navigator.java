@@ -18,7 +18,6 @@ import lavs.logic.model.loan.Loan;
 import lavs.logic.service.Result;
 import lavs.ui.common.Background;
 import lavs.ui.common.Choices;
-import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
@@ -52,11 +51,6 @@ public class Navigator {
         windowRoot.getChildren().add(new Region());
         stage.getScene().setRoot(windowRoot);
         Toasts.install(stage.getScene(), windowRoot);
-    }
-
-    /** The signed-in user's name as people read it, e.g. "Bob Ross" for bob.ross; null before signing in. */
-    public String signedInName() {
-        return services.session().isLoggedIn() ? DisplayFormat.userName(services.session().currentUser()) : null;
     }
 
     /** The services built at start-up, for screens that need them. */

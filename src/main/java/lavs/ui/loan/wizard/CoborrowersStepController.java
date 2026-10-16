@@ -32,7 +32,6 @@ public class CoborrowersStepController {
     /** The loan this is for, in the heading: "$450,000 · Fixed · not yet submitted". */
     void showLoanSummary() {
         Loan.Details details = draft.details();
-        // Later: show the loan number and status once submitting creates the loan
         loanSummary.setText(details == null
                 ? "New loan · not yet submitted"
                 : DisplayFormat.money(details.principal()) + " · "
