@@ -9,24 +9,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import lavs.logic.adapter.CustomerNoteGateway;
 import lavs.logic.adapter.MainframeAdapter;
+import lavs.logic.adapter.NoteGateway;
 import lavs.logic.adapter.ScriptedConnection;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Page;
-import lavs.logic.model.customer.CustomerNote;
+import lavs.logic.model.note.Note;
 import lavs.logic.model.customer.CustomerNumber;
 import org.junit.jupiter.api.Test;
 
-class CustomerNoteServiceTests {
+class NoteServiceTests {
 
     private static final CustomerNumber CUSTOMER = new CustomerNumber("01-0013");
-    private static final CustomerNote.Details DETAILS =
-            new CustomerNote.Details(CustomerNote.Type.CONTACT, "Prefers mobile");
+    private static final Note.Details DETAILS =
+            new Note.Details(Note.Type.CONTACT, "Prefers mobile");
 
     private final ScriptedConnection connection = new ScriptedConnection();
-    private final CustomerNoteGateway gateway = new CustomerNoteGateway(new MainframeAdapter(connection));
-    private final CustomerNoteService service = new CustomerNoteService(gateway);
+    private final NoteGateway<CustomerNumber> gateway = NoteGateway.forCustomers(new MainframeAdapter(connection));
+    private final NoteService<CustomerNumber> service = new NoteService<>(gateway);
 
     @Test
     void listReturnsThePageWithItsText() {
@@ -35,7 +35,7 @@ class CustomerNoteServiceTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        Result<Page<CustomerNote>> result = service.list(CUSTOMER, 1, 8);
+        Result<Page<Note>> result = service.list(CUSTOMER, 1, 8);
 
         assertAll(
                 () -> assertTrue(result.successful()),
@@ -47,7 +47,7 @@ class CustomerNoteServiceTests {
     void listReportsMainframeErrors() {
         connection.fail("customerNote.list", 3, "Rejected");
 
-        Result<Page<CustomerNote>> result = service.list(CUSTOMER, 1, 8);
+        Result<Page<Note>> result = service.list(CUSTOMER, 1, 8);
 
         assertEquals("Rejected", result.errorMessage());
     }
@@ -73,7 +73,7 @@ class CustomerNoteServiceTests {
                 .reply("customerNote.retrieve", row("id", "12", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        Result<CustomerNote> result = service.add(CUSTOMER, DETAILS);
+        Result<Note> result = service.add(CUSTOMER, DETAILS);
 
         assertAll(
                 () -> assertTrue(result.successful()),
@@ -84,7 +84,7 @@ class CustomerNoteServiceTests {
 
     @Test
     void blankNoteIsRejectedWithoutCallingTheMainframe() {
-        Result<CustomerNote> result = service.add(CUSTOMER, new CustomerNote.Details(CustomerNote.Type.CONTACT, " "));
+        Result<Note> result = service.add(CUSTOMER, new Note.Details(Note.Type.CONTACT, " "));
 
         assertAll(
                 () -> assertEquals(List.of(new FieldError("lines", "Note is required.")), result.fieldErrors()),
@@ -94,8 +94,8 @@ class CustomerNoteServiceTests {
 
     @Test
     void unknownTypeIsReportedOnce() {
-        Result<CustomerNote> result =
-                service.add(CUSTOMER, new CustomerNote.Details(CustomerNote.Type.UNKNOWN, "Hi"));
+        Result<Note> result =
+                service.add(CUSTOMER, new Note.Details(Note.Type.UNKNOWN, "Hi"));
 
         assertEquals(1, result.fieldErrors().size());
     }
@@ -107,7 +107,7 @@ class CustomerNoteServiceTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        Result<CustomerNote> result = service.update(CUSTOMER, 7, DETAILS);
+        Result<Note> result = service.update(CUSTOMER, 7, DETAILS);
 
         assertAll(
                 () -> assertTrue(result.successful()),
@@ -142,9 +142,9 @@ class CustomerNoteServiceTests {
     }
 
     @Test
-    void requiresAGatewayAndConstants() {
+    void requiresAGateway() {
         assertAll(
-                () -> assertThrows(NullPointerException.class, () -> new CustomerNoteService(null))
+                () -> assertThrows(NullPointerException.class, () -> new NoteService<CustomerNumber>(null))
         );
     }
 }

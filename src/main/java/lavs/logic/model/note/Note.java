@@ -1,4 +1,4 @@
-package lavs.logic.model.customer;
+package lavs.logic.model.note;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,17 +7,16 @@ import lavs.logic.model.Codes;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
 
-// dateAdded is null on the result of an add or update, because the mainframe does not return it there
-public record CustomerNote(
+// A note on a customer or a loan; whose note it is comes from the request, so it is not stored here.
+// dateAdded is null when the mainframe does not send one
+public record Note(
         long id,
-        CustomerNumber customerNumber,
         Type type,
         String lines,
         String author,
         LocalDate dateAdded
 ) {
-    public CustomerNote {
-        Objects.requireNonNull(customerNumber, "customerNumber");
+    public Note {
         Objects.requireNonNull(type, "type");
     }
 

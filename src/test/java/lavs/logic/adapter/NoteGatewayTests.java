@@ -11,22 +11,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 import lavs.logic.model.Page;
-import lavs.logic.model.customer.CustomerNote;
+import lavs.logic.model.note.Note;
 import lavs.logic.model.customer.CustomerNumber;
 import mainframe.client.MessageRequest;
 import mainframe.client.StatusMessage;
 import org.junit.jupiter.api.Test;
 
-class CustomerNoteGatewayTests {
+class NoteGatewayTests {
 
     private static final CustomerNumber CUSTOMER = new CustomerNumber("01-0013");
-    private static final CustomerNote.Details DETAILS =
-            new CustomerNote.Details(CustomerNote.Type.CONTACT, "Prefers mobile");
-    private static final CustomerNote NOTE = new CustomerNote(
-            7, CUSTOMER, CustomerNote.Type.CONTACT, "Prefers mobile", "Bob Ross", LocalDate.of(2026, 10, 5));
+    private static final Note.Details DETAILS =
+            new Note.Details(Note.Type.CONTACT, "Prefers mobile");
+    private static final Note NOTE = new Note(
+            7, Note.Type.CONTACT, "Prefers mobile", "Bob Ross", LocalDate.of(2026, 10, 5));
 
     private final ScriptedConnection connection = new ScriptedConnection();
-    private final CustomerNoteGateway gateway = new CustomerNoteGateway(new MainframeAdapter(connection));
+    private final NoteGateway<CustomerNumber> gateway = NoteGateway.forCustomers(new MainframeAdapter(connection));
 
     private static void assertUnreadable(MainframeException e) {
         assertEquals(StatusMessage.UNABLE_TO_PARSE.getCode().intValue(), e.errorCode());
@@ -39,7 +39,7 @@ class CustomerNoteGatewayTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        Page<CustomerNote> page = gateway.list(CUSTOMER, 1, 8);
+        Page<Note> page = gateway.list(CUSTOMER, 1, 8);
 
         assertAll(
                 () -> assertEquals(List.of(NOTE), page.items()),
@@ -53,7 +53,7 @@ class CustomerNoteGatewayTests {
     void listWithNoNotesIsEmptyAndFetchesNothing() {
         connection.replyList("customerNote.list", 0);
 
-        Page<CustomerNote> page = gateway.list(CUSTOMER, 1, 8);
+        Page<Note> page = gateway.list(CUSTOMER, 1, 8);
 
         assertAll(
                 () -> assertTrue(page.items().isEmpty()),
@@ -82,7 +82,7 @@ class CustomerNoteGatewayTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "dateAdded", "05/10/2026",
                         "lines", "Hi"));
 
-        Page<CustomerNote> page = gateway.list(CUSTOMER, 1, 8);
+        Page<Note> page = gateway.list(CUSTOMER, 1, 8);
 
         assertAll(
                 () -> assertTrue(page.items().isEmpty()),
@@ -132,7 +132,7 @@ class CustomerNoteGatewayTests {
     void retrieveWithATypeLavsDoesNotModelIsUnknown() {
         connection.reply("customerNote.retrieve", row("id", "7", "type", "Test note", "lines", "Hi"));
 
-        assertEquals(CustomerNote.Type.UNKNOWN, gateway.retrieve(CUSTOMER, 7).type());
+        assertEquals(Note.Type.UNKNOWN, gateway.retrieve(CUSTOMER, 7).type());
     }
 
     @Test
@@ -149,11 +149,11 @@ class CustomerNoteGatewayTests {
                 .reply("customerNote.retrieve", row("id", "12", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        CustomerNote added = gateway.add(CUSTOMER, DETAILS);
+        Note added = gateway.add(CUSTOMER, DETAILS);
 
         MessageRequest request = connection.onlyRequest("customer.addNote");
         assertAll(
-                () -> assertEquals(new CustomerNote(12, CUSTOMER, CustomerNote.Type.CONTACT, "Prefers mobile",
+                () -> assertEquals(new Note(12, Note.Type.CONTACT, "Prefers mobile",
                         "Bob Ross", LocalDate.of(2026, 10, 5)), added),
                 () -> assertEquals("01-0013", request.getValue("customer")),
                 () -> assertEquals("Contact", request.getValue("type")),
@@ -180,7 +180,7 @@ class CustomerNoteGatewayTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
                         "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
-        CustomerNote updated = gateway.update(CUSTOMER, 7, DETAILS);
+        Note updated = gateway.update(CUSTOMER, 7, DETAILS);
 
         MessageRequest request = connection.onlyRequest("customer.updateNote");
         assertAll(
@@ -216,7 +216,7 @@ class CustomerNoteGatewayTests {
 
     @Test
     void requiresAnAdapter() {
-        assertThrows(NullPointerException.class, () -> new CustomerNoteGateway(null));
+        assertThrows(NullPointerException.class, () -> NoteGateway.forCustomers(null));
     }
 
     @Test
@@ -226,11 +226,11 @@ class CustomerNoteGatewayTests {
                 .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "lines", "First"))
                 .reply("customerNote.retrieve", row("id", "8", "type", "General", "lines", "Second"));
 
-        Page<CustomerNote> page = gateway.list(CUSTOMER, 1, 8);
+        Page<Note> page = gateway.list(CUSTOMER, 1, 8);
 
         assertAll(
-                () -> assertEquals(List.of(7L, 8L), page.items().stream().map(CustomerNote::id).toList()),
-                () -> assertEquals(List.of("First", "Second"), page.items().stream().map(CustomerNote::lines).toList()),
+                () -> assertEquals(List.of(7L, 8L), page.items().stream().map(Note::id).toList()),
+                () -> assertEquals(List.of("First", "Second"), page.items().stream().map(Note::lines).toList()),
                 () -> assertEquals(2, connection.requests("customerNote.retrieve").size())
         );
     }
