@@ -19,6 +19,14 @@ final class ContactRequirement {
     }
 
     boolean allowsDeletingOne(CustomerNumber customer) {
-        return phones.count(customer) + emails.count(customer) > 1;
+        return contactCount(customer) > 1;
+    }
+
+    boolean hasAny(CustomerNumber customer) {
+        return contactCount(customer) > 0;
+    }
+
+    private long contactCount(CustomerNumber customer) {
+        return phones.count(customer) + emails.count(customer);
     }
 }

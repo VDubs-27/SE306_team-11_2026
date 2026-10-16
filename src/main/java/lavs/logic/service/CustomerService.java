@@ -27,6 +27,8 @@ public class CustomerService {
     private final EmployerGateway employerGateway;
     private final Clock clock;
 
+    static final FieldError INVALID_STATUS = new FieldError("status", "The status must be Active or Inactive.");
+
     public CustomerService(CustomerGateway customerGateway, AddressGateway addressGateway,
                            PhoneGateway phoneGateway, EmailGateway emailGateway,
                            EmployerGateway employerGateway, Clock clock) {
@@ -73,5 +75,15 @@ public class CustomerService {
 
     private List<FieldError> validate(Customer.Details customerDetails) {
         return customerDetails.validate(LocalDate.now(clock));
+    }
+
+    public Result<Customer> changeStatus(Customer customer, Customer.Status newStatus) {
+        if (newStatus == null || newStatus == Customer.Status.UNKNOWN) {
+            return Result.invalid(List.of(INVALID_STATUS));
+        }
+        return Result.attempt(() -> {
+            customerGateway.updateStatus(customer.number(), newStatus);
+            return Result.success(customer.withStatus(newStatus));
+        });
     }
 }
