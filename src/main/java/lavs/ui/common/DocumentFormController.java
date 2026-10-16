@@ -139,4 +139,9 @@ public class DocumentFormController implements RecordForm<DocumentFile> {
         String extension = name.substring(name.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
         return KNOWN_TYPES.getOrDefault(extension, "application/octet-stream");
     }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
+    }
 }

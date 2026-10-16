@@ -11,8 +11,10 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
+import lavs.ui.common.Choices;
 import lavs.ui.common.Nodes;
 import lavs.ui.customer.profile.SampleProfiles;
 
@@ -48,7 +50,12 @@ public class FindCustomerController {
     /** Starts afresh, leaving out the customer numbers already on the loan. */
     public void reset(Set<String> customerNumbersOnLoan) {
         alreadyOnLoan = customerNumbersOnLoan;
-        coborrowerButton.setSelected(true);
+        // Only the kinds of person the mainframe offers, the first chosen to start with
+        List<Coborrower.Type> offered = Choices.options(
+                ConstantCategory.COBORROWER_TYPE, Coborrower.Type.values(), Coborrower.Type.UNKNOWN);
+        Nodes.show(coborrowerButton, offered.contains(Coborrower.Type.COBORROWER));
+        Nodes.show(guarantorButton, offered.contains(Coborrower.Type.GUARANTOR));
+        (offered.contains(Coborrower.Type.COBORROWER) ? coborrowerButton : guarantorButton).setSelected(true);
         searchField.clear();
         results.getChildren().clear();
         selected = null;

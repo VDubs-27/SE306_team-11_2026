@@ -32,6 +32,11 @@ public class NotesTabController {
                 .newestFirst();
     }
 
+    /** Who new notes are by: the signed-in user's name. */
+    public void setAuthor(String signedInName) {
+        noteFormController.setAuthor(signedInName);
+    }
+
     /** What happens after a note is added, changed or removed, e.g. the screen updates the tab's count. */
     public void setOnChanged(Runnable onChanged) {
         notes.onChanged(onChanged);

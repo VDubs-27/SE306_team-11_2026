@@ -3,13 +3,24 @@ package lavs.ui.customer.profile;
 import static lavs.ui.common.DisplayFormat.date;
 import static lavs.ui.common.DisplayFormat.orNotRecorded;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
+import lavs.logic.service.Result;
+import lavs.ui.common.Dialogs;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.RecordEditor;
+import lavs.ui.customer.forms.CustomerDetailsFormController;
 
 /**
- * The Details tab: the customer's personal details, read-only.
+ * The Details tab: the customer's personal details, read-only until Edit, which opens the same
+ * form as the new customer wizard in a pop-up. The customer can also be made active or inactive.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class DetailsTabController {
@@ -20,25 +31,65 @@ public class DetailsTabController {
     @FXML private Label dateOfBirthValue;
     @FXML private Label nationalityValue;
     @FXML private Label statusBadge;
+    @FXML private Hyperlink statusLink;
+    @FXML private Node detailsForm;
+    @FXML private CustomerDetailsFormController detailsFormController;
+
+    private Customer customer;
+    private RecordEditor<Customer.Details> editor;
+    private Function<Customer.Details, Result<?>> onSaved = details -> Result.success(null);
+    private Consumer<Customer.Status> onStatusChanged = status -> { };
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(titleValue, "customer details", detailsForm, detailsFormController)
+                .withoutRemove();
+    }
+
+    /** How Edit saves: the profile saves the change and says whether it worked; the pop-up stays open if not. */
+    void setOnSaved(Function<Customer.Details, Result<?>> onSaved) {
+        this.onSaved = onSaved;
+    }
+
+    /** What happens once a status change is confirmed: the profile updates itself. */
+    void setOnStatusChanged(Consumer<Customer.Status> onStatusChanged) {
+        this.onStatusChanged = onStatusChanged;
+    }
 
     void show(Customer customer) {
+        this.customer = customer;
         titleValue.setText(orNotRecorded(customer.title()));
         firstNameValue.setText(customer.firstName());
         familyNameValue.setText(customer.familyName());
         dateOfBirthValue.setText(date(customer.dateOfBirth()));
         nationalityValue.setText(orNotRecorded(customer.nationality()));
         statusBadge.setText(orNotRecorded(customer.status().code()));
+        statusBadge.getStyleClass().removeAll("badge-active", "badge-neutral");
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
+        statusLink.setText(isActive() ? "Make inactive" : "Make active");
     }
 
     @FXML
     private void handleEditDetails() {
-        // Later: open the edit details form
+        editor.editAndSave(customer.details(), changed -> onSaved.apply(changed), () -> Result.success(null));
     }
 
     @FXML
     private void handleChangeStatus() {
-        // Later: confirm and switch the customer between Active and Inactive
+        String name = DisplayFormat.fullNameWithTitle(customer);
+        boolean confirmed = isActive()
+                ? Dialogs.confirm(statusLink, "Make " + name + " inactive?",
+                        "Their details, loans and history stay on record. You can make them active again at any time.",
+                        "Make inactive")
+                : Dialogs.confirm(statusLink, "Make " + name + " active again?",
+                        "They'll show as an active customer again.", "Make active");
+        if (confirmed) {
+            onStatusChanged.accept(isActive() ? Customer.Status.INACTIVE : Customer.Status.ACTIVE);
+        }
+    }
+
+    private boolean isActive() {
+        return customer.status() == Customer.Status.ACTIVE;
     }
 }

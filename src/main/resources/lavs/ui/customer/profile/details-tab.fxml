@@ -6,6 +6,10 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.customer.profile.DetailsTabController"
       spacing="16">
+    <fx:define>
+        <!-- Shown in a pop-up when editing the customer's details -->
+        <fx:include fx:id="detailsForm" source="/lavs/ui/customer/forms/customer-details-form.fxml"/>
+    </fx:define>
     <HBox alignment="CENTER_LEFT">
         <Label text="Customer details" styleClass="section-heading"/>
         <Region HBox.hgrow="ALWAYS"/>
@@ -40,7 +44,7 @@
             <Label text="Status" styleClass="detail-label"/>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label fx:id="statusBadge" styleClass="badge"/>
-                <Hyperlink text="Change status" styleClass="link-strong" onAction="#handleChangeStatus"/>
+                <Hyperlink fx:id="statusLink" styleClass="link-strong" onAction="#handleChangeStatus"/>
             </HBox>
         </VBox>
     </GridPane>

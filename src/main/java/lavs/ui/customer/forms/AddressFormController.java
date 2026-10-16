@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Address;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
@@ -47,7 +48,7 @@ public class AddressFormController implements RecordForm<Address.Details> {
 
     @FXML
     private void initialize() {
-        Choices.fill(typeBox, Address.Type.values(), Address.Type.UNKNOWN, Address.Type::code);
+        Choices.fill(typeBox, ConstantCategory.ADDRESS_TYPE, Address.Type.values(), Address.Type.UNKNOWN, Address.Type::code);
         // "Describe the address" only applies to an Other address
         typeBox.valueProperty().addListener((obs, oldType, type) -> showOtherType(type == Address.Type.OTHER));
         errors = new FieldErrors()
@@ -113,5 +114,10 @@ public class AddressFormController implements RecordForm<Address.Details> {
 
     private static String text(String value) {
         return value == null ? "" : value;
+    }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
     }
 }

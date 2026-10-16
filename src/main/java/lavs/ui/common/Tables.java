@@ -11,6 +11,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
@@ -28,8 +30,13 @@ public final class Tables {
     private Tables() {
     }
 
-    /** Draws the › in the last column and calls onOpen when a row is clicked. */
+    /** Draws the › in the last column and calls onOpen when a row is clicked, or Enter is pressed on it. */
     public static <T> void makeRowsOpenable(TableView<T> table, TableColumn<T, Void> arrowColumn, Consumer<T> onOpen) {
+        // Opening a row lets go of the selection, so the row isn't still highlighted on coming back
+        Consumer<T> open = item -> {
+            table.getSelectionModel().clearSelection();
+            onOpen.accept(item);
+        };
         arrowColumn.setCellFactory(column -> new TableCell<>() {
             private final Label chevron = new Label("›");
 
@@ -49,10 +56,17 @@ public final class Tables {
             TableRow<T> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty()) {
-                    onOpen.accept(row.getItem());
+                    open.accept(row.getItem());
                 }
             });
             return row;
+        });
+        table.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            T selected = table.getSelectionModel().getSelectedItem();
+            if (event.getCode() == KeyCode.ENTER && selected != null) {
+                event.consume();
+                open.accept(selected);
+            }
         });
         fitToRows(table);
     }

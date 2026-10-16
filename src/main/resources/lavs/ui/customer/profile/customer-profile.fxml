@@ -11,36 +11,37 @@
 
             <Hyperlink text="‹  Back to search results" onAction="#handleBack"/>
 
-            <!-- Summary card: who the customer is, then key facts separated by thin lines -->
+            <!-- Summary card: who the customer is, then key facts separated by thin lines. The facts and button
+                 keep their full width; a long name wraps instead. -->
             <HBox styleClass="card, summary-card" alignment="CENTER_LEFT">
                 <Label fx:id="initialsAvatar" styleClass="avatar, avatar-large"/>
                 <VBox spacing="6" alignment="CENTER_LEFT">
-                    <Label fx:id="nameLabel" styleClass="summary-name"/>
+                    <Label fx:id="nameLabel" styleClass="summary-name" wrapText="true" minWidth="140"/>
                     <Label fx:id="statusBadge" styleClass="badge"/>
                 </VBox>
                 <HBox styleClass="summary-fact">
                     <Region styleClass="summary-divider"/>
                     <VBox styleClass="summary-fact-text">
                         <Label text="CUSTOMER NUMBER" styleClass="summary-caption"/>
-                        <Label fx:id="customerNumberLabel" styleClass="summary-value, summary-number, mono"/>
+                        <Label fx:id="customerNumberLabel" minWidth="-Infinity" styleClass="summary-value, summary-number, mono"/>
                     </VBox>
                 </HBox>
                 <HBox fx:id="dateOfBirthFact" styleClass="summary-fact">
                     <Region styleClass="summary-divider"/>
                     <VBox styleClass="summary-fact-text">
                         <Label text="DATE OF BIRTH" styleClass="summary-caption"/>
-                        <Label fx:id="dateOfBirthLabel" styleClass="summary-value"/>
+                        <Label fx:id="dateOfBirthLabel" minWidth="-Infinity" styleClass="summary-value"/>
                     </VBox>
                 </HBox>
                 <HBox fx:id="suburbFact" styleClass="summary-fact">
                     <Region styleClass="summary-divider"/>
                     <VBox styleClass="summary-fact-text">
                         <Label text="SUBURB" styleClass="summary-caption"/>
-                        <Label fx:id="suburbLabel" styleClass="summary-value"/>
+                        <Label fx:id="suburbLabel" minWidth="-Infinity" styleClass="summary-value"/>
                     </VBox>
                 </HBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="+  New loan" styleClass="button-primary, button-large" onAction="#handleNewLoan"/>
+                <Button text="+  New loan" minWidth="-Infinity" styleClass="button-primary, button-large" onAction="#handleNewLoan"/>
             </HBox>
 
             <!-- Tabs card -->

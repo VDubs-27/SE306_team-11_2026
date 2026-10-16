@@ -4,11 +4,13 @@ import java.util.List;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.Toasts;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -64,19 +66,23 @@ public class NewLoanWizardController implements NavigatorAware {
         uploadController.use(draft);
         uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
         coborrowersController.use(draft);
-        coborrowersController.setOnAddNewCustomer(navigator::showNewCustomerWizard);
+        coborrowersController.setOnAddNewCustomer(
+                () -> navigator.showNewCustomerWizard(coborrowersController::addNewCustomer));
     }
 
     /** Leaves straight away if nothing has been entered; otherwise asks first. */
     private void handleCancel() {
-        if (!loanDetailsController.hasInput() || Dialogs.confirm(wizard, "Discard this new loan?",
-                "Nothing has been sent to the mainframe yet, so anything entered will be lost.", "Discard")) {
+        if (!loanDetailsController.hasInput() || Dialogs.confirmDiscard(wizard, "Discard this new loan?",
+                "Nothing has been sent to the mainframe yet, so anything entered will be lost.")) {
             navigator.back();
         }
     }
 
     private void handleSubmit() {
         // Later: create the loan through LoanService, then open it
+        Scene scene = wizard.getScene();
         navigator.back();
+        Toasts.show(scene, Toasts.Kind.SUCCESS, "Loan submitted",
+                "The loan for " + draft.applicant().customer().fullName() + " has been sent for approval.");
     }
 }

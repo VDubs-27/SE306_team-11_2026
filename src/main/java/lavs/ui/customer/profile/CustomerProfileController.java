@@ -2,6 +2,10 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -11,12 +15,14 @@ import javafx.scene.layout.HBox;
 
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
+import lavs.logic.service.Result;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.Nodes;
 import lavs.ui.common.NotesTabController;
 import lavs.ui.common.Pages;
 import lavs.ui.common.TabBars;
+import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 
@@ -50,17 +56,23 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private NotesTabController notesController;
 
     private Customer customer;
+    private String suburb;
+    /** What the customer still needs before a loan can start, e.g. "a mailing address"; empty when ready. */
+    private List<String> neededForLoan = List.of();
     private Navigator navigator;
 
     @Override
     public void setNavigator(Navigator navigator) {
         this.navigator = navigator;
+        notesController.setAuthor(navigator.signedInName());
     }
 
     @FXML
     private void initialize() {
         TabBars.setUp(tabPane);
         loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
+        detailsController.setOnSaved(this::saveDetails);
+        detailsController.setOnStatusChanged(this::changeStatus);
         // Later: save document and note changes through CustomerService; until then they only show on this screen
         documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
         notesController.setOnChanged(() -> TabBars.setCount(notesTab, notesController.count()));
@@ -68,11 +80,14 @@ public class CustomerProfileController implements NavigatorAware {
 
     /** Fills the screen for one customer. */
     public void showCustomer(String customerNumber) {
-        // Later: load the profile from CustomerService in the background
+        // Later: load the profile from CustomerService in the background; if that fails,
+        // navigator.showLoadFailed("Couldn't load this customer", reason, () -> showCustomer(customerNumber))
         CustomerProfile profile = SampleProfiles.find(customerNumber);
         customer = profile.customer();
-        showSummary(profile);
-        detailsController.show(profile.customer());
+        suburb = primarySuburb(profile);
+        neededForLoan = neededForLoan(profile);
+        showSummary();
+        detailsController.show(customer);
         TabBars.setCount(addressesTab, addressesController.show(
                 page -> Pages.of(profile.addresses(), page, PAGE_SIZE)));
         TabBars.setCount(contactsTab, contactsController.show(
@@ -95,17 +110,57 @@ public class CustomerProfileController implements NavigatorAware {
 
     @FXML
     private void handleNewLoan() {
-        navigator.showNewLoanWizard(customer);
+        if (neededForLoan.isEmpty()) {
+            navigator.showNewLoanWizard(customer);
+            return;
+        }
+        Toasts.show(nameLabel, Toasts.Kind.WARNING, "Not ready for a loan yet",
+                DisplayFormat.fullNameWithTitle(customer) + " needs " + String.join(" and ", neededForLoan)
+                        + " first. Add them on the Addresses and Contacts tabs.");
+    }
+
+    /** A loan needs a mailing address to send documents to, and a phone or email to reach the customer. */
+    private static List<String> neededForLoan(CustomerProfile profile) {
+        List<String> needed = new ArrayList<>();
+        if (profile.addresses().stream().noneMatch(Address::isMailing)) {
+            needed.add("a mailing address");
+        }
+        if (profile.phones().isEmpty() && profile.emails().isEmpty()) {
+            needed.add("a phone number or email address");
+        }
+        return needed;
+    }
+
+    /** Saves the edited details, keeping the customer's number and status; the edit pop-up shows any failure. */
+    private Result<?> saveDetails(Customer.Details changed) {
+        // Later: Result<?> saved = customerService.update(customer.number(), changed); if it failed, return it
+        customer = new Customer(customer.number(), changed.title(), changed.firstName(), changed.familyName(),
+                customer.status(), changed.dateOfBirth(), changed.nationality());
+        showSummary();
+        detailsController.show(customer);
+        Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
+                DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
+        return Result.success(null);
+    }
+
+    /** Makes the customer active or inactive, once confirmed on the Details tab. */
+    private void changeStatus(Customer.Status status) {
+        // Later: CustomerService.updateStatus(customer.number(), status); until then the change only shows on this screen
+        customer = customer.withStatus(status);
+        showSummary();
+        detailsController.show(customer);
+        Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Status changed",
+                DisplayFormat.fullNameWithTitle(customer) + " is now " + status.code().toLowerCase(Locale.ROOT) + ".");
     }
 
     /** The card at the top: avatar, name, status and key facts. */
-    private void showSummary(CustomerProfile profile) {
-        Customer customer = profile.customer();
+    private void showSummary() {
         initialsAvatar.setText(DisplayFormat.initials(customer));
         nameLabel.setText(DisplayFormat.fullNameWithTitle(customer));
         customerNumberLabel.setText(customer.number().value());
 
         statusBadge.setText(customer.status().code());
+        statusBadge.getStyleClass().removeAll("badge-active", "badge-neutral");
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
         showIfPresent(statusBadge, statusBadge);
@@ -113,7 +168,7 @@ public class CustomerProfileController implements NavigatorAware {
         dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
         showIfPresent(dateOfBirthLabel, dateOfBirthFact);
 
-        suburbLabel.setText(primarySuburb(profile));
+        suburbLabel.setText(suburb);
         showIfPresent(suburbLabel, suburbFact);
     }
 

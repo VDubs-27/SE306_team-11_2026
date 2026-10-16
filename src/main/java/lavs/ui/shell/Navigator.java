@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +15,13 @@ import javafx.stage.Stage;
 
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.Choices;
+import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.customer.wizard.NewCustomer;
+import lavs.ui.customer.wizard.NewCustomerWizardController;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
 
@@ -41,6 +47,11 @@ public class Navigator {
         Toasts.install(stage.getScene(), windowRoot);
     }
 
+    /** The signed-in user's name as people read it, e.g. "Bob Ross" for bob.ross; null before signing in. */
+    public String signedInName() {
+        return services.session().isLoggedIn() ? DisplayFormat.userName(services.session().currentUser()) : null;
+    }
+
     /** The services built at start-up, for screens that need them. */
     public Services services() {
         return services;
@@ -53,6 +64,8 @@ public class Navigator {
         if (services.session().isLoggedIn()) {
             shell.showUser(services.session().currentUser());
         }
+        // Drop-downs offer the mainframe's lists, loaded when the user signed in
+        Choices.use(services.session().constants());
         showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
@@ -73,6 +86,7 @@ public class Navigator {
     /** Signs out of the mainframe and goes back to the login screen, saying it worked. */
     public void logOut() {
         services.login().logout();
+        Choices.use(null);
         showLogin();
         Toasts.show(stage.getScene(), Toasts.Kind.SUCCESS, "Signed out",
                 "You've signed out of LAVS. Sign in again to carry on.");
@@ -100,7 +114,14 @@ public class Navigator {
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showNewCustomerWizard() {
+        showNewCustomerWizard(null);
+    }
+
+    /** Shows the new customer wizard; once the customer is saved, comes back here and runs onSaved. */
+    public void showNewCustomerWizard(Consumer<NewCustomer> onSaved) {
         FXMLLoader loader = load("/lavs/ui/customer/wizard/new-customer-wizard.fxml");
+        NewCustomerWizardController controller = loader.getController();
+        controller.setOnSaved(onSaved);
         show(loader.getRoot());
     }
 
@@ -124,6 +145,14 @@ public class Navigator {
         LoanViewController controller = loader.getController();
         controller.showLoan(loan, customer);
         show(loader.getRoot());
+    }
+
+    /**
+     * Shows that a screen couldn't load, in its place below the header: what failed and why, with
+     * Try again (retry, e.g. load it again) and Back. For loads that fail, e.g. the mainframe is down.
+     */
+    public void showLoadFailed(String title, String message, Runnable retry) {
+        show(ErrorPanel.create(title, message, retry, this::back));
     }
 
     /** Returns to the previous screen, if there is one. */

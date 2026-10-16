@@ -141,11 +141,6 @@
 .avatar-user { -fx-background-color: -brand-yellow; -fx-text-fill: -brand-blue-dark; }
 
 /* ===================== Login ===================== */
-.login-background {
-    -fx-background-color: -brand-blue;
-    -fx-border-color: -brand-red transparent transparent transparent;
-    -fx-border-width: 6 0 0 0;
-}
 .login-card {
     -fx-background-radius: 20;
     -fx-border-radius: 20;
@@ -380,6 +375,11 @@
     -fx-padding: 24;
     -fx-alignment: center;
 }
+/* Customer search before a search, or with no matches: enough room that the card doesn't collapse */
+.search-empty-state { -fx-min-height: 220; }
+/* The results card frames the table, so the table draws no border of its own (it would leave it a pixel
+   taller than its rows and show a scrollbar) */
+.search-table { -fx-border-width: 0; -fx-background-insets: 0; }
 
 /* ===================== Tables ===================== */
 .table-view {
@@ -587,6 +587,8 @@
 }
 .modal-header { -fx-padding: 18 18 6 24; -fx-spacing: 12; }
 .modal-body { -fx-padding: 10 24 8 24; }
+/* The card's content scrolls when the window is too short; it stays white with no frame of its own */
+.modal-scroll, .modal-scroll > .viewport { -fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; }
 .modal-footer {
     -fx-padding: 14 24 20 24;
     -fx-border-color: -line-soft transparent transparent transparent;
@@ -917,16 +919,33 @@
 
 .toast-info { -fx-background-color: -info-tint; -fx-border-color: -info-border; }
 .toast-info .label { -fx-text-fill: -info-blue; }
-.toast-info .toast-icon-disc { -fx-fill: -info-blue; }
+.toast-info-disc { -fx-fill: -info-blue; }
 
 .toast-success { -fx-background-color: -success-tint; -fx-border-color: -success-border; }
 .toast-success .label { -fx-text-fill: -success-text; }
-.toast-success .toast-icon-disc { -fx-fill: -success-green; }
+.toast-success-disc { -fx-fill: -success-green; }
 
 .toast-warning { -fx-background-color: -warning-tint; -fx-border-color: -warning-border; }
 .toast-warning .label { -fx-text-fill: -warning-text; }
-.toast-warning .toast-icon-disc { -fx-fill: #8a7400; }
+.toast-warning-disc { -fx-fill: #8a7400; }
 
 .toast-error { -fx-background-color: -error-tint; -fx-border-color: -error-red; }
 .toast-error .label { -fx-text-fill: -error-red-text; }
-.toast-error .toast-icon-disc { -fx-fill: -error-red; }
+.toast-error-disc { -fx-fill: -error-red; }
+
+/* ===================== Error panel ===================== */
+/* A screen that couldn't load: the error icon, what failed and why, then Try again and Back */
+.error-panel { -fx-padding: 36 40 32 40; -fx-spacing: 12; }
+.error-panel-icon { -fx-scale-x: 1.6; -fx-scale-y: 1.6; -fx-padding: 6 0 10 0; }
+.error-panel-title { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: -text; }
+.error-panel-message { -fx-text-fill: -text-muted; -fx-text-alignment: center; -fx-padding: 0 0 8 0; }
+
+/* ===================== Keyboard focus ===================== */
+/* A ring around whatever Tab has reached, following its shape; not shown after a mouse click */
+.button:focus-visible,
+.toggle-button:focus-visible,
+.check-box:focus-visible > .box {
+    -fx-effect: dropshadow(three-pass-box, rgba(57, 58, 123, 0.85), 4, 1.0, 0, 0);
+}
+/* A link has no background for a ring to sit behind, so it gets a soft highlight instead */
+.hyperlink:focus-visible { -fx-background-color: -brand-blue-tint; -fx-background-radius: 6; }

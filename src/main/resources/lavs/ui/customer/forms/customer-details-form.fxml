@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- A customer's personal details: the new customer wizard's first step, and the profile's Edit pop-up. -->
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="lavs.ui.customer.forms.CustomerDetailsFormController"
+          hgap="16" vgap="14" prefWidth="720">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="33.3"/>
+        <ColumnConstraints percentWidth="33.3"/>
+        <ColumnConstraints percentWidth="33.3"/>
+    </columnConstraints>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Label text="Title (optional)"/>
+        <ComboBox fx:id="titleBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="titleError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Label text="First name"/>
+        <TextField fx:id="firstNameField"/>
+        <Label fx:id="firstNameError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <Label text="Family name"/>
+        <TextField fx:id="familyNameField"/>
+        <Label fx:id="familyNameError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+
+    <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <Label text="Date of birth (optional)"/>
+        <DatePicker fx:id="dateOfBirthPicker" maxWidth="Infinity"/>
+        <Label fx:id="dateOfBirthError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label text="Nationality (optional)"/>
+        <ComboBox fx:id="nationalityBox" promptText="Select" maxWidth="Infinity"/>
+        <Label fx:id="nationalityError" styleClass="field-error-message" wrapText="true"/>
+    </VBox>
+</GridPane>

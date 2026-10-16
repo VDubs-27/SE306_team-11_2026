@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import lavs.logic.model.FieldError;
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.Choices;
 import lavs.ui.common.DateInput;
@@ -53,10 +54,10 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
 
     @FXML
     private void initialize() {
-        Choices.fill(rateTypeBox, Loan.RateType.values(), Loan.RateType.UNKNOWN, LoanText::rateTypeName);
-        Choices.fill(rateFrequencyBox, Loan.RateFrequency.values(), Loan.RateFrequency.UNKNOWN,
+        Choices.fill(rateTypeBox, ConstantCategory.RATE_TYPE, Loan.RateType.values(), Loan.RateType.UNKNOWN, LoanText::rateTypeName);
+        Choices.fill(rateFrequencyBox, ConstantCategory.RATE_FREQUENCY, Loan.RateFrequency.values(), Loan.RateFrequency.UNKNOWN,
                 Loan.RateFrequency::code);
-        Choices.fill(paymentFrequencyBox, Loan.PaymentFrequency.values(), Loan.PaymentFrequency.UNKNOWN,
+        Choices.fill(paymentFrequencyBox, ConstantCategory.PAYMENT_FREQUENCY, Loan.PaymentFrequency.values(), Loan.PaymentFrequency.UNKNOWN,
                 LoanText::paymentFrequencyName);
         startDate = new DateInput(startDatePicker);
         renewalDate = new DateInput(renewalDatePicker);
@@ -79,9 +80,9 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
         principalField.clear();
         rateTypeBox.setValue(null);
         rateField.clear();
-        rateFrequencyBox.setValue(Loan.RateFrequency.YEARLY);
+        rateFrequencyBox.setValue(Choices.preferred(rateFrequencyBox, Loan.RateFrequency.YEARLY));
         paymentField.clear();
-        paymentFrequencyBox.setValue(Loan.PaymentFrequency.MONTHLY);
+        paymentFrequencyBox.setValue(Choices.preferred(paymentFrequencyBox, Loan.PaymentFrequency.MONTHLY));
         startDatePicker.setValue(LocalDate.now());
         renewalDatePicker.setValue(null);
         errors.show(List.of());
@@ -155,5 +156,10 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
         if (Numbers.isInvalid(field.getText())) {
             problems.add(new FieldError(name, message));
         }
+    }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
     }
 }

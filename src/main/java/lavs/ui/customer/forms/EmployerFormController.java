@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import lavs.logic.model.FieldError;
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Employer;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
@@ -38,7 +39,7 @@ public class EmployerFormController implements RecordForm<Employer.Details> {
 
     @FXML
     private void initialize() {
-        Choices.fill(typeBox, Employer.Type.values(), Employer.Type.UNKNOWN, Employer.Type::code);
+        Choices.fill(typeBox, ConstantCategory.EMPLOYER_TYPE, Employer.Type.values(), Employer.Type.UNKNOWN, Employer.Type::code);
         errors = new FieldErrors()
                 .add("type", typeBox, typeError)
                 .add("name", nameField, nameError)
@@ -89,5 +90,10 @@ public class EmployerFormController implements RecordForm<Employer.Details> {
 
     private static boolean isNegative(BigDecimal value) {
         return value != null && value.signum() < 0;
+    }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
     }
 }

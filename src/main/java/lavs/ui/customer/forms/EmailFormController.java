@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Email;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
@@ -35,7 +36,7 @@ public class EmailFormController implements RecordForm<Email.Details> {
 
     @FXML
     private void initialize() {
-        Choices.fill(typeBox, Email.Type.values(), Email.Type.UNKNOWN, Email.Type::code);
+        Choices.fill(typeBox, ConstantCategory.EMAIL_TYPE, Email.Type.values(), Email.Type.UNKNOWN, Email.Type::code);
         // "Describe the email" only applies to an Other email
         typeBox.valueProperty().addListener((obs, oldType, type) -> showOtherType(type == Email.Type.OTHER));
         errors = new FieldErrors()
@@ -80,5 +81,10 @@ public class EmailFormController implements RecordForm<Email.Details> {
 
     private void showOtherType(boolean show) {
         Nodes.show(otherTypeFieldBox, show);
+    }
+
+    @Override
+    public FieldErrors fieldErrors() {
+        return errors;
     }
 }

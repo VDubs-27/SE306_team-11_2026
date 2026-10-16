@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Phone;
+import lavs.logic.service.Result;
 import lavs.ui.common.ContactRows;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordEditor;
@@ -54,31 +55,37 @@ public class ContactsTabController {
 
     @FXML
     private void handleAddPhone() {
-        phoneEditor.add(false, phone -> {
-            // Later: CustomerService.addPhone(customerNumber, phone), then reload the tab
+        phoneEditor.addAndSave(false, phone -> {
+            // Later: return phoneService.add(customerNumber, phone), then reload the tab
+            return Result.success(null);
         });
     }
 
     @FXML
     private void handleAddEmail() {
-        emailEditor.add(false, email -> {
-            // Later: CustomerService.addEmail(customerNumber, email), then reload the tab
+        emailEditor.addAndSave(false, email -> {
+            // Later: return emailService.add(customerNumber, email), then reload the tab
+            return Result.success(null);
         });
     }
 
     private void handleEditPhone(Phone phone) {
-        phoneEditor.edit(phone.details(), changed -> {
-            // Later: CustomerService.updatePhone(phone.id(), changed), then reload the tab
+        phoneEditor.editAndSave(phone.details(), changed -> {
+            // Later: return phoneService.update(customerNumber, phone.id(), changed), then reload the tab
+            return Result.success(null);
         }, () -> {
-            // Later: CustomerService.removePhone(phone.id()), then reload the tab
+            // Later: return phoneService.delete(customerNumber, phone.id()), then reload the tab
+            return Result.success(null);
         });
     }
 
     private void handleEditEmail(Email email) {
-        emailEditor.edit(email.details(), changed -> {
-            // Later: CustomerService.updateEmail(email.id(), changed), then reload the tab
+        emailEditor.editAndSave(email.details(), changed -> {
+            // Later: return emailService.update(customerNumber, email.id(), changed), then reload the tab
+            return Result.success(null);
         }, () -> {
-            // Later: CustomerService.removeEmail(email.id()), then reload the tab
+            // Later: return emailService.delete(customerNumber, email.id()), then reload the tab
+            return Result.success(null);
         });
     }
 }

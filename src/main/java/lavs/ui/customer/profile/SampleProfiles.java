@@ -27,14 +27,21 @@ public final class SampleProfiles {
 
     private static final CustomerNumber JOHN = new CustomerNumber("01-0013-5810482");
 
-    private static final Map<String, Customer> CUSTOMERS = Map.of(
-            JOHN.value(), customer(JOHN.value(), "Mr", "John", "Smith", LocalDate.of(1985, 3, 14)),
-            "01-0013-5811967", customer("01-0013-5811967", "Mr", "John", "Smith", LocalDate.of(1962, 11, 2)),
-            "01-0013-5810233", customer("01-0013-5810233", "Mrs", "Sarah", "Smith", LocalDate.of(1990, 7, 21)),
-            "01-0013-5812810", customer("01-0013-5812810", "Ms", "Aroha", "Smith", LocalDate.of(1978, 1, 9)),
-            "01-0013-5810775", customer("01-0013-5810775", "Mr", "David", "Smith", LocalDate.of(1971, 5, 30)),
-            "01-0013-5813302", customer("01-0013-5813302", "Ms", "Mei", "Smith", LocalDate.of(1995, 9, 17)),
-            "01-0013-5811408", customer("01-0013-5811408", "Mr", "Peter", "Smithson", LocalDate.of(1958, 12, 3)));
+    // More than one page of "Smith" results, so customer search has something to page through
+    private static final Map<String, Customer> CUSTOMERS = Map.ofEntries(
+            Map.entry(JOHN.value(), customer(JOHN.value(), "Mr", "John", "Smith", LocalDate.of(1985, 3, 14))),
+            Map.entry("01-0013-5811967", customer("01-0013-5811967", "Mr", "John", "Smith", LocalDate.of(1962, 11, 2))),
+            Map.entry("01-0013-5810233", customer("01-0013-5810233", "Mrs", "Sarah", "Smith", LocalDate.of(1990, 7, 21))),
+            Map.entry("01-0013-5812810", customer("01-0013-5812810", "Ms", "Aroha", "Smith", LocalDate.of(1978, 1, 9))),
+            Map.entry("01-0013-5810775", customer("01-0013-5810775", "Mr", "David", "Smith", LocalDate.of(1971, 5, 30))),
+            Map.entry("01-0013-5813302", customer("01-0013-5813302", "Ms", "Mei", "Smith", LocalDate.of(1995, 9, 17))),
+            Map.entry("01-0013-5811408", customer("01-0013-5811408", "Mr", "Peter", "Smithson", LocalDate.of(1958, 12, 3))),
+            Map.entry("01-0013-5814016", customer("01-0013-5814016", "Mr", "Hemi", "Smith", LocalDate.of(1988, 4, 22))),
+            Map.entry("01-0013-5814128", customer("01-0013-5814128", "Mrs", "Grace", "Smith", LocalDate.of(1966, 8, 5))),
+            Map.entry("01-0013-5814239", customer("01-0013-5814239", "Mr", "Liam", "Smith", LocalDate.of(2001, 2, 11))),
+            Map.entry("01-0013-5814347", customer("01-0013-5814347", "Ms", "Olivia", "Smithers", LocalDate.of(1993, 10, 28))),
+            Map.entry("01-0013-5814455", customer("01-0013-5814455", "Mr", "Tama", "Smith", LocalDate.of(1980, 6, 17))),
+            Map.entry("01-0013-5814562", customer("01-0013-5814562", "Dr", "Rachel", "Smith", LocalDate.of(1975, 12, 1))));
 
     private SampleProfiles() {
     }

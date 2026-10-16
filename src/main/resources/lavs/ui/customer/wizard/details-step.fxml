@@ -14,44 +14,11 @@
     </HBox>
 
     <VBox styleClass="card-section" spacing="16">
-        <GridPane hgap="16" vgap="14">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="33.3"/>
-                <ColumnConstraints percentWidth="33.3"/>
-                <ColumnConstraints percentWidth="33.3"/>
-            </columnConstraints>
-
-            <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <Label text="Title (optional)"/>
-                <ComboBox fx:id="titleBox" promptText="Select" maxWidth="Infinity"/>
-                <Label fx:id="titleError" styleClass="field-error-message" wrapText="true"/>
-            </VBox>
-            <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                <Label text="First name"/>
-                <TextField fx:id="firstNameField"/>
-                <Label fx:id="firstNameError" styleClass="field-error-message" wrapText="true"/>
-            </VBox>
-            <VBox styleClass="field" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                <Label text="Family name"/>
-                <TextField fx:id="familyNameField"/>
-                <Label fx:id="familyNameError" styleClass="field-error-message" wrapText="true"/>
-            </VBox>
-
-            <VBox styleClass="field" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                <Label text="Date of birth (optional)"/>
-                <DatePicker fx:id="dateOfBirthPicker" maxWidth="Infinity"/>
-                <Label fx:id="dateOfBirthError" styleClass="field-error-message" wrapText="true"/>
-            </VBox>
-            <VBox styleClass="field" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Label text="Nationality (optional)"/>
-                <ComboBox fx:id="nationalityBox" promptText="Select" maxWidth="Infinity"/>
-                <Label fx:id="nationalityError" styleClass="field-error-message" wrapText="true"/>
-            </VBox>
-        </GridPane>
+        <fx:include fx:id="form" source="/lavs/ui/customer/forms/customer-details-form.fxml"/>
 
         <HBox styleClass="note">
             <Label text="ⓘ" minWidth="-Infinity"/>
-            <Label text="Check each detail with the customer. Titles and nationalities come from the mainframe's category lists."/>
+            <Label text="Check each detail with the customer before moving on."/>
         </HBox>
     </VBox>
 </VBox>

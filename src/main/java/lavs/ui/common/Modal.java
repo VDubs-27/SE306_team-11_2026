@@ -4,14 +4,18 @@ import java.util.function.BooleanSupplier;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -25,7 +29,9 @@ import javafx.util.Duration;
 /**
  * A pop-up drawn inside the app rather than as a separate window: the screen dims behind it and a
  * white card shows a title, the content and buttons. showAndWait() waits for an answer, like a
- * dialog, and returns the id of the button chosen; × and Escape count as {@link #CLOSED}.
+ * dialog, and returns the id of the button chosen; × and Escape count as {@link #CLOSED}. When the
+ * window is too short for it, the content scrolls inside the card and the title and buttons stay put.
+ * Enter presses Save on a form; a question (with no checks on its answer) needs a click or Space.
  * Used for the add/edit forms and for confirmations.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
@@ -38,12 +44,18 @@ public final class Modal {
     public enum Kind { PRIMARY, SECONDARY, DANGER }
 
     private static final Duration FADE = Duration.millis(120);
+    /** Space kept between the card and the window's edges. */
+    private static final double WINDOW_MARGIN = 24;
 
     private final Node owner;
     private final VBox card;
     private final VBox body;
     private final HBox leftButtons = new HBox(10);
     private final HBox rightButtons = new HBox(10);
+    private final Label errorText = new Label();
+    private final HBox errorBanner;
+    /** The button Enter presses: a form's Save, the one primary button with checks. */
+    private Button enterButton;
     private final Object loopKey = new Object();
     private boolean open;
 
@@ -70,7 +82,26 @@ public final class Modal {
         footer.setAlignment(Pos.CENTER_LEFT);
         footer.getStyleClass().add("modal-footer");
 
-        card = new VBox(header, body, footer);
+        // Why the last try failed, e.g. the mainframe couldn't be reached; hidden until then
+        Label errorIcon = new Label("ⓘ");
+        errorIcon.setMinWidth(Region.USE_PREF_SIZE);
+        errorText.setWrapText(true);
+        errorBanner = new HBox(errorIcon, errorText);
+        errorBanner.getStyleClass().add("banner-error");
+        VBox.setMargin(errorBanner, new Insets(6, 24, 2, 24));
+        Nodes.show(errorBanner, false);
+
+        // The content scrolls when the window is too short for the whole card
+        ScrollPane bodyScroll = new ScrollPane(body);
+        bodyScroll.setFitToWidth(true);
+        bodyScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        bodyScroll.getStyleClass().add("modal-scroll");
+        VBox.setVgrow(bodyScroll, Priority.ALWAYS);
+        header.setMinHeight(Region.USE_PREF_SIZE);
+        footer.setMinHeight(Region.USE_PREF_SIZE);
+        errorBanner.setMinHeight(Region.USE_PREF_SIZE);
+
+        card = new VBox(header, errorBanner, bodyScroll, footer);
         card.getStyleClass().add("modal-card");
         card.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
     }
@@ -79,6 +110,12 @@ public final class Modal {
     public Modal content(Node content) {
         body.getChildren().add(content);
         return this;
+    }
+
+    /** Shows why something failed in a red banner under the title, or hides it when message is null. */
+    public void showError(String message) {
+        errorText.setText(message == null ? "" : message);
+        Nodes.show(errorBanner, message != null);
     }
 
     /** Adds a line of explanation, for confirmations. */
@@ -112,6 +149,9 @@ public final class Modal {
                 finish(id);
             }
         });
+        if (kind == Kind.PRIMARY && guard != null) {
+            enterButton = button;
+        }
         (kind == Kind.DANGER ? leftButtons : rightButtons).getChildren().add(button);
         return this;
     }
@@ -126,7 +166,13 @@ public final class Modal {
 
         Region scrim = new Region();
         scrim.getStyleClass().add("modal-scrim");
-        StackPane layer = new StackPane(scrim, card);
+        // The frame keeps the card inside the window, so a tall card gets shorter and scrolls
+        VBox frame = new VBox(card);
+        frame.setAlignment(Pos.CENTER);
+        frame.setFillWidth(false);
+        frame.setPadding(new Insets(WINDOW_MARGIN));
+        frame.setPickOnBounds(false);
+        StackPane layer = new StackPane(scrim, frame);
         // Laid over the screen by swapping in a holder as the scene's root, then putting it back
         StackPane holder = new StackPane();
         scene.setRoot(holder);
@@ -135,6 +181,13 @@ public final class Modal {
             if (event.getCode() == KeyCode.ESCAPE) {
                 event.consume();
                 finish(CLOSED);
+            }
+        });
+        // Enter reaches here once the focused control has had its turn; it never reaches the screen behind
+        holder.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                event.consume();
+                pressForEnter(event.getTarget());
             }
         });
 
@@ -151,6 +204,21 @@ public final class Modal {
         scene.setRoot(screen);
         body.getChildren().clear();
         return (String) chosen;
+    }
+
+    /**
+     * What Enter does: presses a focused button; in a box with its own Enter (a note's text, or a
+     * search box) does nothing more; anywhere else on a form, presses Save.
+     */
+    private void pressForEnter(Object target) {
+        if (target instanceof ButtonBase focused) {
+            focused.fire();
+        } else if (target instanceof TextInputControl && !(target instanceof TextField)
+                || target instanceof TextField field && field.getOnAction() != null) {
+            return;
+        } else if (enterButton != null && !enterButton.isDisabled()) {
+            enterButton.fire();
+        }
     }
 
     /** Ends the wait once; a second Escape or click while closing does nothing. */
