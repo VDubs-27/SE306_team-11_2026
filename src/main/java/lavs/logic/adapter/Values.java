@@ -40,9 +40,10 @@ final class Values {
         if (isBlank(value)) {
             return null;
         }
-        return value.contains("T")
-                ? LocalDate.parse(value, DateTimeFormatter.ISO_DATE_TIME)
-                : LocalDate.parse(value);
+        String trimmed = value.trim();
+        return trimmed.contains("T")
+                ? LocalDate.parse(trimmed, DateTimeFormatter.ISO_DATE_TIME)
+                : LocalDate.parse(trimmed);
     }
 
     static String text(LocalDate date) {

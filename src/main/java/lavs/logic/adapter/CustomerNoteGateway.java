@@ -52,13 +52,12 @@ public class CustomerNoteGateway {
 
     public CustomerNote add(CustomerNumber customer, CustomerNote.Details details) {
         AddNote message = adapter.send(new AddNote(customer.value(), details.lines(), details.type().code()));
-        return new CustomerNote(message.getId(), customer, details.type(), details.lines(), message.getAuthor(), null);
+        return retrieve(customer, message.getId());
     }
 
     public CustomerNote update(CustomerNumber customer, long id, CustomerNote.Details details) {
-        UpdateNote message = adapter.send(
-                new UpdateNote(customer.value(), id, details.lines(), details.type().code()));
-        return new CustomerNote(id, customer, details.type(), details.lines(), message.getAuthor(), null);
+        adapter.send(new UpdateNote(customer.value(), id, details.lines(), details.type().code()));
+        return retrieve(customer, id);
     }
 
     public void delete(CustomerNumber customer, long id) {

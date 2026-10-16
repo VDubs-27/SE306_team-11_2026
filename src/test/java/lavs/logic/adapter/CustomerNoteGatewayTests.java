@@ -143,31 +143,49 @@ class CustomerNoteGatewayTests {
     }
 
     @Test
-    void addSendsTheNoteAndReturnsItWithTheServersAuthor() {
-        connection.reply("customer.addNote", row("id", "12", "author", "Bob Ross"));
+    void addSendsTheNoteThenReadsItBack() {
+        connection
+                .reply("customer.addNote", row("id", "12", "author", "Bob Ross"))
+                .reply("customerNote.retrieve", row("id", "12", "type", "Contact", "author", "Bob Ross",
+                        "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
         CustomerNote added = gateway.add(CUSTOMER, DETAILS);
 
         MessageRequest request = connection.onlyRequest("customer.addNote");
         assertAll(
                 () -> assertEquals(new CustomerNote(12, CUSTOMER, CustomerNote.Type.CONTACT, "Prefers mobile",
-                        "Bob Ross", null), added),
+                        "Bob Ross", LocalDate.of(2026, 10, 5)), added),
                 () -> assertEquals("01-0013", request.getValue("customer")),
                 () -> assertEquals("Contact", request.getValue("type")),
-                () -> assertEquals("Prefers mobile", request.getValue("lines"))
+                () -> assertEquals("Prefers mobile", request.getValue("lines")),
+                () -> assertEquals(1, connection.requests("customerNote.retrieve").size())
         );
     }
 
     @Test
-    void updateSendsTheIdAndTheNote() {
-        connection.reply("customer.updateNote", row("id", "7", "author", "Bob Ross"));
+    void addFailureWhileReadingBackIsThrown() {
+        connection
+                .reply("customer.addNote", row("id", "12", "author", "Bob Ross"))
+                .fail("customerNote.retrieve", 10, "Unavailable");
+
+        MainframeException e = assertThrows(MainframeException.class, () -> gateway.add(CUSTOMER, DETAILS));
+
+        assertTrue(e.isNetworkFailure());
+    }
+
+    @Test
+    void updateSendsTheIdAndTheNoteThenReadsItBack() {
+        connection
+                .reply("customer.updateNote", row("id", "7", "author", "Bob Ross"))
+                .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
+                        "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
         CustomerNote updated = gateway.update(CUSTOMER, 7, DETAILS);
 
         MessageRequest request = connection.onlyRequest("customer.updateNote");
         assertAll(
-                () -> assertEquals(7, updated.id()),
-                () -> assertEquals("Bob Ross", updated.author()),
+                () -> assertEquals(NOTE, updated),
+                () -> assertEquals("01-0013", request.getValue("customer")),
                 () -> assertEquals("7", request.getValue("id")),
                 () -> assertEquals("Contact", request.getValue("type")),
                 () -> assertEquals("Prefers mobile", request.getValue("lines"))
@@ -223,5 +241,28 @@ class CustomerNoteGatewayTests {
                 "dateAdded", "2026-10-05T12:13:36.4120000+13:00", "lines", "Prefers mobile"));
 
         assertEquals(LocalDate.of(2026, 10, 5), gateway.retrieve(CUSTOMER, 7).dateAdded());
+    }
+
+    @Test
+    void retrieveIgnoresSpacesAroundTheDate() {
+        connection.reply("customerNote.retrieve", row("id", "7", "type", "Contact", "dateAdded", " 2026-10-05 ",
+                "lines", "Hi"));
+
+        assertEquals(LocalDate.of(2026, 10, 5), gateway.retrieve(CUSTOMER, 7).dateAdded());
+    }
+
+    // These two rely on MainframeAdapter.send reporting parse failures inside a message as UNABLE_TO_PARSE
+    @Test
+    void listResponseWithoutAnItemCountIsReportedAsUnreadable() {
+        connection.reply("customerNote.list", row("total", "1"));
+
+        assertUnreadable(assertThrows(MainframeException.class, () -> gateway.list(CUSTOMER, 1, 8)));
+    }
+
+    @Test
+    void listItemWithoutAnIdIsReportedAsUnreadable() {
+        connection.replyList("customerNote.list", 1, row("type", "Contact"));
+
+        assertUnreadable(assertThrows(MainframeException.class, () -> gateway.list(CUSTOMER, 1, 8)));
     }
 }

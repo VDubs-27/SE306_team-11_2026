@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import lavs.logic.adapter.CustomerNoteGateway;
@@ -66,14 +67,18 @@ class CustomerNoteServiceTests {
     }
 
     @Test
-    void validNoteIsAdded() {
-        connection.reply("customer.addNote", row("id", "12", "author", "Bob Ross"));
+    void validNoteIsAddedAndReturnedWithItsDate() {
+        connection
+                .reply("customer.addNote", row("id", "12", "author", "Bob Ross"))
+                .reply("customerNote.retrieve", row("id", "12", "type", "Contact", "author", "Bob Ross",
+                        "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
         Result<CustomerNote> result = service.add(CUSTOMER, DETAILS);
 
         assertAll(
                 () -> assertTrue(result.successful()),
-                () -> assertEquals(12, result.value().id())
+                () -> assertEquals(12, result.value().id()),
+                () -> assertEquals(LocalDate.of(2026, 10, 5), result.value().dateAdded())
         );
     }
 
@@ -97,7 +102,10 @@ class CustomerNoteServiceTests {
 
     @Test
     void validNoteIsUpdated() {
-        connection.reply("customer.updateNote", row("id", "7", "author", "Bob Ross"));
+        connection
+                .reply("customer.updateNote", row("id", "7", "author", "Bob Ross"))
+                .reply("customerNote.retrieve", row("id", "7", "type", "Contact", "author", "Bob Ross",
+                        "dateAdded", "2026-10-05", "lines", "Prefers mobile"));
 
         Result<CustomerNote> result = service.update(CUSTOMER, 7, DETAILS);
 
