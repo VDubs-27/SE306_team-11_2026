@@ -83,12 +83,12 @@
 /* ===================== Header (shell) ===================== */
 .app-header {
     -fx-background-color: -brand-blue;
-    -fx-border-color: transparent transparent -brand-red transparent;
-    -fx-border-width: 0 0 4 0;
     -fx-padding: 12 40 12 40;
     -fx-spacing: 16;
     -fx-alignment: center-left;
 }
+/* The red line under the header; sweeps while the app waits on the mainframe */
+.app-header-bar { -fx-background-color: -brand-red; }
 .app-header .app-name { -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; }
 .app-header .app-subtitle { -fx-text-fill: #cfd0ea; -fx-font-size: 12px; }
 .app-header .separator .line {

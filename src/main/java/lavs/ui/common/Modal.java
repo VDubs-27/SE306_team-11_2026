@@ -1,5 +1,7 @@
 package lavs.ui.common;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import javafx.animation.FadeTransition;
@@ -32,6 +34,8 @@ import javafx.util.Duration;
  * dialog, and returns the id of the button chosen; × and Escape count as {@link #CLOSED}. When the
  * window is too short for it, the content scrolls inside the card and the title and buttons stay put.
  * Enter presses Save on a form; a question (with no checks on its answer) needs a click or Space.
+ * While busy (see setBusy), such as saving to the mainframe, nothing on the card can be used and it
+ * can't be closed, until the work is done.
  * Used for the add/edit forms and for confirmations.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
@@ -54,6 +58,11 @@ public final class Modal {
     private final HBox rightButtons = new HBox(10);
     private final Label errorText = new Label();
     private final HBox errorBanner;
+    private final Button closeButton = new Button("✕");
+    /** Each button by its id, with its own text, so a busy button's text can be put back. */
+    private final Map<String, Button> buttons = new HashMap<>();
+    private final Map<String, String> buttonTexts = new HashMap<>();
+    private boolean busy;
     /** The button Enter presses: a form's Save, the one primary button with checks. */
     private Button enterButton;
     private final Object loopKey = new Object();
@@ -66,10 +75,9 @@ public final class Modal {
         titleLabel.getStyleClass().add("heading-2");
         Region gap = new Region();
         HBox.setHgrow(gap, Priority.ALWAYS);
-        Button close = new Button("✕");
-        close.getStyleClass().add("modal-close");
-        close.setOnAction(event -> finish(CLOSED));
-        HBox header = new HBox(titleLabel, gap, close);
+        closeButton.getStyleClass().add("modal-close");
+        closeButton.setOnAction(event -> finish(CLOSED));
+        HBox header = new HBox(titleLabel, gap, closeButton);
         header.setAlignment(Pos.CENTER_LEFT);
         header.getStyleClass().add("modal-header");
 
@@ -152,8 +160,39 @@ public final class Modal {
         if (kind == Kind.PRIMARY && guard != null) {
             enterButton = button;
         }
+        buttons.put(id, button);
+        buttonTexts.put(id, text);
         (kind == Kind.DANGER ? leftButtons : rightButtons).getChildren().add(button);
         return this;
+    }
+
+    /**
+     * Locks the card while work it started is under way, e.g. saving: the content and buttons can't be
+     * used, it can't be closed, and the button with this id says busyText, e.g. "Saving…".
+     */
+    public void setBusy(String id, String busyText) {
+        busy = true;
+        buttons.get(id).setText(busyText);
+        lock(true);
+    }
+
+    /** Unlocks the card after setBusy, putting the buttons' own text back. */
+    public void clearBusy() {
+        busy = false;
+        buttons.forEach((id, button) -> button.setText(buttonTexts.get(id)));
+        lock(false);
+    }
+
+    /** Closes the pop-up as if the button with this id were chosen, e.g. once work started by it is done. */
+    public void close(String id) {
+        clearBusy();
+        finish(id);
+    }
+
+    private void lock(boolean locked) {
+        body.setDisable(locked);
+        closeButton.setDisable(locked);
+        buttons.values().forEach(button -> button.setDisable(locked));
     }
 
     /**
@@ -221,9 +260,9 @@ public final class Modal {
         }
     }
 
-    /** Ends the wait once; a second Escape or click while closing does nothing. */
+    /** Ends the wait once; a second Escape or click while closing, or anything while busy, does nothing. */
     private void finish(String id) {
-        if (open) {
+        if (open && !busy) {
             open = false;
             Platform.exitNestedEventLoop(loopKey, id);
         }

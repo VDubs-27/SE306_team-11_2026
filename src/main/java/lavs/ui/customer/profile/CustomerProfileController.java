@@ -71,7 +71,7 @@ public class CustomerProfileController implements NavigatorAware {
     private void initialize() {
         TabBars.setUp(tabPane);
         loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
-        detailsController.setOnSaved(this::saveDetails);
+        detailsController.setOnSaved(this::saveDetails, this::showSavedDetails);
         detailsController.setOnStatusChanged(this::changeStatus);
         // Later: save document and note changes through CustomerService; until then they only show on this screen
         documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
@@ -132,15 +132,19 @@ public class CustomerProfileController implements NavigatorAware {
     }
 
     /** Saves the edited details, keeping the customer's number and status; the edit pop-up shows any failure. */
-    private Result<?> saveDetails(Customer.Details changed) {
-        // Later: Result<?> saved = customerService.update(customer.number(), changed); if it failed, return it
-        customer = new Customer(customer.number(), changed.title(), changed.firstName(), changed.familyName(),
-                customer.status(), changed.dateOfBirth(), changed.nationality());
+    private Result<Customer> saveDetails(Customer.Details changed) {
+        // Later: return customerService.update(customer.number(), changed)
+        return Result.success(new Customer(customer.number(), changed.title(), changed.firstName(),
+                changed.familyName(), customer.status(), changed.dateOfBirth(), changed.nationality()));
+    }
+
+    /** Shows the customer as saved, once the edit pop-up has closed. */
+    private void showSavedDetails(Customer saved) {
+        customer = saved;
         showSummary();
         detailsController.show(customer);
         Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
                 DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
-        return Result.success(null);
     }
 
     /** Makes the customer active or inactive, once confirmed on the Details tab. */
