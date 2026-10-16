@@ -3,8 +3,11 @@ package lavs.logic.model.constants;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
-import lavs.logic.model.customer.*;
+import lavs.logic.model.customer.Address;
+import lavs.logic.model.customer.Customer;
+import lavs.logic.model.customer.Email;
+import lavs.logic.model.customer.Employer;
+import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 
