@@ -4,6 +4,8 @@ import static lavs.logic.model.Validation.isBlank;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import java.util.Objects;
 
 final class Values {
@@ -35,7 +37,13 @@ final class Values {
     }
 
     static LocalDate date(String value) {
-        return isBlank(value) ? null : LocalDate.parse(value.trim());
+        if (isBlank(value)) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.contains("T")
+                ? LocalDate.parse(trimmed, DateTimeFormatter.ISO_DATE_TIME)
+                : LocalDate.parse(trimmed);
     }
 
     static String text(LocalDate date) {

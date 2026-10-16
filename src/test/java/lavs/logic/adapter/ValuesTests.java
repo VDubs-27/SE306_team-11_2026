@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -85,5 +88,27 @@ class ValuesTests {
     @Test
     void missingRequiredAmountFails() {
         assertThrows(NullPointerException.class, () -> Values.amount(null));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    void blankDateIsNull(String value) {
+        assertNull(Values.date(value));
+    }
+
+    @Test
+    void plainDateIsParsed() {
+        assertEquals(LocalDate.of(2026, 10, 5), Values.date("2026-10-05"));
+    }
+
+    @Test
+    void timestampKeepsItsDate() {
+        assertEquals(LocalDate.of(2026, 10, 16), Values.date("2026-10-16T12:13:36.4120000+13:00"));
+    }
+
+    @Test
+    void unreadableDateThrows() {
+        assertThrows(DateTimeParseException.class, () -> Values.date("05/10/2026"));
     }
 }

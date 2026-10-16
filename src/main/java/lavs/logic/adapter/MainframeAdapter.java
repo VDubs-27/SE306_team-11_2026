@@ -13,6 +13,7 @@ public class MainframeAdapter {
     private static final String NETWORK_FAILURE_TEXT =
             "Could not reach the mainframe. Check the connection and try again.";
     private static final String REJECTED_TEXT = "The mainframe rejected the request.";
+    private static final String UNREADABLE_TEXT = "The mainframe returned a response that could not be read.";
 
     private final Connection connection;
 
@@ -50,6 +51,9 @@ public class MainframeAdapter {
             status = call.run();
         } catch (IOException e) {
             throw new MainframeException(StatusMessage.NETWORK_FAILURE_UNAVAILABLE.getCode(), NETWORK_FAILURE_TEXT, e);
+        } catch (RuntimeException e) {
+            // Throw on missing or malformed values.
+            throw new MainframeException(StatusMessage.UNABLE_TO_PARSE.getCode(), UNREADABLE_TEXT, e);
         }
         if (!status.getWasSuccessful()) {
             throw new MainframeException(status.getErrorCode(), describe(status));
