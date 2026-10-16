@@ -35,10 +35,11 @@ public class CustomerSearchController implements NavigatorAware {
     /** Corner radius of .card in app.css. */
     private static final double CARD_RADIUS = 16;
 
+    // The mainframe matches whole names only, so the screen says how to search
     private static final String PROMPT_MESSAGE =
-            "Search by name or customer number to find a customer";
+            "Search by a first or family name, e.g. Smith, or a full customer number, e.g. 01-0001-0000015";
     private static final String NO_RESULTS_MESSAGE =
-            "No customers found. Check the spelling or search by customer number.";
+            "No customers found. Check the spelling, and use whole names (Smith, not Smi) or a full customer number.";
     private static final String FAILED_MESSAGE = "The search didn't work. Try again.";
 
     @FXML private ScrollPane pageScroll;

@@ -20,7 +20,7 @@
     </VBox>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <TextField fx:id="searchField" HBox.hgrow="ALWAYS" promptText="Search by name or customer number"
+        <TextField fx:id="searchField" HBox.hgrow="ALWAYS" promptText="Whole first or family name, or full customer number"
                    onAction="#handleSearch"/>
         <Button text="Search" styleClass="button-secondary" onAction="#handleSearch"/>
     </HBox>

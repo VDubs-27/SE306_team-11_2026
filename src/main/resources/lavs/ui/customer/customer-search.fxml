@@ -14,7 +14,7 @@
             <Label text="Find a customer"/>
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" HBox.hgrow="ALWAYS"
-                           promptText="Search by name or customer number"/>
+                           promptText="Whole first or family name, or full customer number"/>
                 <Button fx:id="searchButton" text="Search" styleClass="button-secondary"
                         defaultButton="true" onAction="#handleSearch"/>
                 <Button text="+ Add customer" styleClass="button-primary"
