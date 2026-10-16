@@ -91,7 +91,7 @@ public class CustomerSearchController implements NavigatorAware {
         resultsTitle.setText("Search results for “" + term + "”");
         resultCount.setText("Searching…");
         searchButton.setDisable(true);
-        pagerController.showLoading(page -> navigator.services().customer().customers().search(term, page),
+        pagerController.showLoading(page -> CustomerFinder.find(navigator.services().customer().customers(), term, page),
                 rows -> Tables.show(resultsTable, tableBox, emptyState, rows), this::showFound);
     }
 
