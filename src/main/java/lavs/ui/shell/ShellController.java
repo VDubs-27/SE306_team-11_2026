@@ -5,14 +5,18 @@ import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import lavs.ui.common.DisplayFormat;
 
 public class ShellController implements NavigatorAware {
 
     @FXML private StackPane contentArea;
     @FXML private Button accountButton;
+    @FXML private Label accountInitials;
 
     private final ContextMenu accountMenu = new ContextMenu();
     private Navigator navigator;
@@ -33,6 +37,12 @@ public class ShellController implements NavigatorAware {
         this.navigator = navigator;
     }
 
+    /** Shows who is signed in on the account button, e.g. "bob.ross" as Bob Ross with BR. */
+    public void showUser(String userName) {
+        accountButton.setText(DisplayFormat.userName(userName));
+        accountInitials.setText(DisplayFormat.userInitials(userName));
+    }
+
     /** Replaces whatever screen is showing below the header. */
     public void setContent(Parent screen) {
         contentArea.getChildren().setAll(screen);
@@ -49,6 +59,6 @@ public class ShellController implements NavigatorAware {
     }
 
     private void handleLogout() {
-        navigator.showLogin();
+        navigator.logOut();
     }
 }

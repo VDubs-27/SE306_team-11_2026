@@ -22,6 +22,9 @@
     -success-text: #175c34;
     -success-tint: #eef8f1;
     -success-border: #b9dcc5;
+    -info-blue: #1d4f91;
+    -info-tint: #eef5fe;
+    -info-border: #c4d7f2;
     -warning-tint: #fdfbc9;
     -warning-border: #d9cf1a;
     -warning-text: #3d3800;
@@ -268,6 +271,7 @@
 
 /* Smaller pill button, e.g. Edit beside a section heading */
 .button-small { -fx-padding: 6 18 6 18; -fx-font-size: 14px; }
+.button-large { -fx-padding: 13 28 13 28; -fx-font-size: 16px; }
 
 /* ===================== Badges and chips ===================== */
 .badge {
@@ -609,7 +613,6 @@
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
-.loan-terms { -fx-font-weight: bold; -fx-text-fill: -text; }
 .stat-tile { -fx-spacing: 4; -fx-padding: 14 18 14 18; }
 .stat-value { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -text; }
 
@@ -836,3 +839,94 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
+
+/* ===================== Summary cards ===================== */
+/* The card at the top of the profile and loan screens: who or which loan, its status, then
+   labelled facts each set off by a thin vertical line */
+.summary-card { -fx-spacing: 20; }
+.summary-card .avatar-large,
+.summary-card .loan-icon {
+    -fx-min-width: 60; -fx-min-height: 60;
+    -fx-max-width: 60; -fx-max-height: 60;
+}
+.summary-card .avatar-large { -fx-font-size: 19px; }
+.summary-card .loan-icon { -fx-font-size: 24px; }
+.summary-loan-number { -fx-font-size: 19px; }
+.summary-name { -fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: -text; }
+.summary-fact { -fx-spacing: 22; -fx-alignment: center-left; }
+.summary-fact-text { -fx-spacing: 4; -fx-alignment: center-left; }
+.summary-divider {
+    -fx-background-color: -line;
+    -fx-min-width: 1; -fx-pref-width: 1; -fx-max-width: 1;
+    -fx-min-height: 44; -fx-pref-height: 44; -fx-max-height: 44;
+}
+.summary-caption { -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: -text-muted; }
+.summary-value { -fx-font-size: 17px; -fx-text-fill: -text; }
+.summary-number { -fx-font-weight: bold; }
+
+/* ===================== Login ===================== */
+/* The whole window before signing in: brand blue with the red line along the top, like the header */
+.login-page { -fx-background-color: -brand-blue; }
+.login-content { -fx-padding: 24; }
+.login-top-bar { -fx-background-color: -brand-red; }
+/* The highlight that sweeps along a LoadingBar: brightest in the middle, fading at both ends */
+.loading-sweep {
+    -fx-background-color: linear-gradient(to right,
+            rgba(255, 255, 255, 0), rgba(255, 236, 228, 0.9), rgba(255, 255, 255, 0));
+}
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 30 32 30 32;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 24, 0, 0, 6);
+}
+.login-eyebrow { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -brand-blue; }
+.login-title { -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: -text; }
+.login-button { -fx-padding: 12 22 12 22; -fx-font-size: 15px; }
+.login-footnote { -fx-font-size: 12px; -fx-text-fill: #cfd0ea; }
+
+/* Room on the right of the password for the eye button */
+.password-input { -fx-padding: 0 48 0 16; }
+.password-toggle,
+.password-toggle:selected,
+.password-toggle:hover,
+.password-toggle:focused {
+    -fx-background-color: transparent;
+    -fx-padding: 6 8 6 8;
+    -fx-cursor: hand;
+}
+.password-eye { -fx-fill: transparent; -fx-stroke: -text-muted; -fx-stroke-width: 1.3; }
+.password-toggle:hover .password-eye { -fx-stroke: -brand-blue; }
+
+/* ===================== Toasts ===================== */
+/* Short messages at the top of the window, e.g. "Signed out": a tinted card, round icon, title and detail */
+.toast-layer { -fx-padding: 22 16 0 16; }
+.toast {
+    -fx-max-width: 440;
+    -fx-min-width: 440;
+    -fx-padding: 14 20 14 18;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(20, 22, 40, 0.18), 18, 0, 0, 4);
+    -fx-cursor: hand;
+}
+.toast-title { -fx-font-size: 15px; -fx-font-weight: bold; }
+.toast-message { -fx-font-size: 14px; }
+.toast-icon-glyph { -fx-fill: transparent; -fx-stroke: white; -fx-stroke-width: 2; -fx-stroke-line-cap: round; }
+
+.toast-info { -fx-background-color: -info-tint; -fx-border-color: -info-border; }
+.toast-info .label { -fx-text-fill: -info-blue; }
+.toast-info .toast-icon-disc { -fx-fill: -info-blue; }
+
+.toast-success { -fx-background-color: -success-tint; -fx-border-color: -success-border; }
+.toast-success .label { -fx-text-fill: -success-text; }
+.toast-success .toast-icon-disc { -fx-fill: -success-green; }
+
+.toast-warning { -fx-background-color: -warning-tint; -fx-border-color: -warning-border; }
+.toast-warning .label { -fx-text-fill: -warning-text; }
+.toast-warning .toast-icon-disc { -fx-fill: #8a7400; }
+
+.toast-error { -fx-background-color: -error-tint; -fx-border-color: -error-red; }
+.toast-error .label { -fx-text-fill: -error-red-text; }
+.toast-error .toast-icon-disc { -fx-fill: -error-red; }

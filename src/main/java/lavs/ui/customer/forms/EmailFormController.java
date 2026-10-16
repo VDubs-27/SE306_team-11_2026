@@ -12,13 +12,15 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Email;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.Nodes;
+import lavs.ui.common.RecordForm;
 
 /**
  * The form for one email address, used in a pop-up to add or edit. It checks itself with the
  * model's Email.Details.validate().
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class EmailFormController {
+public class EmailFormController implements RecordForm<Email.Details> {
 
     @FXML private ComboBox<Email.Type> typeBox;
     @FXML private VBox otherTypeFieldBox;
@@ -43,11 +45,13 @@ public class EmailFormController {
     }
 
     /** Empties the form for a new email. The first email is primary to start with. */
+    @Override
     public void clear(boolean first) {
         fill(new Email.Details(null, "", "", first));
     }
 
     /** Puts an existing email into the form for editing. */
+    @Override
     public void fill(Email.Details email) {
         typeBox.setValue(email.type());
         otherTypeField.setText(email.otherType() == null ? "" : email.otherType());
@@ -58,11 +62,13 @@ public class EmailFormController {
     }
 
     /** Checks the form, showing any problems. Returns true when it can be saved. */
+    @Override
     public boolean check() {
         return errors.show(read().validate());
     }
 
     /** What the form holds now. */
+    @Override
     public Email.Details read() {
         Email.Type type = typeBox.getValue();
         return new Email.Details(
@@ -73,7 +79,6 @@ public class EmailFormController {
     }
 
     private void showOtherType(boolean show) {
-        otherTypeFieldBox.setVisible(show);
-        otherTypeFieldBox.setManaged(show);
+        Nodes.show(otherTypeFieldBox, show);
     }
 }

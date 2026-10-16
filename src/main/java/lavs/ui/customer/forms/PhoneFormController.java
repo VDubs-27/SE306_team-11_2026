@@ -12,13 +12,15 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.customer.Phone;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
+import lavs.ui.common.Nodes;
+import lavs.ui.common.RecordForm;
 
 /**
  * The form for one phone number, used in a pop-up to add or edit. It checks itself with the
  * model's Phone.Details.validate().
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class PhoneFormController {
+public class PhoneFormController implements RecordForm<Phone.Details> {
 
     private static final String NZ_CODE = "64";
 
@@ -49,11 +51,13 @@ public class PhoneFormController {
     }
 
     /** Empties the form for a new number. The first number is primary to start with. */
+    @Override
     public void clear(boolean first) {
         fill(new Phone.Details(null, "", NZ_CODE, "", first, false));
     }
 
     /** Puts an existing number into the form for editing. */
+    @Override
     public void fill(Phone.Details phone) {
         typeBox.setValue(phone.type());
         otherTypeField.setText(text(phone.otherType()));
@@ -66,11 +70,13 @@ public class PhoneFormController {
     }
 
     /** Checks the form, showing any problems. Returns true when it can be saved. */
+    @Override
     public boolean check() {
         return errors.show(read().validate());
     }
 
     /** What the form holds now. A leading "+" on the country code is dropped. */
+    @Override
     public Phone.Details read() {
         Phone.Type type = typeBox.getValue();
         return new Phone.Details(
@@ -83,8 +89,7 @@ public class PhoneFormController {
     }
 
     private void showOtherType(boolean show) {
-        otherTypeFieldBox.setVisible(show);
-        otherTypeFieldBox.setManaged(show);
+        Nodes.show(otherTypeFieldBox, show);
     }
 
     private static String text(String value) {

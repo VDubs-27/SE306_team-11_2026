@@ -14,13 +14,14 @@ import lavs.logic.model.customer.Employer;
 import lavs.ui.common.Choices;
 import lavs.ui.common.FieldErrors;
 import lavs.ui.common.Numbers;
+import lavs.ui.common.RecordForm;
 
 /**
  * The form for one employer, used in a pop-up to add or edit. It checks itself with the model's
  * Employer.Details.validate(), plus a check that the salary is a number.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class EmployerFormController {
+public class EmployerFormController implements RecordForm<Employer.Details> {
 
     private static final String BAD_SALARY = "Enter the salary as a number, e.g. 78000.";
 
@@ -46,11 +47,13 @@ public class EmployerFormController {
     }
 
     /** Empties the form for a new employer. The first employer is the primary one to start with. */
+    @Override
     public void clear(boolean first) {
         fill(new Employer.Details(first ? Employer.Type.PRIMARY : Employer.Type.SECONDARY, "", "", null));
     }
 
     /** Puts an existing employer into the form for editing. */
+    @Override
     public void fill(Employer.Details employer) {
         typeBox.setValue(employer.type());
         nameField.setText(employer.name() == null ? "" : employer.name());
@@ -60,6 +63,7 @@ public class EmployerFormController {
     }
 
     /** Checks the form, showing any problems. Returns true when it can be saved. */
+    @Override
     public boolean check() {
         List<FieldError> problems = new ArrayList<>(read().validate());
         if (Numbers.isInvalid(salaryField.getText()) || isNegative(salary())) {
@@ -69,6 +73,7 @@ public class EmployerFormController {
     }
 
     /** What the form holds now. A salary that isn't a number reads as none; check() reports it. */
+    @Override
     public Employer.Details read() {
         return new Employer.Details(
                 typeBox.getValue(),

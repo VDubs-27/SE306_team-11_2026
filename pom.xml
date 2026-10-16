@@ -13,6 +13,8 @@
         <maven.compiler.release>17</maven.compiler.release>
         <JUnit.version>5.10.1</JUnit.version>
         <javafx.version>21.0.2</javafx.version>
+        <!-- The mainframe the app signs in to; override with -Dlavs.mainframe.url=... -->
+        <lavs.mainframe.url>https://animating-eraser-arrogance.ngrok-free.dev/</lavs.mainframe.url>
     </properties>
 
     <dependencyManagement>
@@ -123,6 +125,10 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>lavs.App</mainClass>
+                    <!-- javafx:run starts the app in its own process, so the server address is passed on -->
+                    <options>
+                        <option>-Dlavs.mainframe.url=${lavs.mainframe.url}</option>
+                    </options>
                 </configuration>
             </plugin>
 

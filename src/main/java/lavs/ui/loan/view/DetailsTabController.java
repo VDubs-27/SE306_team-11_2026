@@ -1,6 +1,5 @@
 package lavs.ui.loan.view;
 
-import java.util.Locale;
 import java.util.function.Consumer;
 
 import javafx.fxml.FXML;
@@ -12,8 +11,9 @@ import javafx.scene.layout.VBox;
 
 import lavs.logic.model.loan.Loan;
 import lavs.ui.common.DisplayFormat;
-import lavs.ui.common.FormDialog;
 import lavs.ui.common.LoanText;
+import lavs.ui.common.Nodes;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.loan.forms.LoanDetailsFormController;
 
 /**
@@ -30,7 +30,13 @@ public class DetailsTabController {
     @FXML private Label lockNote;
 
     private Loan loan;
+    private RecordEditor<Loan.Details> editor;
     private Consumer<Loan.Details> onSaved = details -> { };
+
+    @FXML
+    private void initialize() {
+        editor = new RecordEditor<>(detailGrid, "loan details", detailsForm, detailsFormController).withoutRemove();
+    }
 
     /** What happens after Edit is saved: the loan screen updates itself. */
     void setOnSaved(Consumer<Loan.Details> onSaved) {
@@ -53,22 +59,16 @@ public class DetailsTabController {
         add(0, 4, "Start date", DisplayFormat.date(details.startDate()));
         add(1, 4, "Renewal date", DisplayFormat.date(details.renewalDate()));
 
-        boolean editable = loan.status() == Loan.Status.NEW;
-        editButton.setVisible(editable);
-        editButton.setManaged(editable);
+        boolean editable = LoanLock.isEditable(loan);
+        Nodes.show(editButton, editable);
         lockNote.setText(editable
                 ? "These details can be changed until the loan is submitted for approval."
-                : "This loan is " + loan.status().code().toLowerCase(Locale.ROOT)
-                        + ", so its details can no longer be changed.");
+                : LoanLock.lockedNote(loan, "its details"));
     }
 
     @FXML
     private void handleEdit() {
-        detailsFormController.fill(loan.details());
-        if (FormDialog.show(detailGrid, "Edit loan details", detailsForm, detailsFormController::check, false)
-                == FormDialog.Result.SAVED) {
-            onSaved.accept(detailsFormController.read());
-        }
+        editor.edit(loan.details(), changed -> onSaved.accept(changed), () -> { });
     }
 
     /** One read-only field: a small label with its value under it. */

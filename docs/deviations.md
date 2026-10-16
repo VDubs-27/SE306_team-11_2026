@@ -80,3 +80,21 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Code:** `MainframeAdapter` only runs a provided message (`send`) and turns failures into `MainframeException`. One gateway per area (`CustomerGateway`, with loan and co-borrower to follow at time of writing) builds the provided message, calls `adapter.send`, and maps the getters into domain records so that services depend on the gateways, not the adapter.
 - **Justification:** the provided message classes already build their own request and unpack their own response, so one adapter building requests would duplicate them. `Message.send` throws a checked `IOException` and catching it once in `send` and rethrowing it as `MainframeException` stops it spreading to the services and UI. Splitting by area also keeps each class small and lets the work be reviewed in parts. UI still never touches the mainframe.
 - **Introduced in:** PR #11 (adapter foundation), PR #26 (customer gateway).
+
+## 11. Loan document fields are validated
+
+- **Proposal:** Table 1 has no rules for loan documents, and Figure 2 lists documents as an optional entity without fields.
+- **Code:** `LoanDocument.Details` requires a document type, file name and file type, and rejects a negative file size.
+- **Justification:** the mainframe's add document message sends all four fields, and a document without a type or file name cannot be identified in the documents list.
+  The fields follow the `loan.addDocument` message, as Section 3.1 says field names follow the mainframe interface messages.
+- **Introduced in:** PR #23.
+
+## 12. Loan document update adds a replacement and deletes the original
+
+- **Proposal:** Section 3.1 says each domain object maps directly to a mainframe message.
+- **Code:** `LoanDocumentService.update` checks the original still exists, adds the new details as a new document, then deletes the original. It returns the new document, which has a new id.
+- **Justification:** the brief requires adding, updating and deleting loan documents, but the mainframe has no update message for them.
+  Tested against the live mainframe, `loan.updateDocument` and `loanDocument.update` are both rejected as unknown transactions.
+  This follows the proposal's approach for co-borrowers in Table 1, where changes are made by deleting and re-adding.
+  Adding before deleting means a failure can leave a duplicate, which the user is told to delete, but never loses a document.
+- **Introduced in:** PR #23.

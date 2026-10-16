@@ -1,8 +1,5 @@
 package lavs.ui.customer.wizard;
 
-import java.util.List;
-import java.util.stream.IntStream;
-
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
@@ -11,9 +8,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import lavs.logic.model.customer.Employer;
+import lavs.ui.common.EditableList;
 import lavs.ui.common.EmployerRows;
-import lavs.ui.common.FormDialog;
-import lavs.ui.common.RecordTiles;
+import lavs.ui.common.Nodes;
+import lavs.ui.common.RecordEditor;
 import lavs.ui.customer.forms.EmployerFormController;
 
 /**
@@ -31,10 +29,19 @@ public class EmploymentStepController {
     @FXML private HBox errorBanner;
 
     private NewCustomerDraft draft;
+    private EditableList<Employer.Details> employers;
 
     @FXML
     private void initialize() {
-        show(errorBanner, false);
+        Nodes.show(errorBanner, false);
+        // One primary employer: saving another as primary makes the old one secondary
+        employers = new EditableList<>(
+                new RecordEditor<>(employerList, "employer", employerForm, employerFormController),
+                employerList, EmployerRows::tile, "No employers added yet.")
+                .keepOnlyOne(employer -> employer.type() == Employer.Type.PRIMARY,
+                        employer -> new Employer.Details(Employer.Type.SECONDARY, employer.name(),
+                                employer.position(), employer.salary()))
+                .onChanged(this::refresh);
         employedButton.setSelected(true);
         // One of the two is always chosen; clicking the chosen one again leaves it chosen
         employmentChoice.selectedToggleProperty().addListener((obs, oldChoice, choice) -> {
@@ -50,72 +57,26 @@ public class EmploymentStepController {
     /** Gives the step the draft whose employment it edits. */
     void use(NewCustomerDraft draft) {
         this.draft = draft;
+        employers.use(draft.employers());
         refresh();
     }
 
     /** Not employed, or employed with at least one employer; otherwise shows what's missing. */
     boolean check() {
         boolean ok = !draft.isEmployed() || !draft.employers().isEmpty();
-        show(errorBanner, !ok);
+        Nodes.show(errorBanner, !ok);
         return ok;
     }
 
     @FXML
     private void handleAddEmployer() {
-        List<Employer.Details> employers = draft.employers();
-        employerFormController.clear(employers.isEmpty());
-        if (openForm("Add employer", false) == FormDialog.Result.SAVED) {
-            employers.add(employerFormController.read());
-            keepOnePrimary(employers.size() - 1);
-        }
-        refresh();
-    }
-
-    private void handleEditEmployer(int index) {
-        List<Employer.Details> employers = draft.employers();
-        employerFormController.fill(employers.get(index));
-        FormDialog.Result result = openForm("Edit employer", true);
-        if (result == FormDialog.Result.SAVED) {
-            employers.set(index, employerFormController.read());
-            keepOnePrimary(index);
-        } else if (result == FormDialog.Result.REMOVED) {
-            employers.remove(index);
-        }
-        refresh();
-    }
-
-    private FormDialog.Result openForm(String title, boolean canRemove) {
-        return FormDialog.show(employerList, title, employerForm, employerFormController::check, canRemove);
-    }
-
-    /** One primary employer: when the one just saved is primary, any other becomes secondary. */
-    private void keepOnePrimary(int savedIndex) {
-        List<Employer.Details> employers = draft.employers();
-        if (employers.get(savedIndex).type() != Employer.Type.PRIMARY) {
-            return;
-        }
-        for (int i = 0; i < employers.size(); i++) {
-            Employer.Details employer = employers.get(i);
-            if (i != savedIndex && employer.type() == Employer.Type.PRIMARY) {
-                employers.set(i, new Employer.Details(Employer.Type.SECONDARY, employer.name(),
-                        employer.position(), employer.salary()));
-            }
-        }
+        employers.add();
     }
 
     private void refresh() {
-        List<Employer.Details> employers = draft.employers();
-        RecordTiles.fill(employerList, IntStream.range(0, employers.size())
-                .mapToObj(i -> EmployerRows.tile(employers.get(i), () -> handleEditEmployer(i)))
-                .toList(), "No employers added yet.");
-        show(employedSection, draft.isEmployed());
-        if (!draft.isEmployed() || !employers.isEmpty()) {
-            show(errorBanner, false);
+        Nodes.show(employedSection, draft.isEmployed());
+        if (!draft.isEmployed() || !draft.employers().isEmpty()) {
+            Nodes.show(errorBanner, false);
         }
-    }
-
-    private static void show(Node node, boolean visible) {
-        node.setVisible(visible);
-        node.setManaged(visible);
     }
 }

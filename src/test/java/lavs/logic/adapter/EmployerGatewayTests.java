@@ -40,6 +40,18 @@ class EmployerGatewayTests {
     }
 
     @Test
+    void countAsksForOneItemAndReturnsTheTotal() {
+        connection.replyList("customerEmployer.list", 3, row("id", "4", "type", "Primary", "name", "Countrywide"));
+
+        long count = gateway.count(CUSTOMER);
+
+        assertAll(
+                () -> assertEquals(3, count),
+                () -> assertEquals("1", connection.onlyRequest("customerEmployer.list").getValue("size"))
+        );
+    }
+
+    @Test
     void retrieveReturnsTheFullEmployer() {
         connection.reply("customerEmployer.retrieve", row(
                 "id", "4", "type", "Primary", "name", "Countrywide", "position", "Teller", "salary", "65000.5"));

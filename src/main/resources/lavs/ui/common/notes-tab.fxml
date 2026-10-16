@@ -4,20 +4,20 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="lavs.ui.loan.view.NotesTabController"
+      fx:controller="lavs.ui.common.NotesTabController"
       spacing="12">
     <fx:define>
         <!-- Shown in a pop-up when adding or editing a note -->
-        <fx:include fx:id="noteForm" source="/lavs/ui/common/note-form.fxml"/>
+        <fx:include fx:id="noteForm" source="note-form.fxml"/>
     </fx:define>
 
     <Label text="Notes" styleClass="section-heading"/>
     <VBox fx:id="noteList" spacing="12"/>
-    <fx:include fx:id="pager" source="/lavs/ui/common/pager.fxml"/>
+    <fx:include fx:id="pager" source="pager.fxml"/>
     <Button text="+  Add note" styleClass="button-add" maxWidth="Infinity"
             onAction="#handleAddNote"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="Notes are shared with everyone who opens this loan, newest first. Keep them factual."/>
+        <Label text="Notes are shared with all staff, newest first. Keep them factual and record who you spoke to."/>
     </HBox>
 </VBox>

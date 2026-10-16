@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import lavs.logic.model.Page;
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.customer.CustomerNumber;
@@ -16,6 +15,7 @@ import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
+import lavs.ui.common.DocumentFile;
 import lavs.ui.common.NoteRow;
 
 /**
@@ -66,13 +66,6 @@ public final class SampleProfiles {
                 .sorted(Comparator.comparing((Customer customer) -> customer.familyName())
                         .thenComparing(Customer::firstName))
                 .toList();
-    }
-
-    /** One page of a sample list, the way the mainframe returns lists a page at a time. */
-    static <T> Page<T> pageOf(List<T> items, long page, long size) {
-        int from = (int) Math.min((page - 1) * size, items.size());
-        int to = (int) Math.min(from + size, items.size());
-        return new Page<>(items.subList(from, to), page, size, items.size());
     }
 
     /** A customer with just a home address and one job, enough to show them as a co-borrower. */
@@ -131,14 +124,14 @@ public final class SampleProfiles {
                 loan("004", Loan.Status.CANCELLED, "60000", "650.00", Loan.PaymentFrequency.MONTHLY, 2020),
                 loan("005", Loan.Status.ACTIVE, "18500", "98.40", Loan.PaymentFrequency.WEEKLY, 2024),
                 loan("006", Loan.Status.DEFAULTED, "12000", "240.00", Loan.PaymentFrequency.FORTNIGHTLY, 2019));
-        List<DocumentRow> documents = List.of(
-                new DocumentRow(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
-                new DocumentRow(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291),
-                new DocumentRow(3, "Proof of income", "Payslip-August-2026.pdf", "application/pdf", 181_248),
-                new DocumentRow(4, "Proof of address", "Power-bill-July-2026.pdf", "application/pdf", 342_016),
-                new DocumentRow(5, "Bank statement", "Statement-Q2-2026.pdf", "application/pdf", 604_160),
-                new DocumentRow(6, "KiwiSaver", "KiwiSaver-withdrawal-estimate.pdf", "application/pdf", 96_256),
-                new DocumentRow(7, "Identification", "Passport.png", "image/png", 2_411_725));
+        List<DocumentFile> documents = List.of(
+                new DocumentFile(1, "Proof of income", "Payslip-September-2026.pdf", "application/pdf", 188_416),
+                new DocumentFile(2, "Identification", "Drivers-licence.jpg", "image/jpeg", 1_258_291),
+                new DocumentFile(3, "Proof of income", "Payslip-August-2026.pdf", "application/pdf", 181_248),
+                new DocumentFile(4, "Proof of address", "Power-bill-July-2026.pdf", "application/pdf", 342_016),
+                new DocumentFile(5, "Bank statement", "Statement-Q2-2026.pdf", "application/pdf", 604_160),
+                new DocumentFile(6, "KiwiSaver", "KiwiSaver-withdrawal-estimate.pdf", "application/pdf", 96_256),
+                new DocumentFile(7, "Identification", "Passport.png", "image/png", 2_411_725));
         // Newest first, as the Notes tab shows them
         List<NoteRow> notes = List.of(
                 new NoteRow(12, "Application", "Bob Ross", LocalDate.of(2026, 10, 12),

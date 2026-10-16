@@ -46,6 +46,10 @@ public class ScriptedConnection extends StubConnection {
         return queue(requestType, new MessageResponse(new Status(errorCode, message, 1), new HashMap<>()));
     }
 
+    public List<String> requestTypes() {
+        return requests.stream().map(MessageRequest::getRequestType).toList();
+    }
+
     public List<MessageRequest> requests(String requestType) {
         return requests.stream().filter(request -> requestType.equals(request.getRequestType())).toList();
     }

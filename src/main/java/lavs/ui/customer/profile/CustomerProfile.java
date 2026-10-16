@@ -8,6 +8,7 @@ import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Employer;
 import lavs.logic.model.customer.Phone;
 import lavs.logic.model.loan.Loan;
+import lavs.ui.common.DocumentFile;
 import lavs.ui.common.NoteRow;
 
 /**
@@ -21,6 +22,6 @@ public record CustomerProfile(
         List<Email> emails,
         List<Employer> employers,
         List<Loan> loans,
-        List<DocumentRow> documents,
+        List<DocumentFile> documents,
         List<NoteRow> notes) {
 }
