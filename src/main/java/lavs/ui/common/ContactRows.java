@@ -50,11 +50,11 @@ public final class ContactRows {
                 email.isPrimary() ? List.of(RecordTiles.primaryBadge()) : List.of(), onEdit);
     }
 
-    /** e.g. "+64 21 555 0182". */
+    /** e.g. "+64 21 555 0182", whether the country code was saved as "64" or "+64". */
     public static String number(Phone.Details phone) {
         return isBlank(phone.countryCode())
                 ? phone.number()
-                : "+" + phone.countryCode() + " " + phone.number();
+                : "+" + phone.countryCode().trim().replaceFirst("^\\+", "") + " " + phone.number();
     }
 
     private static String typeName(Phone.Details phone) {

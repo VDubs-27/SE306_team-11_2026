@@ -5,7 +5,6 @@ import static lavs.logic.model.Validation.isBlank;
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
-import lavs.ui.customer.profile.CustomerProfile;
 import lavs.ui.customer.profile.SampleProfiles;
 
 /**
@@ -17,8 +16,8 @@ public record LoanPerson(Customer customer, Coborrower.Type role, String suburb,
 
     /** Looks up where the customer lives and whether they work, to show beside their name. */
     public static LoanPerson lookUp(Customer customer, Coborrower.Type role) {
-        // Later: read these from CustomerService instead of the sample profiles
-        CustomerProfile profile = SampleProfiles.find(customer.number().value());
+        // Only for the sample co-borrowers the loan screens still show; the applicant comes from their profile
+        SampleProfiles.Sample profile = SampleProfiles.find(customer.number().value());
         String suburb = profile.addresses().stream()
                 .filter(Address::isPrimary)
                 .map(Address::suburb)

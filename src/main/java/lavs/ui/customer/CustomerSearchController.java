@@ -1,6 +1,7 @@
 package lavs.ui.customer;
 
 import java.util.List;
+import java.util.Locale;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -13,25 +14,24 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.customer.Customer;
+import lavs.logic.service.Result;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.Nodes;
 import lavs.ui.common.PagerController;
-import lavs.ui.common.Pages;
 import lavs.ui.common.Tables;
-import lavs.ui.customer.profile.SampleProfiles;
+import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 
 /**
- * Customer search: find a customer by name or customer number, a page of results at a time, and
- * open their profile; or start a new customer.
+ * Customer search: find a customer by name or customer number, a page of results at a time, read
+ * from the mainframe, and open their profile; or start a new customer.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class CustomerSearchController implements NavigatorAware {
 
-    /** Results shown at once; a search returning more is paged. */
-    private static final long PAGE_SIZE = 10;
     /** Corner radius of .card in app.css. */
     private static final double CARD_RADIUS = 16;
 
@@ -39,6 +39,7 @@ public class CustomerSearchController implements NavigatorAware {
             "Search by name or customer number to find a customer";
     private static final String NO_RESULTS_MESSAGE =
             "No customers found. Check the spelling or search by customer number.";
+    private static final String FAILED_MESSAGE = "The search didn't work. Try again.";
 
     @FXML private ScrollPane pageScroll;
     @FXML private VBox page;
@@ -48,11 +49,11 @@ public class CustomerSearchController implements NavigatorAware {
     @FXML private Label resultsTitle;
     @FXML private Label resultCount;
     @FXML private StackPane tableBox;
-    @FXML private TableView<Customer> resultsTable;
-    @FXML private TableColumn<Customer, String> nameColumn;
-    @FXML private TableColumn<Customer, String> customerNumberColumn;
-    @FXML private TableColumn<Customer, String> dateOfBirthColumn;
-    @FXML private TableColumn<Customer, Void> arrowColumn;
+    @FXML private TableView<Customer.Summary> resultsTable;
+    @FXML private TableColumn<Customer.Summary, String> nameColumn;
+    @FXML private TableColumn<Customer.Summary, String> customerNumberColumn;
+    @FXML private TableColumn<Customer.Summary, String> dateOfBirthColumn;
+    @FXML private TableColumn<Customer.Summary, Void> arrowColumn;
     @FXML private Label emptyState;
     @FXML private VBox pagerSection;
     @FXML private PagerController pagerController;
@@ -87,16 +88,31 @@ public class CustomerSearchController implements NavigatorAware {
             showPrompt();
             return;
         }
-        // Later: ask CustomerService for each page in the background instead of filtering the samples
-        List<Customer> found = SampleProfiles.search(term);
         resultsTitle.setText("Search results for “" + term + "”");
-        resultCount.setText(found.size() == 1 ? "1 customer" : found.size() + " customers");
-        long total = pagerController.show(page -> Pages.of(found, page, PAGE_SIZE),
-                rows -> Tables.show(resultsTable, tableBox, emptyState, rows));
-        if (total == 0) {
+        resultCount.setText("Searching…");
+        searchButton.setDisable(true);
+        pagerController.showLoading(page -> navigator.services().customer().customers().search(term, page),
+                rows -> Tables.show(resultsTable, tableBox, emptyState, rows), this::showFound);
+    }
+
+    /** Shows how many were found and whether there's more than a page, or why the search didn't work. */
+    private void showFound(Result<Page<Customer.Summary>> found) {
+        searchButton.setDisable(false);
+        if (!found.successful()) {
+            resultCount.setText("");
+            Tables.show(resultsTable, tableBox, emptyState, List.of());
+            emptyState.setText(FAILED_MESSAGE);
+            Nodes.show(pagerSection, false);
+            Toasts.show(searchField, Toasts.Kind.ERROR, "Couldn't search", found.errorMessage());
+            return;
+        }
+        Page<Customer.Summary> page = found.value();
+        resultCount.setText(page.total() == 1 ? "1 customer"
+                : String.format(Locale.ROOT, "%d customers", page.total()));
+        if (page.total() == 0) {
             emptyState.setText(NO_RESULTS_MESSAGE);
         }
-        Nodes.show(pagerSection, total > PAGE_SIZE);
+        Nodes.show(pagerSection, page.totalPages() > 1);
     }
 
     @FXML
@@ -106,6 +122,8 @@ public class CustomerSearchController implements NavigatorAware {
 
     /** Starting state: nothing searched yet. */
     private void showPrompt() {
+        pagerController.cancel();
+        searchButton.setDisable(false);
         resultsTitle.setText("Customers");
         resultCount.setText("");
         Tables.show(resultsTable, tableBox, emptyState, List.of());

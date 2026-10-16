@@ -2,6 +2,7 @@ package lavs.ui.common;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
 import lavs.logic.model.FieldError;
+import lavs.logic.model.note.Note;
 
 /**
  * The form for one note, used in a pop-up to add or edit: what kind of note it is and what it says.
@@ -18,8 +20,11 @@ import lavs.logic.model.FieldError;
  */
 public class NoteFormController implements RecordForm<NoteRow> {
 
-    /** Temporary choices; replaced by the mainframe's note types once there is a service to read them. */
-    private static final List<String> TYPES = List.of("General", "Application", "Contact", "Identification", "Loan");
+    /** The kinds of note LAVS keeps; the mainframe sends no list of them, so they come from Note.Type. */
+    private static final List<String> TYPES = Arrays.stream(Note.Type.values())
+            .filter(type -> type != Note.Type.UNKNOWN)
+            .map(Note.Type::code)
+            .toList();
 
     @FXML private ComboBox<String> typeBox;
     @FXML private TextArea textArea;

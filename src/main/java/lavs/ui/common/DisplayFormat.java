@@ -96,6 +96,15 @@ public final class DisplayFormat {
 
     /** e.g. "Mr John Smith", or just "John Smith" when there's no title. */
     public static String fullNameWithTitle(Customer customer) {
-        return isBlank(customer.title()) ? customer.fullName() : customer.title() + " " + customer.fullName();
+        return withTitle(customer.title(), customer.fullName());
+    }
+
+    /** As for a customer, from a search result. */
+    public static String fullNameWithTitle(Customer.Summary customer) {
+        return withTitle(customer.title(), customer.fullName());
+    }
+
+    private static String withTitle(String title, String fullName) {
+        return isBlank(title) ? fullName : title + " " + fullName;
     }
 }

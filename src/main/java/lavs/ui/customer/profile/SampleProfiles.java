@@ -19,8 +19,8 @@ import lavs.ui.common.DocumentFile;
 import lavs.ui.common.NoteRow;
 
 /**
- * Temporary sample data for designing. Replaced by CustomerService results. Public so the
- * new loan wizard can look up co-borrowers the same way.
+ * Temporary sample data for the loan screens, which still show co-borrowers from it until they're
+ * read through the services. The customer screens read the mainframe.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public final class SampleProfiles {
@@ -46,8 +46,20 @@ public final class SampleProfiles {
     private SampleProfiles() {
     }
 
+    /** Everything recorded for a sample customer. */
+    public record Sample(
+            Customer customer,
+            List<Address> addresses,
+            List<Phone> phones,
+            List<Email> emails,
+            List<Employer> employers,
+            List<Loan> loans,
+            List<DocumentFile> documents,
+            List<NoteRow> notes) {
+    }
+
     /** The sample profile for a customer number; John Smith has every section filled in. */
-    public static CustomerProfile find(String customerNumber) {
+    public static Sample find(String customerNumber) {
         Customer customer = CUSTOMERS.get(customerNumber);
         if (customer == null) {
             throw new IllegalArgumentException("No sample customer " + customerNumber);
@@ -61,7 +73,7 @@ public final class SampleProfiles {
         if (customerNumber.equals("01-0013-5811408")) {
             return withHomeAndJob(customer, "3 Hurstmere Road", "Takapuna", "North Shore Marine", "Engineer");
         }
-        return new CustomerProfile(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        return new Sample(customer, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
     /** Sample customers whose name or customer number contains the term, ignoring case. */
@@ -76,10 +88,10 @@ public final class SampleProfiles {
     }
 
     /** A customer with just a home address and one job, enough to show them as a co-borrower. */
-    private static CustomerProfile withHomeAndJob(Customer customer, String street, String suburb,
+    private static Sample withHomeAndJob(Customer customer, String street, String suburb,
             String employer, String position) {
         CustomerNumber number = customer.number();
-        return new CustomerProfile(customer,
+        return new Sample(customer,
                 List.of(new Address(1, number, Address.Type.RESIDENTIAL, null, street, null, suburb,
                         "Auckland", null, "New Zealand", true, true)),
                 List.of(), List.of(),
@@ -102,7 +114,7 @@ public final class SampleProfiles {
                 Customer.Status.ACTIVE, dateOfBirth, "New Zealand");
     }
 
-    private static CustomerProfile johnSmith(Customer customer) {
+    private static Sample johnSmith(Customer customer) {
         List<Address> addresses = List.of(
                 new Address(1, JOHN, Address.Type.RESIDENTIAL, null, "12 Ponsonby Road", null,
                         "Ponsonby", "Auckland", "1011", "New Zealand", true, true),
@@ -170,6 +182,6 @@ public final class SampleProfiles {
                         "Passport, power bill and latest payslip sighted and copied to the filestore."),
                 new NoteRow(1, "Initial account setup", "Peter Smith", LocalDate.of(2025, 6, 30),
                         "New customer set up in branch."));
-        return new CustomerProfile(customer, addresses, phones, emails, employers, loans, documents, notes);
+        return new Sample(customer, addresses, phones, emails, employers, loans, documents, notes);
     }
 }

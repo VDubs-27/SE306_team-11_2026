@@ -56,13 +56,14 @@ public class NewLoanWizardController implements NavigatorAware {
                 new WizardStep("Submit", submit, null, () -> submitController.show(draft))));
     }
 
-    /** Sets the wizard up for the customer the loan is for: their initials and "for John Smith · number". */
-    public void start(Customer customer) {
+    /** Sets the wizard up for the person the loan is for: their initials and "for John Smith · number". */
+    public void start(LoanPerson applicant) {
+        Customer customer = applicant.customer();
         Label avatar = new Label(DisplayFormat.initials(customer));
         avatar.getStyleClass().add("avatar");
         wizardController.setIcon(avatar);
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
-        draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
+        draft = new NewLoanDraft(applicant);
         uploadController.use(draft);
         uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
         coborrowersController.use(draft);

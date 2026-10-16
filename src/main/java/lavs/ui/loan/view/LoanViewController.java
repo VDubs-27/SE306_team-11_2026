@@ -73,11 +73,11 @@ public class LoanViewController implements NavigatorAware {
         notesController.setOnChanged(this::showCounts);
     }
 
-    /** Fills the screen for one of a customer's loans. */
-    public void showLoan(Loan loan, Customer customer) {
+    /** Fills the screen for one of a customer's loans; applicant is the customer it's for. */
+    public void showLoan(Loan loan, LoanPerson applicant) {
         this.loan = loan;
-        this.customer = customer;
-        coborrowersController.use(LoanPerson.lookUp(customer, null), SampleLoans.coborrowers(loan));
+        this.customer = applicant.customer();
+        coborrowersController.use(applicant, SampleLoans.coborrowers(loan));
         documentsController.use(SampleLoans.documents(loan));
         notesController.use(SampleLoans.notes(loan));
         refresh();

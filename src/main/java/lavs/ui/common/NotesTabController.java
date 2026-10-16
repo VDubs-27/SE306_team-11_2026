@@ -2,6 +2,7 @@ package lavs.ui.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.LongConsumer;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -9,8 +10,8 @@ import javafx.scene.layout.VBox;
 
 /**
  * A Notes tab, on a customer's profile or a loan: notes staff have written, newest first, a page at
- * a time, which can be added, changed or removed. The screen it's on gives it the notes and hears
- * about changes.
+ * a time, which can be added, changed or removed. The screen it's on gives it the notes, either kept
+ * on screen (use) or on the mainframe (show), and hears about changes.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class NotesTabController {
@@ -22,14 +23,24 @@ public class NotesTabController {
     @FXML private VBox noteList;
     @FXML private PagerController pagerController;
 
+    private static final String EMPTY = "No notes recorded.";
+
     private EditableList<NoteRow> notes;
+    private ServiceList<NoteRow, NoteRow> saved;
 
     @FXML
     private void initialize() {
-        notes = new EditableList<>(new RecordEditor<>(noteList, "note", noteForm, noteFormController),
-                noteList, NoteCards::card, "No notes recorded.")
+        RecordEditor<NoteRow> editor = new RecordEditor<>(noteList, "note", noteForm, noteFormController);
+        notes = new EditableList<>(editor, noteList, NoteCards::card, EMPTY)
                 .paged(pagerController, PAGE_SIZE)
                 .newestFirst();
+        saved = new ServiceList<>(editor, noteList, pagerController, PAGE_SIZE, NoteCards::card, note -> note, EMPTY);
+    }
+
+    /** Shows the notes kept on the mainframe, e.g. a customer's, and saves changes there; onTotal hears the count. */
+    public void show(ServiceList.Source<NoteRow, NoteRow> source, LongConsumer onTotal) {
+        saved.onTotal(onTotal).show(source);
+        notes = null;
     }
 
     /** Who new notes are by: the signed-in user's name. */
@@ -54,6 +65,10 @@ public class NotesTabController {
 
     @FXML
     private void handleAddNote() {
-        notes.add();
+        if (notes == null) {
+            saved.add();
+        } else {
+            notes.add();
+        }
     }
 }
