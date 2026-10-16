@@ -37,7 +37,7 @@ public final class ProfileLoader {
     }
 
     /** The suburb of the customer's primary address, or "" when there isn't one. Run it in the background. */
-    static Result<String> primarySuburb(CustomerServices services, CustomerNumber number) {
+    public static Result<String> primarySuburb(CustomerServices services, CustomerNumber number) {
         return Fetch.run(() -> Fetch.all(page -> services.addresses().list(number, page, Fetch.PAGE_SIZE)).stream()
                 .filter(Address.Summary::isPrimary)
                 .findFirst()

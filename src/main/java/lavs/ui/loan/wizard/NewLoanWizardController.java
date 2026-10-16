@@ -66,7 +66,7 @@ public class NewLoanWizardController implements NavigatorAware {
         draft = new NewLoanDraft(applicant);
         uploadController.use(draft);
         uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
-        coborrowersController.use(draft);
+        coborrowersController.use(draft, navigator.services().customer());
         coborrowersController.setOnAddNewCustomer(
                 () -> navigator.showNewCustomerWizard(coborrowersController::addNewCustomer));
     }

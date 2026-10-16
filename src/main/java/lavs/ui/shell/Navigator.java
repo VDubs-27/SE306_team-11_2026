@@ -26,6 +26,7 @@ import lavs.ui.customer.profile.ProfileLoader;
 import lavs.ui.customer.wizard.NewCustomer;
 import lavs.ui.customer.wizard.NewCustomerWizardController;
 import lavs.ui.loan.people.LoanPerson;
+import lavs.ui.loan.view.LoanLoader;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
 
@@ -150,10 +151,12 @@ public class Navigator {
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showLoan(Loan loan, LoanPerson applicant) {
-        FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
-        LoanViewController controller = loader.getController();
-        controller.showLoan(loan, applicant);
-        show(loader.getRoot());
+        openWhenLoaded(() -> LoanLoader.load(services, loan, applicant), "Couldn't open this loan", screen -> {
+            FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
+            LoanViewController controller = loader.getController();
+            controller.showLoan(screen);
+            show(loader.getRoot());
+        });
     }
 
     /**

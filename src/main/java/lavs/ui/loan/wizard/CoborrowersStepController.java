@@ -8,6 +8,7 @@ import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.customer.wizard.NewCustomer;
 import lavs.ui.loan.people.LoanPeopleController;
+import lavs.ui.shell.CustomerServices;
 
 /**
  * Step 3 of the new loan wizard: who else is on the loan. The applicant is listed first; others
@@ -21,9 +22,10 @@ public class CoborrowersStepController {
 
     private NewLoanDraft draft;
 
-    /** Gives the step the draft whose people it edits. */
-    void use(NewLoanDraft draft) {
+    /** Gives the step the draft whose people it edits, and where to find customers to add. */
+    void use(NewLoanDraft draft, CustomerServices services) {
         this.draft = draft;
+        peopleController.useServices(services, LoanPeopleController.ON_SCREEN);
         peopleController.use(draft.applicant(), draft.others());
     }
 
