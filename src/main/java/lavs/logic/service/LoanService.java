@@ -2,8 +2,11 @@ package lavs.logic.service;
 
 import lavs.logic.adapter.AddressGateway;
 import lavs.logic.adapter.CoborrowerGateway;
+import lavs.logic.adapter.CustomerGateway;
+import lavs.logic.adapter.EmailGateway;
 import lavs.logic.adapter.EmployerGateway;
 import lavs.logic.adapter.LoanGateway;
+import lavs.logic.adapter.PhoneGateway;
 import lavs.logic.adapter.RepaymentGateway;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Page;
@@ -21,19 +24,35 @@ public class LoanService {
 
     private final LoanGateway loanGateway;
     private final RepaymentGateway repaymentGateway;
+    private final LoanStartRequirement loanStartRequirement;
     private final SubmitRequirement submitRequirement;
     private final Supplier<Constants> constants;
 
-    public LoanService(LoanGateway loanGateway, RepaymentGateway repaymentGateway, AddressGateway addressGateway,
+    public LoanService(LoanGateway loanGateway, RepaymentGateway repaymentGateway, CustomerGateway customerGateway,
+                       AddressGateway addressGateway, PhoneGateway phoneGateway, EmailGateway emailGateway,
                        EmployerGateway employerGateway, CoborrowerGateway coborrowerGateway,
                        Supplier<Constants> constants) {
         this.loanGateway = Objects.requireNonNull(loanGateway, "loanGateway");
         this.repaymentGateway = Objects.requireNonNull(repaymentGateway, "repaymentGateway");
-        this.submitRequirement = new SubmitRequirement(
-                Objects.requireNonNull(addressGateway, "addressGateway"),
+        AddressGateway addresses = Objects.requireNonNull(addressGateway, "addressGateway");
+        this.loanStartRequirement = new LoanStartRequirement(
+                Objects.requireNonNull(customerGateway, "customerGateway"), addresses,
+                new ContactRequirement(Objects.requireNonNull(phoneGateway, "phoneGateway"),
+                        Objects.requireNonNull(emailGateway, "emailGateway")));
+        this.submitRequirement = new SubmitRequirement(addresses,
                 Objects.requireNonNull(employerGateway, "employerGateway"),
                 Objects.requireNonNull(coborrowerGateway, "coborrowerGateway"));
         this.constants = Objects.requireNonNull(constants, "constants");
+    }
+
+    public Result<Void> canStartLoan(CustomerNumber customerNumber) {
+        return Result.attempt(() -> {
+           List<FieldError> problems = loanStartRequirement.problems(customerNumber);
+           if (!problems.isEmpty()) {
+               return Result.invalid(problems);
+           }
+           return Result.success(null);
+        });
     }
 
     // The page size is the caller's, because each loan screen shows a different number of rows
@@ -58,7 +77,13 @@ public class LoanService {
         if (!errors.isEmpty()) {
             return Result.invalid(errors);
         }
-        return Result.attempt(() -> Result.success(loanGateway.create(customerNumber, loanDetails)));
+        return Result.attempt(() -> {
+            List<FieldError> problems = loanStartRequirement.problems(customerNumber);
+            if (!problems.isEmpty()) {
+                return Result.invalid(problems);
+            }
+            return Result.success(loanGateway.create(customerNumber, loanDetails));
+        });
     }
 
     public Result<Loan> update(Loan loan, Loan.Details loanDetails) {

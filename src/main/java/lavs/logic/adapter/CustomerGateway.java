@@ -10,6 +10,7 @@ import mainframe.client.messages.customer.Create;
 import mainframe.client.messages.customer.Retrieve;
 import mainframe.client.messages.customer.Search;
 import mainframe.client.messages.customer.Update;
+import mainframe.client.messages.customer.UpdateStatus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -56,6 +57,10 @@ public class CustomerGateway {
                 customerNumber.value(), customerDetails.title()));
         return toCustomer(customerNumber, update.getTitle(), update.getFirstName(), update.getFamilyName(),
                 update.getStatus(), update.getDateOfBirth(), update.getNationality());
+    }
+
+    public void updateStatus(CustomerNumber customerNumber, Customer.Status status) {
+        adapter.send(new UpdateStatus(customerNumber.value(), status.code()));
     }
 
     private static String dateOrNull(LocalDate date) {

@@ -10,10 +10,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+
 import lavs.logic.adapter.AddressGateway;
 import lavs.logic.adapter.CoborrowerGateway;
+import lavs.logic.adapter.CustomerGateway;
+import lavs.logic.adapter.EmailGateway;
 import lavs.logic.adapter.EmployerGateway;
 import lavs.logic.adapter.LoanGateway;
+import lavs.logic.adapter.PhoneGateway;
 import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.adapter.RepaymentGateway;
 import lavs.logic.adapter.ScriptedConnection;
@@ -26,6 +31,8 @@ import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
 import lavs.logic.model.loan.ScheduledRepayment;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class LoanServiceTests {
 
@@ -47,7 +54,8 @@ class LoanServiceTests {
     private final ScriptedConnection connection = new ScriptedConnection();
     private final MainframeAdapter adapter = new MainframeAdapter(connection);
     private final LoanService service = new LoanService(new LoanGateway(adapter), new RepaymentGateway(adapter),
-            new AddressGateway(adapter), new EmployerGateway(adapter), new CoborrowerGateway(adapter), () -> CONSTANTS);
+            new CustomerGateway(adapter), new AddressGateway(adapter), new PhoneGateway(adapter),
+            new EmailGateway(adapter), new EmployerGateway(adapter), new CoborrowerGateway(adapter), () -> CONSTANTS);
 
     // The provided loan messages fail if the mainframe leaves out an amount
     private static Map<String, String> loanRow(String status) {
@@ -72,6 +80,19 @@ class LoanServiceTests {
 
     private void readyToSubmit(String status) {
         loanToSubmit(status, "y").reply("loan.updateStatus", row("loanNumber", "01-0013-001", "status", "Pending"));
+    }
+
+    private static Map<String, String> customerRow(String status) {
+        return row("number", "01-0013", "firstName", "Ann", "familyName", "Lee", "status", status);
+    }
+
+    // The customer has the given status and mailing flag, and the given numbers of phones and emails
+    private ScriptedConnection customerToStartLoan(String status, String isMailing, long phones, long emails) {
+        return connection
+                .reply("customer.retrieve", customerRow(status))
+                .replyList("customerAddress.list", 1, row("id", "1", "type", "Postal", "isMailing", isMailing))
+                .replyList("customerPhoneNumber.list", phones)
+                .replyList("customerEmail.list", emails);
     }
 
     @Test
@@ -121,7 +142,7 @@ class LoanServiceTests {
 
     @Test
     void validLoanIsCreated() {
-        connection.reply("loan.create", loanRow("New"));
+        customerToStartLoan("Active", "y", 1, 0).reply("loan.create", loanRow("New"));
 
         Result<LoanNumber> result = service.create(CUSTOMER, DETAILS);
 
@@ -234,23 +255,121 @@ class LoanServiceTests {
     void requiresEveryDependency() {
         LoanGateway loans = new LoanGateway(adapter);
         RepaymentGateway repayments = new RepaymentGateway(adapter);
+        CustomerGateway customers = new CustomerGateway(adapter);
         AddressGateway addresses = new AddressGateway(adapter);
+        PhoneGateway phones = new PhoneGateway(adapter);
+        EmailGateway emails = new EmailGateway(adapter);
         EmployerGateway employers = new EmployerGateway(adapter);
         CoborrowerGateway coborrowers = new CoborrowerGateway(adapter);
+        Supplier<Constants> constants = () -> CONSTANTS;
 
         assertAll(
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(null, repayments, addresses, employers, coborrowers, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(loans, null, addresses, employers, coborrowers, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(loans, repayments, null, employers, coborrowers, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(loans, repayments, addresses, null, coborrowers, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(loans, repayments, addresses, employers, null, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class,
-                        () -> new LoanService(loans, repayments, addresses, employers, coborrowers, null))
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        null, repayments, customers, addresses, phones, emails, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, null, customers, addresses, phones, emails, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, null, addresses, phones, emails, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, null, phones, emails, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, addresses, null, emails, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, addresses, phones, null, employers, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, addresses, phones, emails, null, coborrowers, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, addresses, phones, emails, employers, null, constants)),
+                () -> assertThrows(NullPointerException.class, () -> new LoanService(
+                        loans, repayments, customers, addresses, phones, emails, employers, coborrowers, null))
         );
+    }
+
+    @Test
+    void loanIsNotCreatedForAnInactiveCustomer() {
+        connection.reply("customer.retrieve", customerRow("Inactive"));
+
+        Result<LoanNumber> result = service.create(CUSTOMER, DETAILS);
+
+        assertAll(
+                () -> assertEquals(List.of(LoanStartRequirement.NOT_ACTIVE), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.create").isEmpty()),
+                () -> assertTrue(connection.requests("customerAddress.list").isEmpty())
+        );
+    }
+
+    @Test
+    void loanIsNotCreatedForAStatusLavsDoesNotKnow() {
+        connection.reply("customer.retrieve", customerRow("Suspended"));
+
+        assertEquals(List.of(LoanStartRequirement.NOT_ACTIVE), service.create(CUSTOMER, DETAILS).fieldErrors());
+    }
+
+    @Test
+    void loanIsNotCreatedWithoutAMailingAddress() {
+        customerToStartLoan("Active", "n", 1, 0);
+
+        Result<LoanNumber> result = service.create(CUSTOMER, DETAILS);
+
+        assertAll(
+                () -> assertEquals(List.of(LoanStartRequirement.NO_MAILING_ADDRESS), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.create").isEmpty())
+        );
+    }
+
+    @Test
+    void loanIsNotCreatedWithoutAPhoneOrEmail() {
+        customerToStartLoan("Active", "y", 0, 0);
+
+        Result<LoanNumber> result = service.create(CUSTOMER, DETAILS);
+
+        assertAll(
+                () -> assertEquals(List.of(LoanStartRequirement.NO_CONTACT), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.create").isEmpty())
+        );
+    }
+
+    @Test
+    void everyMissingRequirementIsReported() {
+        customerToStartLoan("Active", "n", 0, 0);
+
+        assertEquals(List.of(LoanStartRequirement.NO_MAILING_ADDRESS, LoanStartRequirement.NO_CONTACT),
+                service.create(CUSTOMER, DETAILS).fieldErrors());
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1, 0", "0, 1", "2, 3"})
+    void eitherKindOfContactIsEnough(long phones, long emails) {
+        customerToStartLoan("Active", "y", phones, emails).reply("loan.create", loanRow("New"));
+
+        assertTrue(service.create(CUSTOMER, DETAILS).successful());
+    }
+
+    @Test
+    void failureWhileCheckingTheCustomerIsReported() {
+        connection.fail("customer.retrieve", 10, "Unavailable");
+
+        Result<LoanNumber> result = service.create(CUSTOMER, DETAILS);
+
+        assertAll(
+                () -> assertEquals("Could not reach the mainframe. Check the connection and try again.",
+                        result.errorMessage()),
+                () -> assertTrue(connection.requests("loan.create").isEmpty())
+        );
+    }
+
+    @Test
+    void customerWhoMeetsTheRequirementsCanStartALoan() {
+        customerToStartLoan("Active", "y", 1, 0);
+
+        assertTrue(service.canStartLoan(CUSTOMER).successful());
+    }
+
+    @Test
+    void customerWhoCannotStartALoanIsToldEveryReason() {
+        customerToStartLoan("Active", "n", 0, 0);
+
+        assertEquals(List.of(LoanStartRequirement.NO_MAILING_ADDRESS, LoanStartRequirement.NO_CONTACT),
+                service.canStartLoan(CUSTOMER).fieldErrors());
     }
 }
