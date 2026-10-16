@@ -1,35 +1,26 @@
-package lavs.logic.model.loan;
+package lavs.logic.model.document;
 
 import java.util.List;
-import java.util.Objects;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Validator;
 
-public record LoanDocument(
+// A document on a customer or a loan; whose document it is comes from the request, so it is not stored here
+public record Document(
     long id,
-    LoanNumber loanNumber,
     String type,
     String fileName,
     String fileType,
     long size
 ) {
-    public LoanDocument {
-        Objects.requireNonNull(loanNumber, "loanNumber");
-    }
-
     public Details details() {
         return new Details(type, fileName, fileType, size);
     }
 
     public record Summary(
         long id,
-        LoanNumber loanNumber,
         String type,
         String fileName
     ) {
-        public Summary {
-            Objects.requireNonNull(loanNumber, "loanNumber");
-        }
     }
 
     public record Details(

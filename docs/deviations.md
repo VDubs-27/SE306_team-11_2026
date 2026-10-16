@@ -81,23 +81,24 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Justification:** the provided message classes already build their own request and unpack their own response, so one adapter building requests would duplicate them. `Message.send` throws a checked `IOException` and catching it once in `send` and rethrowing it as `MainframeException` stops it spreading to the services and UI. Splitting by area also keeps each class small and lets the work be reviewed in parts. UI still never touches the mainframe.
 - **Introduced in:** PR #11 (adapter foundation), PR #26 (customer gateway).
 
-## 11. Loan document fields are validated
+## 11. Document fields are validated
 
-- **Proposal:** Table 1 has no rules for loan documents, and Figure 2 lists documents as an optional entity without fields.
-- **Code:** `LoanDocument.Details` requires a document type, file name and file type, and rejects a negative file size.
-- **Justification:** the mainframe's add document message sends all four fields, and a document without a type or file name cannot be identified in the documents list.
-  The fields follow the `loan.addDocument` message, as Section 3.1 says field names follow the mainframe interface messages.
-- **Introduced in:** PR #23.
+- **Proposal:** Table 1 has no rules for customer or loan documents, and Figure 2 lists documents as an optional entity without fields.
+- **Code:** `Document.Details`, shared by customer and loan documents, requires a document type, file name and file type, and rejects a negative file size.
+- **Justification:** the mainframe's add document messages send all four fields, and a document without a type or file name cannot be identified in the documents list.
+  The fields follow the `customer.addDocument` and `loan.addDocument` messages, as Section 3.1 says field names follow the mainframe interface messages.
+- **Introduced in:** PR #23 for loan documents; extended to customer documents when the document classes were shared.
 
-## 12. Loan document update adds a replacement and deletes the original
+## 12. Document update adds a replacement and deletes the original
 
 - **Proposal:** Section 3.1 says each domain object maps directly to a mainframe message.
-- **Code:** `LoanDocumentService.update` checks the original still exists, adds the new details as a new document, then deletes the original. It returns the new document, which has a new id.
-- **Justification:** the brief requires adding, updating and deleting loan documents, but the mainframe has no update message for them.
-  Tested against the live mainframe, `loan.updateDocument` and `loanDocument.update` are both rejected as unknown transactions.
+- **Code:** `DocumentService.update`, shared by customer and loan documents, checks the original still exists, adds the new details as a new document, then deletes the original. It returns the new document, which has a new id.
+- **Justification:** the brief requires adding, updating and deleting documents, but the mainframe has no update message for them.
+  Tested against the live mainframe, `loan.updateDocument` and `loanDocument.update` are both rejected as unknown transactions,
+  and the provided message classes have no customer document update either.
   This follows the proposal's approach for co-borrowers in Table 1, where changes are made by deleting and re-adding.
   Adding before deleting means a failure can leave a duplicate, which the user is told to delete, but never loses a document.
-- **Introduced in:** PR #23.
+- **Introduced in:** PR #23 for loan documents; extended to customer documents when the document classes were shared.
 
 ## 13. Notes require a type and text
 
@@ -107,3 +108,11 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Justification:** type and text are the only note fields the user enters (Figure 2), so a note without either has nothing to record.
   `Unknown` only exists to display types LAVS doesn't model (Section 8), so it can't be saved.
 - **Introduced in:** PR #33 for customer notes; extended to loan notes when the note classes were shared.
+
+## 14. Documents don't store their owner's number
+
+- **Proposal:** Figure 2 gives customer and loan documents a `customerNumber` or `loanNumber` foreign key.
+- **Code:** `Document` and `Document.Summary` hold only the document's own fields. The customer or loan number is passed to each `DocumentGateway` and `DocumentService` call instead.
+- **Justification:** customer and loan documents have the same fields, so one `Document` record serves both, as `Note` does for notes.
+  Every request already names the owner, so storing it again on the record would only duplicate the caller's value.
+- **Introduced in:** the PR that shared the document classes and added customer documents.

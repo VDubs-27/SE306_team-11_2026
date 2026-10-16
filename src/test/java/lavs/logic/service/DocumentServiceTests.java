@@ -9,34 +9,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import lavs.logic.adapter.LoanDocumentGateway;
+import lavs.logic.adapter.DocumentGateway;
 import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.adapter.ScriptedConnection;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Page;
-import lavs.logic.model.loan.LoanDocument;
+import lavs.logic.model.document.Document;
 import lavs.logic.model.loan.LoanNumber;
 import org.junit.jupiter.api.Test;
 
-class LoanDocumentServiceTests {
+class DocumentServiceTests {
 
     private static final LoanNumber LOAN = new LoanNumber("01-0001-0000015-001");
-    private static final LoanDocument.Details DETAILS =
-            new LoanDocument.Details("Proof of Identity", "passport.pdf", "application/pdf", 123);
+    private static final Document.Details DETAILS =
+            new Document.Details("Proof of Identity", "passport.pdf", "application/pdf", 123);
 
     private static final Map<String, String> ORIGINAL = row(
             "id", "4", "type", "Proof of Income", "fileName", "payslip.pdf", "fileType", "application/pdf", "size", "99");
 
     private final ScriptedConnection connection = new ScriptedConnection();
-    private final LoanDocumentService service =
-            new LoanDocumentService(new LoanDocumentGateway(new MainframeAdapter(connection)));
+    private final DocumentService<LoanNumber> service =
+            new DocumentService<>(DocumentGateway.forLoans(new MainframeAdapter(connection)));
 
     @Test
     void listReturnsThePage() {
         connection.replyList("loanDocument.list", 1,
                 row("id", "4", "type", "Proof of Identity", "fileName", "passport.pdf"));
 
-        Result<Page<LoanDocument.Summary>> result = service.list(LOAN, 1, 10);
+        Result<Page<Document.Summary>> result = service.list(LOAN, 1, 10);
 
         assertEquals("passport.pdf", result.value().items().get(0).fileName());
     }
@@ -45,7 +45,7 @@ class LoanDocumentServiceTests {
     void listFailureIsReported() {
         connection.fail("loanDocument.list", 10, "Unavailable");
 
-        Result<Page<LoanDocument.Summary>> result = service.list(LOAN, 1, 10);
+        Result<Page<Document.Summary>> result = service.list(LOAN, 1, 10);
 
         assertEquals("Could not reach the mainframe. Check the connection and try again.", result.errorMessage());
     }
@@ -63,7 +63,7 @@ class LoanDocumentServiceTests {
     void validDocumentIsAdded() {
         connection.reply("loan.addDocument", row("id", "12", "size", "123"));
 
-        Result<LoanDocument> result = service.add(LOAN, DETAILS);
+        Result<Document> result = service.add(LOAN, DETAILS);
 
         assertAll(
                 () -> assertTrue(result.successful()),
@@ -73,8 +73,8 @@ class LoanDocumentServiceTests {
 
     @Test
     void invalidDetailsAreRejectedWithoutCallingTheMainframe() {
-        Result<LoanDocument> result =
-                service.add(LOAN, new LoanDocument.Details("Proof of Identity", "", "application/pdf", 123));
+        Result<Document> result =
+                service.add(LOAN, new Document.Details("Proof of Identity", "", "application/pdf", 123));
 
         assertAll(
                 () -> assertEquals(List.of(new FieldError("fileName", "File name is required.")),
@@ -97,11 +97,11 @@ class LoanDocumentServiceTests {
                 .reply("loan.addDocument", row("id", "13", "size", "123"))
                 .reply("loan.deleteDocument", row("id", "4"));
 
-        Result<LoanDocument> result = service.update(LOAN, 4, DETAILS);
+        Result<Document> result = service.update(LOAN, 4, DETAILS);
 
         assertAll(
                 () -> assertTrue(result.successful()),
-                () -> assertEquals(new LoanDocument(13, LOAN, "Proof of Identity", "passport.pdf", "application/pdf",
+                () -> assertEquals(new Document(13, "Proof of Identity", "passport.pdf", "application/pdf",
                         123), result.value()),
                 () -> assertEquals(List.of("loanDocument.retrieve", "loan.addDocument", "loan.deleteDocument"),
                         connection.requestTypes()),
@@ -111,8 +111,8 @@ class LoanDocumentServiceTests {
 
     @Test
     void updateWithInvalidDetailsSendsNothing() {
-        Result<LoanDocument> result =
-                service.update(LOAN, 4, new LoanDocument.Details("", "passport.pdf", "application/pdf", 123));
+        Result<Document> result =
+                service.update(LOAN, 4, new Document.Details("", "passport.pdf", "application/pdf", 123));
 
         assertAll(
                 () -> assertEquals(List.of(new FieldError("type", "Document type is required.")),
@@ -125,8 +125,8 @@ class LoanDocumentServiceTests {
     void updateWithNoChangesKeepsTheOriginal() {
         connection.reply("loanDocument.retrieve", ORIGINAL);
 
-        Result<LoanDocument> result =
-                service.update(LOAN, 4, new LoanDocument.Details("Proof of Income", "payslip.pdf", "application/pdf", 99));
+        Result<Document> result =
+                service.update(LOAN, 4, new Document.Details("Proof of Income", "payslip.pdf", "application/pdf", 99));
 
         assertAll(
                 () -> assertTrue(result.successful()),
@@ -139,7 +139,7 @@ class LoanDocumentServiceTests {
     void updateOfAMissingDocumentAddsNothing() {
         connection.fail("loanDocument.retrieve", 3, "Document with id '4' does not exist.");
 
-        Result<LoanDocument> result = service.update(LOAN, 4, DETAILS);
+        Result<Document> result = service.update(LOAN, 4, DETAILS);
 
         assertAll(
                 () -> assertEquals("Document with id '4' does not exist.", result.errorMessage()),
@@ -153,7 +153,7 @@ class LoanDocumentServiceTests {
                 .reply("loanDocument.retrieve", ORIGINAL)
                 .fail("loan.addDocument", 10, "Unavailable");
 
-        Result<LoanDocument> result = service.update(LOAN, 4, DETAILS);
+        Result<Document> result = service.update(LOAN, 4, DETAILS);
 
         assertAll(
                 () -> assertEquals("Could not reach the mainframe. Check the connection and try again.",
@@ -169,11 +169,11 @@ class LoanDocumentServiceTests {
                 .reply("loan.addDocument", row("id", "13", "size", "123"))
                 .fail("loan.deleteDocument", 10, "Unavailable");
 
-        Result<LoanDocument> result = service.update(LOAN, 4, DETAILS);
+        Result<Document> result = service.update(LOAN, 4, DETAILS);
 
         assertAll(
                 () -> assertFalse(result.successful()),
-                () -> assertEquals(LoanDocumentService.ORIGINAL_NOT_REMOVED_MESSAGE, result.errorMessage()),
+                () -> assertEquals(DocumentService.ORIGINAL_NOT_REMOVED_MESSAGE, result.errorMessage()),
                 () -> assertEquals(13, result.value().id())
         );
     }
@@ -199,6 +199,6 @@ class LoanDocumentServiceTests {
 
     @Test
     void requiresGateway() {
-        assertThrows(NullPointerException.class, () -> new LoanDocumentService(null));
+        assertThrows(NullPointerException.class, () -> new DocumentService<>(null));
     }
 }
