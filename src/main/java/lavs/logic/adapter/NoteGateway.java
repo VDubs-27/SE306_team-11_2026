@@ -4,6 +4,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import lavs.logic.model.Page;
 import lavs.logic.model.customer.CustomerNumber;
+import lavs.logic.model.loan.LoanNumber;
 import lavs.logic.model.note.Note;
 import mainframe.client.StatusMessage;
 
@@ -20,6 +21,10 @@ public final class NoteGateway<K> {
 
     public static NoteGateway<CustomerNumber> forCustomers(MainframeAdapter adapter) {
         return new NoteGateway<>(new CustomerNoteMessages(adapter));
+    }
+
+    public static NoteGateway<LoanNumber> forLoans(MainframeAdapter adapter) {
+        return new NoteGateway<>(new LoanNoteMessages(adapter));
     }
 
     // The list message has no note text, so each note on the page is fetched for its text

@@ -99,10 +99,11 @@ Add an entry here whenever a change knowingly departs from the proposal.
   Adding before deleting means a failure can leave a duplicate, which the user is told to delete, but never loses a document.
 - **Introduced in:** PR #23.
 
-## 13. Customer notes require a type and text
+## 13. Notes require a type and text
 
-- **Proposal:** Table 1 has no rules for customer notes, although Section 4.2 says every change is validated against it.
-- **Code:** `CustomerNote.Details.validate` rejects a missing or `Unknown` type and blank text, so nothing is sent to the mainframe.
+- **Proposal:** Table 1 has no rules for customer or loan notes, although Section 4.2 says every change is validated against it.
+- **Code:** `Note.Details.validate`, shared by customer and loan notes, rejects a missing or `Unknown` type and blank text,
+  so nothing is sent to the mainframe.
 - **Justification:** type and text are the only note fields the user enters (Figure 2), so a note without either has nothing to record.
   `Unknown` only exists to display types LAVS doesn't model (Section 8), so it can't be saved.
-- **Introduced in:** PR #33.
+- **Introduced in:** PR #33 for customer notes; extended to loan notes when the note classes were shared.
