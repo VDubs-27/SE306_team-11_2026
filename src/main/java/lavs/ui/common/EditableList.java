@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.Page;
 
 /**
- * A list of records kept on screen, such as a wizard's addresses or a loan's notes: shows a row for
+ * A list of records kept on screen, such as a wizard's addresses or documents: shows a row for
  * each, adds and edits them through a RecordEditor, and redraws after every change. Rules such as
  * "only one primary" and paging are switched on per list.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
@@ -33,7 +33,6 @@ public final class EditableList<T> {
     private Runnable onChanged = () -> { };
     private PagerController pager;
     private long pageSize;
-    private boolean newestFirst;
 
     /**
      * row draws one record, given what its Edit button does. emptyMessage shows when there are no
@@ -62,12 +61,6 @@ public final class EditableList<T> {
         return this;
     }
 
-    /** Puts added records at the top instead of the end, for a list kept newest first. */
-    public EditableList<T> newestFirst() {
-        this.newestFirst = true;
-        return this;
-    }
-
     /** Runs after every add, change or remove, once the rows are redrawn, e.g. to update a count. */
     public EditableList<T> onChanged(Runnable action) {
         this.onChanged = action;
@@ -89,19 +82,12 @@ public final class EditableList<T> {
         return items;
     }
 
-    /** Opens an empty form, for the list's Add button; a saved record goes on the end, or the top. */
+    /** Opens an empty form, for the list's Add button; a saved record goes on the end. */
     public void add() {
         editor.add(items.isEmpty(), record -> {
-            int index = newestFirst ? 0 : items.size();
-            items.add(index, record);
-            keepRules(index);
-            if (newestFirst && pager != null) {
-                // The new record is at the very top, so show the first page where it landed
-                use(items);
-                onChanged.run();
-            } else {
-                changed();
-            }
+            items.add(record);
+            keepRules(items.size() - 1);
+            changed();
         });
     }
 

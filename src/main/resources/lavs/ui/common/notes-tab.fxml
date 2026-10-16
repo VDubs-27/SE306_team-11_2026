@@ -18,6 +18,6 @@
             onAction="#handleAddNote"/>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="Notes are shared with all staff, newest first. Keep them factual and record who you spoke to."/>
+        <Label text="Notes are shared with all staff, oldest first. Keep them factual and record who you spoke to."/>
     </HBox>
 </VBox>
