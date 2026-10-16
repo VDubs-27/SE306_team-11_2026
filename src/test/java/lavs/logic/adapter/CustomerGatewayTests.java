@@ -257,4 +257,15 @@ class CustomerGatewayTests {
 
         Assertions.assertEquals("Customer not found", e.getMessage());
     }
+
+    @Test
+    void updateStatusSendsTheCustomerAndTheStatusCode() {
+        respondWith(Map.of("customer", "C123", "status", "Inactive"));
+
+        gateway.updateStatus(NUMBER, Customer.Status.INACTIVE);
+
+        MessageRequest request = sentRequest();
+        Assertions.assertEquals("C123", request.getValue("customer"));
+        Assertions.assertEquals("Inactive", request.getValue("status"));
+    }
 }

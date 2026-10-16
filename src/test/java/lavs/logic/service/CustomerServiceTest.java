@@ -1,9 +1,5 @@
 package lavs.logic.service;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,6 +20,11 @@ import lavs.logic.model.customer.CustomerProfile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
+
+import static org.mockito.Mockito.*;
 
 class CustomerServiceTest {
 
@@ -212,5 +213,35 @@ class CustomerServiceTest {
         when(customers.create(details)).thenReturn(NUMBER);
 
         Assertions.assertTrue(service.create(details).successful());
+    }
+
+    @Test
+    void changeStatusSendsTheStatusAndReturnsTheCustomerWithIt() {
+        Result<Customer> result = service.changeStatus(CUSTOMER, Customer.Status.INACTIVE);
+
+        Assertions.assertTrue(result.successful());
+        Assertions.assertEquals(Customer.Status.INACTIVE, result.value().status());
+        verify(customers).updateStatus(NUMBER, Customer.Status.INACTIVE);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @EnumSource(value = Customer.Status.class, names = "UNKNOWN")
+    void changeStatusRejectsAStatusThatIsNotActiveOrInactive(Customer.Status status) {
+        Result<Customer> result = service.changeStatus(CUSTOMER, status);
+
+        Assertions.assertEquals(List.of(CustomerService.INVALID_STATUS), result.fieldErrors());
+        verifyNothingSent();
+    }
+
+    @Test
+    void changeStatusReportsMainframeErrors() {
+        doThrow(new MainframeException(3, "Rejected")).when(customers)
+                .updateStatus(NUMBER, Customer.Status.INACTIVE);
+
+        Result<Customer> result = service.changeStatus(CUSTOMER, Customer.Status.INACTIVE);
+
+        Assertions.assertFalse(result.successful());
+        Assertions.assertEquals("Rejected", result.errorMessage());
     }
 }
