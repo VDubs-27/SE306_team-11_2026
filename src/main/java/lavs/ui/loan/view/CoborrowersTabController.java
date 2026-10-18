@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import lavs.logic.model.loan.Loan;
 import lavs.ui.loan.people.LoanPeopleController;
 import lavs.ui.loan.people.LoanPerson;
+import lavs.ui.shell.CustomerServices;
 
 /**
  * The loan screen's Co-borrowers tab: the applicant, then everyone else on the loan. While the
@@ -22,12 +23,16 @@ public class CoborrowersTabController {
 
     /** What happens after someone is added or removed: the loan screen updates the tab's count. */
     void setOnChanged(Runnable onChanged) {
-        // Later: save through LoanService (add and delete co-borrower); until then changes only show on this screen
         peopleController.setOnChanged(onChanged);
     }
 
-    /** The people on the loan when the screen opens: the applicant and everyone else. */
-    void use(LoanPerson applicant, List<LoanPerson> others) {
+    /**
+     * The people on the loan when the screen opens, the applicant and everyone else; customers are found
+     * through services, and adding or removing someone is saved to the loan with saving.
+     */
+    void use(LoanPerson applicant, List<LoanPerson> others, CustomerServices services,
+             LoanPeopleController.Saving saving) {
+        peopleController.useServices(services, saving);
         peopleController.use(applicant, new ArrayList<>(others));
     }
 

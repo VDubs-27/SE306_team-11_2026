@@ -16,9 +16,10 @@ import lavs.logic.service.Result;
  * Remove when editing), and only closes once saving works. What saving does is up to the screen, so
  * the same editor serves a wizard's draft, a loan's lists and the services.
  * <p>
- * With a service (addAndSave, editAndSave) the save is tried while the pop-up is still open. If it
- * fails, everything entered stays: a problem with a field shows under that field, and anything else,
- * such as the mainframe being unreachable, shows in a banner at the top of the pop-up.
+ * With a service (addAndSave, editAndSave) the save runs in the background while the pop-up stays
+ * open, saying "Saving…". If it fails, everything entered stays: a problem with a field shows under
+ * that field, and anything else, such as the mainframe being unreachable, shows in a banner at the
+ * top of the pop-up.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  *
  * @param <T> the record the form edits
@@ -57,39 +58,96 @@ public final class RecordEditor<T> {
 
     /** Opens an empty form (see RecordForm.clear for first); when it's saved, passes on the new record. */
     public void add(boolean first, Consumer<T> onSave) {
-        addAndSave(first, record -> done(() -> onSave.accept(record)));
+        form.clear(first);
+        Modal modal = new Modal(owner, "Add " + name).content(formView);
+        modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
+                .button(SAVE, "Save", Modal.Kind.PRIMARY, () -> form.check() && done(() -> onSave.accept(form.read())));
+        modal.showAndWait();
     }
 
     /** Opens the form filled with the record; passes on the changed record when saved, or runs onRemove. */
     public void edit(T record, Consumer<T> onSave, Runnable onRemove) {
-        editAndSave(record, changed -> done(() -> onSave.accept(changed)), () -> done(onRemove));
+        form.fill(record);
+        Modal modal = new Modal(owner, "Edit " + name).content(formView);
+        if (removable) {
+            modal.button(REMOVE, "Remove", Modal.Kind.DANGER, () -> done(onRemove));
+        }
+        modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
+                .button(SAVE, "Save", Modal.Kind.PRIMARY, () -> form.check() && done(() -> onSave.accept(form.read())));
+        modal.showAndWait();
     }
 
     /**
-     * Opens an empty form and, on Save, saves the new record with save (e.g. a service call). The
-     * pop-up closes only when that succeeds; otherwise it shows what went wrong and stays open.
+     * Opens an empty form and, on Save, saves the new record with save (e.g. a service call) in the
+     * background. The pop-up closes only when that succeeds; otherwise it shows what went wrong and
+     * stays open. Returns true when the record was saved, so the screen can show it.
      */
-    public void addAndSave(boolean first, Function<T, Result<?>> save) {
+    public boolean addAndSave(boolean first, Function<T, Result<?>> save) {
+        return addAndSave(first, record -> anyResult(save.apply(record)), saved -> { });
+    }
+
+    /** As addAndSave, then gives what save returned (e.g. the new record) to onSaved, on the screen's thread. */
+    public <R> boolean addAndSave(boolean first, Function<T, Result<R>> save, Consumer<R> onSaved) {
         form.clear(first);
         Modal modal = new Modal(owner, "Add " + name).content(formView);
         modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
-                .button(SAVE, "Save", Modal.Kind.PRIMARY, () -> form.check() && tried(modal, save.apply(form.read())));
-        modal.showAndWait();
+                .button(SAVE, "Save", Modal.Kind.PRIMARY,
+                        () -> form.check() && saving(modal, SAVE, "Saving…", entered(save), onSaved));
+        return SAVE.equals(modal.showAndWait());
     }
 
     /**
      * Opens the form filled with the record. On Save, saves the change with save; on Remove, removes
-     * it with remove. Either closes the pop-up only when it succeeds, as for addAndSave.
+     * it with remove. Either runs in the background and closes the pop-up only when it succeeds, as
+     * for addAndSave. Returns true when the record was saved or removed, so the screen can show it.
      */
-    public void editAndSave(T record, Function<T, Result<?>> save, Supplier<Result<?>> remove) {
+    public boolean editAndSave(T record, Function<T, Result<?>> save, Supplier<Result<?>> remove) {
+        return editAndSave(record, changed -> anyResult(save.apply(changed)), saved -> { }, remove);
+    }
+
+    /** As editAndSave, then gives what save returned (e.g. the changed record) to onSaved, on the screen's thread. */
+    public <R> boolean editAndSave(T record, Function<T, Result<R>> save, Consumer<R> onSaved,
+                                   Supplier<Result<?>> remove) {
         form.fill(record);
         Modal modal = new Modal(owner, "Edit " + name).content(formView);
         if (removable) {
-            modal.button(REMOVE, "Remove", Modal.Kind.DANGER, () -> tried(modal, remove.get()));
+            modal.button(REMOVE, "Remove", Modal.Kind.DANGER,
+                    () -> saving(modal, REMOVE, "Removing…", () -> anyResult(remove.get()), removed -> { }));
         }
         modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
-                .button(SAVE, "Save", Modal.Kind.PRIMARY, () -> form.check() && tried(modal, save.apply(form.read())));
-        modal.showAndWait();
+                .button(SAVE, "Save", Modal.Kind.PRIMARY,
+                        () -> form.check() && saving(modal, SAVE, "Saving…", entered(save), onSaved));
+        String chosen = modal.showAndWait();
+        return SAVE.equals(chosen) || REMOVE.equals(chosen);
+    }
+
+    /** What Save does with the form as it is when pressed, read now, on the screen's thread. */
+    private <R> Supplier<Result<R>> entered(Function<T, Result<R>> save) {
+        T entered = form.read();
+        return () -> save.apply(entered);
+    }
+
+    /**
+     * Starts the work in the background with the pop-up locked and the button saying busyText; when it
+     * succeeds, closes the pop-up as that button and passes on its value, otherwise shows why. Returns
+     * false, so the button itself doesn't close the pop-up while the work is still going.
+     */
+    private <R> boolean saving(Modal modal, String id, String busyText, Supplier<Result<R>> work, Consumer<R> onDone) {
+        modal.showError(null);
+        modal.setBusy(id, busyText);
+        Background.run(work, result -> {
+            modal.clearBusy();
+            if (tried(modal, result)) {
+                modal.close(id);
+                onDone.accept(result.value());
+            }
+        });
+        return false;
+    }
+
+    /** The same result, typed so it can be passed back from the background. */
+    private static Result<Object> anyResult(Result<?> result) {
+        return new Result<>(result.value(), result.fieldErrors(), result.errorMessage());
     }
 
     /**
@@ -113,8 +171,8 @@ public final class RecordEditor<T> {
     }
 
     /** A save that only changes what's on screen, so it always works. */
-    private static Result<Void> done(Runnable change) {
+    private static boolean done(Runnable change) {
         change.run();
-        return Result.success(null);
+        return true;
     }
 }

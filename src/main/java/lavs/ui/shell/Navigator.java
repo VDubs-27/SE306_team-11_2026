@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,15 +14,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Loan;
+import lavs.logic.service.Result;
+import lavs.ui.common.Background;
 import lavs.ui.common.Choices;
-import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.ErrorPanel;
 import lavs.ui.common.Toasts;
 import lavs.ui.customer.profile.CustomerProfileController;
+import lavs.ui.customer.profile.ProfileLoader;
 import lavs.ui.customer.wizard.NewCustomer;
 import lavs.ui.customer.wizard.NewCustomerWizardController;
+import lavs.ui.loan.people.LoanPerson;
+import lavs.ui.loan.view.LoanLoader;
 import lavs.ui.loan.view.LoanViewController;
 import lavs.ui.loan.wizard.NewLoanWizardController;
 
@@ -38,6 +42,8 @@ public class Navigator {
     private final Deque<Parent> history = new ArrayDeque<>();
     private ShellController shell;
     private Parent currentScreen;
+    /** True while a screen is loading before it opens, so a second click doesn't open it twice. */
+    private boolean opening;
 
     public Navigator(Stage stage, Services services) {
         this.stage = stage;
@@ -45,11 +51,6 @@ public class Navigator {
         windowRoot.getChildren().add(new Region());
         stage.getScene().setRoot(windowRoot);
         Toasts.install(stage.getScene(), windowRoot);
-    }
-
-    /** The signed-in user's name as people read it, e.g. "Bob Ross" for bob.ross; null before signing in. */
-    public String signedInName() {
-        return services.session().isLoggedIn() ? DisplayFormat.userName(services.session().currentUser()) : null;
     }
 
     /** The services built at start-up, for screens that need them. */
@@ -99,14 +100,17 @@ public class Navigator {
     }
 
     /**
-     * Shows one customer's profile below the header.
+     * Reads one customer's profile from the mainframe, then shows it below the header. Until it's
+     * read, the current screen stays, with the header's bar sweeping; if it can't be read, says why.
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showCustomerProfile(String customerNumber) {
-        FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
-        CustomerProfileController controller = loader.getController();
-        controller.showCustomer(customerNumber);
-        show(loader.getRoot());
+        openWhenLoaded(() -> ProfileLoader.load(services, customerNumber), "Couldn't open this customer", profile -> {
+                    FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
+                    CustomerProfileController controller = loader.getController();
+                    controller.showCustomer(profile);
+                    show(loader.getRoot());
+                });
     }
 
     /**
@@ -129,10 +133,10 @@ public class Navigator {
      * Shows the new loan wizard for a customer below the header.
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
-    public void showNewLoanWizard(Customer customer) {
+    public void showNewLoanWizard(LoanPerson applicant) {
         FXMLLoader loader = load("/lavs/ui/loan/wizard/new-loan-wizard.fxml");
         NewLoanWizardController controller = loader.getController();
-        controller.start(customer);
+        controller.start(applicant);
         show(loader.getRoot());
     }
 
@@ -140,11 +144,13 @@ public class Navigator {
      * Shows one of a customer's loans below the header.
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
-    public void showLoan(Loan loan, Customer customer) {
-        FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
-        LoanViewController controller = loader.getController();
-        controller.showLoan(loan, customer);
-        show(loader.getRoot());
+    public void showLoan(Loan loan, LoanPerson applicant) {
+        openWhenLoaded(() -> LoanLoader.load(services, loan, applicant), "Couldn't open this loan", screen -> {
+            FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
+            LoanViewController controller = loader.getController();
+            controller.showLoan(screen);
+            show(loader.getRoot());
+        });
     }
 
     /**
@@ -153,6 +159,25 @@ public class Navigator {
      */
     public void showLoadFailed(String title, String message, Runnable retry) {
         show(ErrorPanel.create(title, message, retry, this::back));
+    }
+
+    /**
+     * Loads what a screen needs in the background, then shows it with show. While loading, another
+     * open is ignored; if loading fails, a message titled failTitle says why and nothing opens.
+     */
+    private <T> void openWhenLoaded(Supplier<Result<T>> loadData, String failTitle, Consumer<T> show) {
+        if (opening) {
+            return;
+        }
+        opening = true;
+        Background.run(loadData, loaded -> {
+            opening = false;
+            if (loaded.successful()) {
+                show.accept(loaded.value());
+            } else {
+                Toasts.show(stage.getScene(), Toasts.Kind.ERROR, failTitle, loaded.errorMessage());
+            }
+        });
     }
 
     /** Returns to the previous screen, if there is one. */

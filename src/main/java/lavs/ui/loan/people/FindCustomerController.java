@@ -2,6 +2,7 @@ package lavs.ui.loan.people;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,16 +12,18 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import lavs.logic.model.Page;
 import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
+import lavs.logic.service.Result;
+import lavs.ui.common.Background;
 import lavs.ui.common.Choices;
 import lavs.ui.common.Nodes;
-import lavs.ui.customer.profile.SampleProfiles;
 
 /**
- * The pop-up for adding an existing customer to a loan: choose co-borrower or guarantor, search,
- * then click the person. People already on the loan are left out of the results.
+ * The pop-up for adding an existing customer to a loan: choose co-borrower or guarantor, search the
+ * mainframe, then click the person. People already on the loan are left out of the results.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class FindCustomerController {
@@ -36,6 +39,9 @@ public class FindCustomerController {
 
     private Set<String> alreadyOnLoan = Set.of();
     private Customer selected;
+    private Function<String, Result<Page<Customer.Summary>>> find = term -> Result.success(new Page<>(List.of(), 1, 1, 0));
+    /** Counts searches, so only the answer to the latest is shown. */
+    private long searches;
 
     @FXML
     private void initialize() {
@@ -56,10 +62,16 @@ public class FindCustomerController {
         Nodes.show(coborrowerButton, offered.contains(Coborrower.Type.COBORROWER));
         Nodes.show(guarantorButton, offered.contains(Coborrower.Type.GUARANTOR));
         (offered.contains(Coborrower.Type.COBORROWER) ? coborrowerButton : guarantorButton).setSelected(true);
+        searches++;
         searchField.clear();
         results.getChildren().clear();
         selected = null;
         showError(null);
+    }
+
+    /** How a search finds customers: the first page of matches for the term. Called in the background. */
+    public void setFind(Function<String, Result<Page<Customer.Summary>>> find) {
+        this.find = find;
     }
 
     /** True once someone has been picked; otherwise says to pick someone. */
@@ -80,17 +92,53 @@ public class FindCustomerController {
     private void handleSearch() {
         selected = null;
         String term = searchField.getText().trim();
-        // Later: search through CustomerService instead of the sample profiles
-        List<Customer> found = term.isEmpty() ? List.of() : SampleProfiles.search(term).stream()
-                .filter(customer -> !alreadyOnLoan.contains(customer.number().value()))
-                .toList();
-        if (found.isEmpty()) {
-            Label none = new Label(term.isEmpty() ? "Type a name or customer number to search." : "No customers found.");
-            none.getStyleClass().add("text-muted");
-            results.getChildren().setAll(none);
+        if (term.isEmpty()) {
+            showMessage("Type a whole first or family name, or a full customer number.");
             return;
         }
-        results.getChildren().setAll(found.stream().map(this::resultRow).toList());
+        long search = ++searches;
+        showMessage("Searching…");
+        Background.run(() -> find.apply(term), found -> {
+            if (search == searches) {
+                showFound(found);
+            }
+        });
+    }
+
+    /** The matches not already on the loan, or why there are none. */
+    private void showFound(Result<Page<Customer.Summary>> found) {
+        if (!found.successful()) {
+            showMessage("The search didn't work. " + found.errorMessage());
+            return;
+        }
+        List<Customer> matches = found.value().items().stream()
+                .filter(match -> !alreadyOnLoan.contains(match.number().value()))
+                .map(FindCustomerController::customer)
+                .toList();
+        if (matches.isEmpty()) {
+            showMessage("No customers found. Use whole names (Smith, not Smi) or a full customer number.");
+            return;
+        }
+        results.getChildren().setAll(matches.stream().map(this::resultRow).toList());
+        if (found.value().hasNext()) {
+            Label more = new Label("Showing the first " + found.value().items().size() + " of "
+                    + found.value().total() + ". Add a first name to narrow it down.");
+            more.getStyleClass().add("text-muted");
+            results.getChildren().add(more);
+        }
+    }
+
+    private void showMessage(String text) {
+        Label message = new Label(text);
+        message.setWrapText(true);
+        message.getStyleClass().add("text-muted");
+        results.getChildren().setAll(message);
+    }
+
+    /** A search result as a customer, for its row; the mainframe is asked for the rest when they're added. */
+    private static Customer customer(Customer.Summary found) {
+        return new Customer(found.number(), found.title(), found.firstName(), found.familyName(), found.status(),
+                found.dateOfBirth(), null);
     }
 
     /** A result the user can click to choose; the chosen one is highlighted. */

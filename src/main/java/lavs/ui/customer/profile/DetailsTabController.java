@@ -37,7 +37,8 @@ public class DetailsTabController {
 
     private Customer customer;
     private RecordEditor<Customer.Details> editor;
-    private Function<Customer.Details, Result<?>> onSaved = details -> Result.success(null);
+    private Function<Customer.Details, Result<Customer>> save = details -> Result.success(customer);
+    private Consumer<Customer> onSaved = saved -> { };
     private Consumer<Customer.Status> onStatusChanged = status -> { };
 
     @FXML
@@ -46,8 +47,12 @@ public class DetailsTabController {
                 .withoutRemove();
     }
 
-    /** How Edit saves: the profile saves the change and says whether it worked; the pop-up stays open if not. */
-    void setOnSaved(Function<Customer.Details, Result<?>> onSaved) {
+    /**
+     * How Edit saves: save stores the change, in the background, and says whether it worked (the pop-up
+     * stays open if not); onSaved then gets the saved customer, to show.
+     */
+    void setOnSaved(Function<Customer.Details, Result<Customer>> save, Consumer<Customer> onSaved) {
+        this.save = save;
         this.onSaved = onSaved;
     }
 
@@ -72,7 +77,7 @@ public class DetailsTabController {
 
     @FXML
     private void handleEditDetails() {
-        editor.editAndSave(customer.details(), changed -> onSaved.apply(changed), () -> Result.success(null));
+        editor.editAndSave(customer.details(), save, onSaved, () -> Result.success(null));
     }
 
     @FXML

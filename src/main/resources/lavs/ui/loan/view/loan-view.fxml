@@ -17,7 +17,7 @@
                 <VBox spacing="6" alignment="CENTER_LEFT">
                     <Label fx:id="loanNumberLabel" minWidth="-Infinity" styleClass="summary-name, summary-loan-number, mono"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label fx:id="statusBadge"/>
+                        <Label fx:id="statusBadge" minWidth="-Infinity"/>
                         <Label fx:id="customerValue" minWidth="-Infinity" styleClass="text-muted"/>
                     </HBox>
                 </VBox>
@@ -70,7 +70,7 @@
                     <Tab text="Details">
                         <fx:include fx:id="details" source="details-tab.fxml"/>
                     </Tab>
-                    <Tab text="Schedule">
+                    <Tab fx:id="scheduleTab" text="Schedule">
                         <fx:include fx:id="schedule" source="schedule-tab.fxml"/>
                     </Tab>
                     <Tab fx:id="coborrowersTab" text="Co-borrowers">

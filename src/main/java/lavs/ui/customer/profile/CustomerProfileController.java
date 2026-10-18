@@ -2,9 +2,9 @@ package lavs.ui.customer.profile;
 
 import static lavs.logic.model.Validation.isBlank;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -13,14 +13,13 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
 
-import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
-import lavs.logic.service.Result;
+import lavs.ui.common.Background;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.DocumentsTabController;
 import lavs.ui.common.Nodes;
+import lavs.ui.common.Fetch;
 import lavs.ui.common.NotesTabController;
-import lavs.ui.common.Pages;
 import lavs.ui.common.TabBars;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
@@ -55,52 +54,62 @@ public class CustomerProfileController implements NavigatorAware {
     @FXML private DocumentsTabController documentsController;
     @FXML private NotesTabController notesController;
 
+    private CustomerProfile profile;
     private Customer customer;
-    private String suburb;
-    /** What the customer still needs before a loan can start, e.g. "a mailing address"; empty when ready. */
-    private List<String> neededForLoan = List.of();
+    /** What each tab does the first time it's opened: read its first page of records. */
+    private final Map<Tab, Runnable> unopened = new HashMap<>();
+    /** True while checking the customer can have a loan, so a second click doesn't open two wizards. */
+    private boolean checkingLoan;
     private Navigator navigator;
 
     @Override
     public void setNavigator(Navigator navigator) {
         this.navigator = navigator;
-        notesController.setAuthor(navigator.signedInName());
     }
 
     @FXML
     private void initialize() {
         TabBars.setUp(tabPane);
-        loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, customer));
-        detailsController.setOnSaved(this::saveDetails);
+        tabPane.getSelectionModel().selectedItemProperty().addListener((property, was, tab) -> open(tab));
+        loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, profile.asApplicant(customer)));
+        detailsController.setOnSaved(
+                changed -> navigator.services().customer().customers().update(customer.number(), changed),
+                this::showSavedDetails);
         detailsController.setOnStatusChanged(this::changeStatus);
-        // Later: save document and note changes through CustomerService; until then they only show on this screen
-        documentsController.setOnChanged(() -> TabBars.setCount(documentsTab, documentsController.count()));
-        notesController.setOnChanged(() -> TabBars.setCount(notesTab, notesController.count()));
     }
 
-    /** Fills the screen for one customer. */
-    public void showCustomer(String customerNumber) {
-        // Later: load the profile from CustomerService in the background; if that fails,
-        // navigator.showLoadFailed("Couldn't load this customer", reason, () -> showCustomer(customerNumber))
-        CustomerProfile profile = SampleProfiles.find(customerNumber);
+    /**
+     * Fills the screen for one customer, from what was read before opening (see ProfileLoader). Each
+     * tab reads its own records, a page at a time, when it's first opened.
+     */
+    public void showCustomer(CustomerProfile loaded) {
+        profile = loaded;
         customer = profile.customer();
-        suburb = primarySuburb(profile);
-        neededForLoan = neededForLoan(profile);
         showSummary();
         detailsController.show(customer);
-        TabBars.setCount(addressesTab, addressesController.show(
-                page -> Pages.of(profile.addresses(), page, PAGE_SIZE)));
-        TabBars.setCount(contactsTab, contactsController.show(
-                page -> Pages.of(profile.phones(), page, PAGE_SIZE),
-                page -> Pages.of(profile.emails(), page, PAGE_SIZE)));
-        TabBars.setCount(employmentTab, employmentController.show(
-                page -> Pages.of(profile.employers(), page, PAGE_SIZE)));
-        TabBars.setCount(loansTab, loansController.show(
-                page -> Pages.of(profile.loans(), page, PAGE_SIZE)));
-        documentsController.use(profile.documents());
-        TabBars.setCount(documentsTab, documentsController.count());
-        notesController.use(profile.notes());
-        TabBars.setCount(notesTab, notesController.count());
+        TabBars.setCount(addressesTab, profile.addresses());
+        TabBars.setCount(contactsTab, profile.contacts());
+        TabBars.setCount(employmentTab, profile.employers());
+        TabBars.setCount(loansTab, profile.loans());
+        TabBars.setCount(documentsTab, profile.documents());
+        TabBars.setCount(notesTab, profile.notes());
+
+        ProfileSources sources = new ProfileSources(navigator.services(), customer.number());
+        unopened.put(addressesTab, () -> addressesController.show(sources.addresses(),
+                count -> TabBars.setCount(addressesTab, count), this::refreshSuburb));
+        unopened.put(contactsTab, () -> contactsController.show(sources.phones(), sources.emails(),
+                count -> TabBars.setCount(contactsTab, count)));
+        unopened.put(employmentTab, () -> employmentController.show(sources.employers(), count -> {
+            TabBars.setCount(employmentTab, count);
+            profile = profile.withEmployers(count);
+        }));
+        unopened.put(loansTab, () -> loansController.show(page -> sources.loans(page, PAGE_SIZE),
+                count -> TabBars.setCount(loansTab, count)));
+        unopened.put(documentsTab, () -> documentsController.show(sources.documents(),
+                count -> TabBars.setCount(documentsTab, count)));
+        unopened.put(notesTab, () -> notesController.show(sources.notes(),
+                count -> TabBars.setCount(notesTab, count)));
+        open(tabPane.getSelectionModel().getSelectedItem());
     }
 
     @FXML
@@ -108,49 +117,68 @@ public class CustomerProfileController implements NavigatorAware {
         navigator.back();
     }
 
+    /**
+     * Opens the new loan wizard once the mainframe confirms the customer can have one: they're active,
+     * with a mailing address and a way to reach them. Otherwise says what's missing.
+     */
     @FXML
     private void handleNewLoan() {
-        if (neededForLoan.isEmpty()) {
-            navigator.showNewLoanWizard(customer);
+        if (checkingLoan) {
             return;
         }
-        Toasts.show(nameLabel, Toasts.Kind.WARNING, "Not ready for a loan yet",
-                DisplayFormat.fullNameWithTitle(customer) + " needs " + String.join(" and ", neededForLoan)
-                        + " first. Add them on the Addresses and Contacts tabs.");
+        checkingLoan = true;
+        Background.run(() -> navigator.services().loan().loans().canStartLoan(customer.number()), ready -> {
+            checkingLoan = false;
+            if (ready.successful()) {
+                navigator.showNewLoanWizard(profile.asApplicant(customer));
+            } else if (ready.errorMessage() == null) {
+                Toasts.show(nameLabel, Toasts.Kind.WARNING, "Not ready for a loan yet", Fetch.reason(ready));
+            } else {
+                Toasts.show(nameLabel, Toasts.Kind.ERROR, "Couldn't check for a new loan", ready.errorMessage());
+            }
+        });
     }
 
-    /** A loan needs a mailing address to send documents to, and a phone or email to reach the customer. */
-    private static List<String> neededForLoan(CustomerProfile profile) {
-        List<String> needed = new ArrayList<>();
-        if (profile.addresses().stream().noneMatch(Address::isMailing)) {
-            needed.add("a mailing address");
+    /** Reads a tab's first page of records the first time it's opened. */
+    private void open(Tab tab) {
+        Runnable firstOpen = unopened.remove(tab);
+        if (firstOpen != null) {
+            firstOpen.run();
         }
-        if (profile.phones().isEmpty() && profile.emails().isEmpty()) {
-            needed.add("a phone number or email address");
-        }
-        return needed;
     }
 
-    /** Saves the edited details, keeping the customer's number and status; the edit pop-up shows any failure. */
-    private Result<?> saveDetails(Customer.Details changed) {
-        // Later: Result<?> saved = customerService.update(customer.number(), changed); if it failed, return it
-        customer = new Customer(customer.number(), changed.title(), changed.firstName(), changed.familyName(),
-                customer.status(), changed.dateOfBirth(), changed.nationality());
+    /** Shows the customer as saved, once the edit pop-up has closed. */
+    private void showSavedDetails(Customer saved) {
+        customer = saved;
         showSummary();
         detailsController.show(customer);
         Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Details saved",
                 DisplayFormat.fullNameWithTitle(customer) + "'s details have been updated.");
-        return Result.success(null);
     }
 
-    /** Makes the customer active or inactive, once confirmed on the Details tab. */
+    /** Makes the customer active or inactive on the mainframe, once confirmed on the Details tab. */
     private void changeStatus(Customer.Status status) {
-        // Later: CustomerService.updateStatus(customer.number(), status); until then the change only shows on this screen
-        customer = customer.withStatus(status);
-        showSummary();
-        detailsController.show(customer);
-        Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Status changed",
-                DisplayFormat.fullNameWithTitle(customer) + " is now " + status.code().toLowerCase(Locale.ROOT) + ".");
+        Background.run(() -> navigator.services().customer().customers().changeStatus(customer, status), changed -> {
+            if (!changed.successful()) {
+                Toasts.show(nameLabel, Toasts.Kind.ERROR, "Couldn't change the status", Fetch.reason(changed));
+                return;
+            }
+            customer = changed.value();
+            showSummary();
+            detailsController.show(customer);
+            Toasts.show(nameLabel, Toasts.Kind.SUCCESS, "Status changed", DisplayFormat.fullNameWithTitle(customer)
+                    + " is now " + status.code().toLowerCase(Locale.ROOT) + ".");
+        });
+    }
+
+    /** Reads the primary address's suburb again after the addresses changed, for the card at the top. */
+    private void refreshSuburb() {
+        Background.run(() -> ProfileLoader.primarySuburb(navigator.services().customer(), customer.number()), suburb -> {
+            if (suburb.successful()) {
+                profile = profile.withPrimarySuburb(suburb.value());
+                showSummary();
+            }
+        });
     }
 
     /** The card at the top: avatar, name, status and key facts. */
@@ -168,17 +196,8 @@ public class CustomerProfileController implements NavigatorAware {
         dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
         showIfPresent(dateOfBirthLabel, dateOfBirthFact);
 
-        suburbLabel.setText(suburb);
+        suburbLabel.setText(profile.primarySuburb());
         showIfPresent(suburbLabel, suburbFact);
-    }
-
-    private static String primarySuburb(CustomerProfile profile) {
-        return profile.addresses().stream()
-                .filter(Address::isPrimary)
-                .map(Address::suburb)
-                .filter(suburb -> !isBlank(suburb))
-                .findFirst()
-                .orElse("");
     }
 
     /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */

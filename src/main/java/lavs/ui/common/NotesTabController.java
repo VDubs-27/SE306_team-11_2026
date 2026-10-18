@@ -1,16 +1,14 @@
 package lavs.ui.common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.LongConsumer;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
 /**
- * A Notes tab, on a customer's profile or a loan: notes staff have written, newest first, a page at
- * a time, which can be added, changed or removed. The screen it's on gives it the notes and hears
- * about changes.
+ * A Notes tab, on a customer's profile or a loan: notes staff have written, a page at a time from the
+ * mainframe, which can be added, changed or removed there. The mainframe records who wrote each note.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class NotesTabController {
@@ -22,34 +20,17 @@ public class NotesTabController {
     @FXML private VBox noteList;
     @FXML private PagerController pagerController;
 
-    private EditableList<NoteRow> notes;
+    private ServiceList<NoteRow, NoteRow> notes;
 
     @FXML
     private void initialize() {
-        notes = new EditableList<>(new RecordEditor<>(noteList, "note", noteForm, noteFormController),
-                noteList, NoteCards::card, "No notes recorded.")
-                .paged(pagerController, PAGE_SIZE)
-                .newestFirst();
+        notes = new ServiceList<>(new RecordEditor<>(noteList, "note", noteForm, noteFormController),
+                noteList, pagerController, PAGE_SIZE, NoteCards::card, note -> note, "No notes recorded.");
     }
 
-    /** Who new notes are by: the signed-in user's name. */
-    public void setAuthor(String signedInName) {
-        noteFormController.setAuthor(signedInName);
-    }
-
-    /** What happens after a note is added, changed or removed, e.g. the screen updates the tab's count. */
-    public void setOnChanged(Runnable onChanged) {
-        notes.onChanged(onChanged);
-    }
-
-    /** Shows these notes, newest first, from the first page. */
-    public void use(List<NoteRow> recorded) {
-        notes.use(new ArrayList<>(recorded));
-    }
-
-    /** How many notes there are, for the tab's count. */
-    public long count() {
-        return notes.items().size();
+    /** Shows the notes kept on the mainframe, e.g. a customer's, and saves changes there; onTotal hears the count. */
+    public void show(ServiceList.Source<NoteRow, NoteRow> source, LongConsumer onTotal) {
+        notes.onTotal(onTotal).show(source);
     }
 
     @FXML

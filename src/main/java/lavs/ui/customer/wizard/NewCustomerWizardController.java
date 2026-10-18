@@ -11,8 +11,9 @@ import javafx.scene.shape.SVGPath;
 
 import lavs.logic.model.customer.Address;
 import lavs.logic.model.customer.Customer;
-import lavs.logic.model.customer.CustomerNumber;
+import lavs.ui.common.Background;
 import lavs.ui.common.Dialogs;
+import lavs.ui.common.Fetch;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
@@ -27,8 +28,6 @@ import lavs.ui.wizard.WizardStep;
 public class NewCustomerWizardController implements NavigatorAware {
 
     private static final String NOT_SAVED = "Not yet saved to the mainframe";
-    /** Shown where the customer number goes until saving through CustomerService gives a real one. */
-    private static final CustomerNumber NUMBER_NOT_SAVED = new CustomerNumber("Not yet saved");
 
     @FXML private Node wizard;
     @FXML private WizardController wizardController;
@@ -94,18 +93,37 @@ public class NewCustomerWizardController implements NavigatorAware {
         }
     }
 
-    /** Saves the customer, then goes back; a screen waiting for them gets them, otherwise (later) their profile opens. */
+    /**
+     * Saves the customer to the mainframe in the background, then goes back: to the screen waiting for
+     * them, if there is one, or to their new profile. If they couldn't be created, says why and stays.
+     */
     private void handleSave() {
-        // Later: Result<Customer> created = customerService.create(...); if it failed, say why and stay here
-        Customer.Details details = draft.details();
-        Customer saved = new Customer(NUMBER_NOT_SAVED, details.title(), details.firstName(), details.familyName(),
-                Customer.Status.ACTIVE, details.dateOfBirth(), details.nationality());
+        wizardController.setBusy("Saving…");
+        Background.run(() -> CustomerSaver.save(navigator.services().customer(), draft), saved -> {
+            if (!saved.successful()) {
+                wizardController.clearBusy();
+                Toasts.show(wizard, Toasts.Kind.ERROR, "Couldn't save the customer", Fetch.reason(saved));
+                return;
+            }
+            finish(saved.value());
+        });
+    }
+
+    /** Leaves the wizard for the customer just saved, saying what, if anything, didn't save with them. */
+    private void finish(CustomerSaver.Saved saved) {
+        Customer customer = saved.customer();
         Scene scene = wizard.getScene();
         navigator.back();
         if (onSaved != null) {
-            onSaved.accept(new NewCustomer(saved, primarySuburb(), draft.isEmployed() && !draft.employers().isEmpty()));
+            onSaved.accept(new NewCustomer(customer, primarySuburb(), draft.isEmployed() && !draft.employers().isEmpty()));
         } else {
-            Toasts.show(scene, Toasts.Kind.SUCCESS, "Customer saved", saved.fullName() + " has been added.");
+            navigator.showCustomerProfile(customer.number().value());
+        }
+        if (saved.notSaved().isEmpty()) {
+            Toasts.show(scene, Toasts.Kind.SUCCESS, "Customer saved", customer.fullName() + " has been added.");
+        } else {
+            Toasts.show(scene, Toasts.Kind.WARNING, customer.fullName() + " was saved, but not all their details",
+                    "Add these again from their profile. " + String.join(" ", saved.notSaved()));
         }
     }
 

@@ -8,8 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
 import lavs.logic.model.customer.Customer;
+import lavs.ui.common.Background;
 import lavs.ui.common.Dialogs;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.Fetch;
 import lavs.ui.common.Toasts;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.Navigator;
@@ -56,16 +58,17 @@ public class NewLoanWizardController implements NavigatorAware {
                 new WizardStep("Submit", submit, null, () -> submitController.show(draft))));
     }
 
-    /** Sets the wizard up for the customer the loan is for: their initials and "for John Smith · number". */
-    public void start(Customer customer) {
+    /** Sets the wizard up for the person the loan is for: their initials and "for John Smith · number". */
+    public void start(LoanPerson applicant) {
+        Customer customer = applicant.customer();
         Label avatar = new Label(DisplayFormat.initials(customer));
         avatar.getStyleClass().add("avatar");
         wizardController.setIcon(avatar);
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
-        draft = new NewLoanDraft(LoanPerson.lookUp(customer, null));
+        draft = new NewLoanDraft(applicant);
         uploadController.use(draft);
         uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
-        coborrowersController.use(draft);
+        coborrowersController.use(draft, navigator.services().customer());
         coborrowersController.setOnAddNewCustomer(
                 () -> navigator.showNewCustomerWizard(coborrowersController::addNewCustomer));
     }
@@ -78,11 +81,39 @@ public class NewLoanWizardController implements NavigatorAware {
         }
     }
 
+    /**
+     * Sends the loan to the mainframe in the background and submits it for approval, then opens it.
+     * If it couldn't be created, says why and stays, with everything entered still there.
+     */
     private void handleSubmit() {
-        // Later: create the loan through LoanService, then open it
+        wizardController.setBusy("Submitting…");
+        Background.run(() -> LoanSaver.save(navigator.services().loan(), draft), saved -> {
+            if (!saved.successful()) {
+                wizardController.clearBusy();
+                Toasts.show(wizard, Toasts.Kind.ERROR, "Couldn't create the loan", Fetch.reason(saved));
+                return;
+            }
+            finish(saved.value());
+        });
+    }
+
+    /** Leaves the wizard for the loan just made, saying what, if anything, still needs doing on it. */
+    private void finish(LoanSaver.Saved saved) {
         Scene scene = wizard.getScene();
+        String number = saved.loan().loanNumber().value();
         navigator.back();
-        Toasts.show(scene, Toasts.Kind.SUCCESS, "Loan submitted",
-                "The loan for " + draft.applicant().customer().fullName() + " has been sent for approval.");
+        navigator.showLoan(saved.loan(), draft.applicant());
+        if (saved.notSubmitted() != null) {
+            Toasts.show(scene, Toasts.Kind.WARNING, "Loan " + number + " saved, but not submitted yet",
+                    saved.notSubmitted() + " Fix this, then submit it from the loan. "
+                            + String.join(" ", saved.notSaved()));
+        } else if (!saved.notSaved().isEmpty()) {
+            Toasts.show(scene, Toasts.Kind.WARNING, "Loan " + number + " submitted, but not everything was added",
+                    "Add these from the loan. " + String.join(" ", saved.notSaved()));
+        } else {
+            Toasts.show(scene, Toasts.Kind.SUCCESS, "Loan submitted",
+                    "Loan " + number + " for " + draft.applicant().customer().fullName()
+                            + " has been sent for approval.");
+        }
     }
 }

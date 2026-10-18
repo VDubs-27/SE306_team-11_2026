@@ -1,5 +1,7 @@
 package lavs.ui.shell;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WeakChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
@@ -7,22 +9,38 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
+import lavs.ui.common.Background;
 import lavs.ui.common.DisplayFormat;
+import lavs.ui.common.LoadingBar;
 
 public class ShellController implements NavigatorAware {
 
     @FXML private StackPane contentArea;
     @FXML private Button accountButton;
     @FXML private Label accountInitials;
+    @FXML private Pane headerBar;
 
     private final ContextMenu accountMenu = new ContextMenu();
     private Navigator navigator;
+    /** Sweeps the header's bar while the app waits on the mainframe; held here, as Background only holds it weakly. */
+    private ChangeListener<Boolean> showBusy;
 
     @FXML
     private void initialize() {
+        LoadingBar loadingBar = new LoadingBar(headerBar);
+        showBusy = (property, wasBusy, busy) -> {
+            if (busy) {
+                loadingBar.start();
+            } else {
+                loadingBar.stop();
+            }
+        };
+        // Weak, so a shell left behind by signing out can be let go
+        Background.busyProperty().addListener(new WeakChangeListener<>(showBusy));
         MenuItem logout = new MenuItem("Log out");
         logout.setOnAction(event -> handleLogout());
         accountMenu.getItems().add(logout);

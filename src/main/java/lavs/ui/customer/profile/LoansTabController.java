@@ -1,6 +1,8 @@
 package lavs.ui.customer.profile;
 
 import java.util.function.Consumer;
+import java.util.List;
+import java.util.function.LongConsumer;
 import java.util.function.LongFunction;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,6 +16,7 @@ import javafx.scene.layout.StackPane;
 
 import lavs.logic.model.Page;
 import lavs.logic.model.loan.Loan;
+import lavs.logic.service.Result;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.PagerController;
@@ -24,6 +27,8 @@ import lavs.ui.common.Tables;
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class LoansTabController {
+
+    private static final String NO_LOANS = "No loans yet.";
 
     @FXML private StackPane tableBox;
     @FXML private TableView<Loan> loansTable;
@@ -72,9 +77,23 @@ public class LoansTabController {
         Tables.fitInsideBox(loansTable);
     }
 
-    /** Shows the first page and returns how many there are altogether, for the tab's count. */
-    long show(LongFunction<Page<Loan>> loadPage) {
-        return pagerController.show(loadPage, items -> Tables.show(loansTable, tableBox, emptyState, items));
+    /**
+     * Shows the customer's loans a page at a time, each read from the mainframe in the background with
+     * loadPage; onTotal hears how many there are, for the tab's count.
+     */
+    void show(LongFunction<Result<Page<Loan>>> loadPage, LongConsumer onTotal) {
+        emptyState.setText("Loading…");
+        Tables.show(loansTable, tableBox, emptyState, List.of());
+        pagerController.showLoading(page -> loadPage.apply(page), items -> {
+            emptyState.setText(NO_LOANS);
+            Tables.show(loansTable, tableBox, emptyState, items);
+        }, loaded -> {
+            if (loaded.successful()) {
+                onTotal.accept(loaded.value().total());
+            } else {
+                emptyState.setText("Couldn't load the loans. " + loaded.errorMessage());
+            }
+        });
     }
 
     /** What clicking a loan does: the profile opens the loan screen. */

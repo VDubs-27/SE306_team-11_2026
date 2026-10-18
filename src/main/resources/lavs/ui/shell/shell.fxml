@@ -6,24 +6,28 @@
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="lavs.ui.shell.ShellController" styleClass="app-root">
     <top>
-        <HBox styleClass="app-header">
-            <ImageView fitHeight="40" preserveRatio="true">
-                <Image url="@../images/countrywide-logo.jpg"/>
-            </ImageView>
-            <Separator orientation="VERTICAL" maxHeight="28"/>
-            <VBox alignment="CENTER_LEFT">
-                <Label text="LAVS" styleClass="app-name"/>
-                <Label text="Loan Application and Verification System" styleClass="app-subtitle"/>
-            </VBox>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="accountButton" styleClass="account-button"
-                    onAction="#handleAccountMenu">
-                <graphic>
-                    <Label fx:id="accountInitials"
-                           styleClass="avatar, avatar-small, avatar-user"/>
-                </graphic>
-            </Button>
-        </HBox>
+        <VBox>
+            <HBox styleClass="app-header">
+                <ImageView fitHeight="40" preserveRatio="true">
+                    <Image url="@../images/countrywide-logo.jpg"/>
+                </ImageView>
+                <Separator orientation="VERTICAL" maxHeight="28"/>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="LAVS" styleClass="app-name"/>
+                    <Label text="Loan Application and Verification System" styleClass="app-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="accountButton" styleClass="account-button"
+                        onAction="#handleAccountMenu">
+                    <graphic>
+                        <Label fx:id="accountInitials"
+                               styleClass="avatar, avatar-small, avatar-user"/>
+                    </graphic>
+                </Button>
+            </HBox>
+            <!-- The red line under the header, which sweeps while the app waits on the mainframe -->
+            <Pane fx:id="headerBar" styleClass="app-header-bar" minHeight="4" prefHeight="4" maxHeight="4"/>
+        </VBox>
     </top>
     <center>
         <StackPane fx:id="contentArea"/>

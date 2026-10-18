@@ -2,6 +2,7 @@ package lavs.ui.common;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.fxml.FXML;
@@ -10,16 +11,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
 import lavs.logic.model.FieldError;
+import lavs.logic.model.note.Note;
 
 /**
  * The form for one note, used in a pop-up to add or edit: what kind of note it is and what it says.
- * A new note is by the signed-in user (see setAuthor) and dated today; an edited one keeps its author and date.
+ * The mainframe records who wrote a note and when, so the form only has its type and text.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class NoteFormController implements RecordForm<NoteRow> {
 
-    /** Temporary choices; replaced by the mainframe's note types once there is a service to read them. */
-    private static final List<String> TYPES = List.of("General", "Application", "Contact", "Identification", "Loan");
+    /** The kinds of note LAVS keeps; the mainframe sends no list of them, so they come from Note.Type. */
+    private static final List<String> TYPES = Arrays.stream(Note.Type.values())
+            .filter(type -> type != Note.Type.UNKNOWN)
+            .map(Note.Type::code)
+            .toList();
 
     @FXML private ComboBox<String> typeBox;
     @FXML private TextArea textArea;
@@ -28,7 +33,6 @@ public class NoteFormController implements RecordForm<NoteRow> {
 
     private FieldErrors errors;
     private NoteRow editing;
-    private String author;
 
     @FXML
     private void initialize() {
@@ -36,11 +40,6 @@ public class NoteFormController implements RecordForm<NoteRow> {
         errors = new FieldErrors()
                 .add("type", typeBox, typeError)
                 .add("text", textArea, textError);
-    }
-
-    /** Who new notes are by: the signed-in user's name, e.g. "Bob Ross". */
-    public void setAuthor(String signedInName) {
-        this.author = signedInName;
     }
 
     /** Empties the form for a new note; first is ignored, as notes have no primary. */
@@ -72,7 +71,7 @@ public class NoteFormController implements RecordForm<NoteRow> {
     @Override
     public NoteRow read() {
         return editing == null
-                ? new NoteRow(0, typeBox.getValue(), author, LocalDate.now(), text())
+                ? new NoteRow(0, typeBox.getValue(), null, LocalDate.now(), text())
                 : new NoteRow(editing.id(), typeBox.getValue(), editing.author(), editing.dateAdded(), text());
     }
 

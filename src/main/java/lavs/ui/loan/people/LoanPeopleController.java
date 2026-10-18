@@ -14,24 +14,50 @@ import javafx.scene.layout.VBox;
 import lavs.logic.model.constants.ConstantCategory;
 import lavs.logic.model.customer.Customer;
 import lavs.logic.model.loan.Coborrower;
+import lavs.logic.service.Result;
+import lavs.ui.common.Background;
 import lavs.ui.common.Choices;
 import lavs.ui.common.Dialogs;
+import lavs.ui.common.Fetch;
 import lavs.ui.common.Modal;
 import lavs.ui.common.Nodes;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.Pages;
 import lavs.ui.common.Toasts;
+import lavs.ui.customer.CustomerFinder;
+import lavs.ui.shell.CustomerServices;
 
 /**
  * Who is on a loan, used by the new loan wizard and the loan screen: the applicant first, then
- * each co-borrower and guarantor, a page at a time. People are found among existing customers and
- * removed after a check. An applicant who isn't employed needs a guarantor.
+ * each co-borrower and guarantor, a page at a time. People are found among existing customers on the
+ * mainframe and removed after a check; on a loan already made, each change is saved to it straight
+ * away (see useServices). An applicant who isn't employed needs a guarantor.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class LoanPeopleController {
 
     private static final long PAGE_SIZE = 5;
     private static final String ADD = "add";
+
+    /** How adding and removing someone is kept; each runs in the background. */
+    public interface Saving {
+        Result<?> add(LoanPerson person);
+
+        Result<?> remove(LoanPerson person);
+    }
+
+    /** Changes only kept on screen, e.g. in a wizard's draft, saved with the rest later. */
+    public static final Saving ON_SCREEN = new Saving() {
+        @Override
+        public Result<?> add(LoanPerson person) {
+            return Result.success(person);
+        }
+
+        @Override
+        public Result<?> remove(LoanPerson person) {
+            return Result.success(person);
+        }
+    };
 
     @FXML private Node findCustomer;
     @FXML private FindCustomerController findCustomerController;
@@ -46,6 +72,8 @@ public class LoanPeopleController {
     private boolean editable = true;
     private Runnable onAddNewCustomer;
     private Runnable onChanged = () -> { };
+    private CustomerServices customers;
+    private Saving saving = ON_SCREEN;
 
     @FXML
     private void initialize() {
@@ -58,6 +86,13 @@ public class LoanPeopleController {
         this.applicant = loanApplicant;
         this.others = otherPeople;
         redraw();
+    }
+
+    /** Where people are found and read from, and how adding or removing them is saved. */
+    public void useServices(CustomerServices customerServices, Saving changes) {
+        this.customers = customerServices;
+        this.saving = changes;
+        findCustomerController.setFind(term -> CustomerFinder.find(customerServices.customers(), term, 1));
     }
 
     /** Whether people can be added and removed; when not, the list is shown read-only. */
@@ -93,15 +128,37 @@ public class LoanPeopleController {
     @FXML
     private void handleFindCustomer() {
         findCustomerController.reset(customerNumbersOnLoan());
-        String chosen = new Modal(peopleList, "Find existing customer")
-                .content(findCustomer)
-                .button("cancel", "Cancel", Modal.Kind.SECONDARY)
-                .button(ADD, "Add to loan", Modal.Kind.PRIMARY, findCustomerController::check)
+        Modal modal = new Modal(peopleList, "Find existing customer").content(findCustomer);
+        modal.button("cancel", "Cancel", Modal.Kind.SECONDARY)
+                .button(ADD, "Add to loan", Modal.Kind.PRIMARY, () -> findCustomerController.check() && adding(modal))
                 .showAndWait();
-        if (ADD.equals(chosen)) {
-            others.add(LoanPerson.lookUp(findCustomerController.selected(), findCustomerController.role()));
+    }
+
+    /**
+     * Reads the chosen customer's details and saves them onto the loan, in the background with the
+     * pop-up waiting; closes it once they're added, or says why they couldn't be. Returns false, so
+     * the button doesn't close the pop-up itself.
+     */
+    private boolean adding(Modal modal) {
+        Customer chosen = findCustomerController.selected();
+        Coborrower.Type role = findCustomerController.role();
+        modal.showError(null);
+        modal.setBusy(ADD, "Adding…");
+        Background.run(() -> Fetch.run(() -> {
+            LoanPerson person = Fetch.value(PersonLoader.load(customers, chosen.number(), role));
+            Fetch.value(saving.add(person));
+            return person;
+        }), added -> {
+            modal.clearBusy();
+            if (!added.successful()) {
+                modal.showError(Fetch.reason(added));
+                return;
+            }
+            modal.close(ADD);
+            others.add(added.value());
             changed();
-        }
+        });
+        return false;
     }
 
     @FXML
@@ -144,11 +201,19 @@ public class LoanPeopleController {
     }
 
     private void handleRemove(LoanPerson person) {
-        if (Dialogs.confirm(peopleList, "Remove " + person.customer().fullName() + " from this loan?",
+        if (!Dialogs.confirm(peopleList, "Remove " + person.customer().fullName() + " from this loan?",
                 "They will no longer be on the loan. They stay a customer, and can be added again.", "Remove")) {
-            others.remove(person);
-            changed();
+            return;
         }
+        Background.run(() -> Fetch.run(() -> Fetch.value(saving.remove(person))), removed -> {
+            if (removed.successful()) {
+                others.remove(person);
+                changed();
+            } else {
+                Toasts.show(peopleList, Toasts.Kind.ERROR, "Couldn't remove " + person.customer().fullName(),
+                        Fetch.reason(removed));
+            }
+        });
     }
 
     private void changed() {

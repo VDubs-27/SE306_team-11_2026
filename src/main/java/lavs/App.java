@@ -8,9 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import lavs.logic.adapter.MainframeAdapter;
-import lavs.logic.service.LoginService;
-import lavs.logic.service.Session;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.Services;
 
@@ -43,9 +40,7 @@ public class App extends Application {
         primaryStage.setScene(scene);   // must come before the navigator uses the scene
 
         // The services every screen shares, built once; the UI only ever sees services
-        Session session = new Session();
-        MainframeAdapter mainframe = MainframeAdapter.connect(MAINFRAME_URL);
-        Services services = new Services(session, new LoginService(mainframe, session));
+        Services services = Wiring.connect(MAINFRAME_URL);
 
         Navigator navigator = new Navigator(primaryStage, services);
         navigator.showLogin();

@@ -71,6 +71,28 @@ public class WizardController {
         this.onCancel = onCancel;
     }
 
+    /**
+     * Locks the wizard while the finish is being saved, e.g. to the mainframe: the step and both
+     * buttons can't be used, and the finish button says busyText, e.g. "Saving…".
+     */
+    public void setBusy(String busyText) {
+        lock(true);
+        nextButton.setText(busyText);
+    }
+
+    /** Unlocks the wizard after setBusy, e.g. when saving failed and the user can try again. */
+    public void clearBusy() {
+        lock(false);
+        update();
+    }
+
+    private void lock(boolean locked) {
+        stepArea.setDisable(locked);
+        stepper.setDisable(locked);
+        backButton.setDisable(locked);
+        nextButton.setDisable(locked);
+    }
+
     /** Sets the steps in order and shows the first. */
     public void setSteps(List<WizardStep> steps) {
         this.steps = List.copyOf(steps);

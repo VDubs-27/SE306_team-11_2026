@@ -1,28 +1,28 @@
 package lavs.ui.customer.profile;
 
-import java.util.function.LongFunction;
+import java.util.function.LongConsumer;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-import lavs.logic.model.Page;
 import lavs.logic.model.customer.Email;
 import lavs.logic.model.customer.Phone;
-import lavs.logic.service.Result;
 import lavs.ui.common.ContactRows;
 import lavs.ui.common.PagerController;
 import lavs.ui.common.RecordEditor;
-import lavs.ui.common.RecordTiles;
+import lavs.ui.common.ServiceList;
 import lavs.ui.customer.forms.EmailFormController;
 import lavs.ui.customer.forms.PhoneFormController;
 
 /**
- * The Contacts tab: the customer's phone numbers and email addresses. Add and Edit use the same
- * pop-ups as the new customer wizard.
+ * The Contacts tab: the customer's phone numbers and email addresses, each a page at a time from the
+ * mainframe. Add and Edit use the same pop-ups as the new customer wizard.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class ContactsTabController {
+
+    private static final long PAGE_SIZE = 5;
 
     @FXML private VBox phoneList;
     @FXML private VBox emailList;
@@ -33,59 +33,54 @@ public class ContactsTabController {
     @FXML private Node emailForm;
     @FXML private EmailFormController emailFormController;
 
-    private RecordEditor<Phone.Details> phoneEditor;
-    private RecordEditor<Email.Details> emailEditor;
+    private ServiceList<Phone, Phone.Details> phones;
+    private ServiceList<Email, Email.Details> emails;
+    /** How many of each there are, or -1 until its first page is read. */
+    private long phoneCount = -1;
+    private long emailCount = -1;
 
     @FXML
     private void initialize() {
-        phoneEditor = new RecordEditor<>(phoneList, "phone", phoneForm, phoneFormController);
-        emailEditor = new RecordEditor<>(emailList, "email", emailForm, emailFormController);
+        phones = new ServiceList<>(new RecordEditor<>(phoneList, "phone", phoneForm, phoneFormController),
+                phoneList, phonePagerController, PAGE_SIZE,
+                (phone, onEdit) -> ContactRows.phoneCaptionTile(phone.details(), onEdit), Phone::details,
+                "No phone numbers recorded.");
+        emails = new ServiceList<>(new RecordEditor<>(emailList, "email", emailForm, emailFormController),
+                emailList, emailPagerController, PAGE_SIZE,
+                (email, onEdit) -> ContactRows.emailCaptionTile(email.details(), onEdit), Email::details,
+                "No email addresses recorded.");
     }
 
-    /** Shows the first page of each list and returns how many contacts there are altogether, for the tab's count. */
-    long show(LongFunction<Page<Phone>> loadPhones, LongFunction<Page<Email>> loadEmails) {
-        long phones = phonePagerController.show(loadPhones, items -> RecordTiles.fill(phoneList, items.stream()
-                .map(phone -> ContactRows.phoneCaptionTile(phone.details(), () -> handleEditPhone(phone)))
-                .toList(), "No phone numbers recorded."));
-        long emails = emailPagerController.show(loadEmails, items -> RecordTiles.fill(emailList, items.stream()
-                .map(email -> ContactRows.emailCaptionTile(email.details(), () -> handleEditEmail(email)))
-                .toList(), "No email addresses recorded."));
-        return phones + emails;
+    /**
+     * Shows the customer's phone numbers and email addresses from these sources; onTotal hears how many
+     * contacts there are altogether, for the tab's count.
+     */
+    void show(ServiceList.Source<Phone, Phone.Details> phoneSource, ServiceList.Source<Email, Email.Details> emailSource,
+              LongConsumer onTotal) {
+        phones.onTotal(count -> {
+            phoneCount = count;
+            tellTotal(onTotal);
+        }).show(phoneSource);
+        emails.onTotal(count -> {
+            emailCount = count;
+            tellTotal(onTotal);
+        }).show(emailSource);
+    }
+
+    /** Passes on the number of contacts once both lists have been read, so the count never shows half. */
+    private void tellTotal(LongConsumer onTotal) {
+        if (phoneCount >= 0 && emailCount >= 0) {
+            onTotal.accept(phoneCount + emailCount);
+        }
     }
 
     @FXML
     private void handleAddPhone() {
-        phoneEditor.addAndSave(false, phone -> {
-            // Later: return phoneService.add(customerNumber, phone), then reload the tab
-            return Result.success(null);
-        });
+        phones.add();
     }
 
     @FXML
     private void handleAddEmail() {
-        emailEditor.addAndSave(false, email -> {
-            // Later: return emailService.add(customerNumber, email), then reload the tab
-            return Result.success(null);
-        });
-    }
-
-    private void handleEditPhone(Phone phone) {
-        phoneEditor.editAndSave(phone.details(), changed -> {
-            // Later: return phoneService.update(customerNumber, phone.id(), changed), then reload the tab
-            return Result.success(null);
-        }, () -> {
-            // Later: return phoneService.delete(customerNumber, phone.id()), then reload the tab
-            return Result.success(null);
-        });
-    }
-
-    private void handleEditEmail(Email email) {
-        emailEditor.editAndSave(email.details(), changed -> {
-            // Later: return emailService.update(customerNumber, email.id(), changed), then reload the tab
-            return Result.success(null);
-        }, () -> {
-            // Later: return emailService.delete(customerNumber, email.id()), then reload the tab
-            return Result.success(null);
-        });
+        emails.add();
     }
 }

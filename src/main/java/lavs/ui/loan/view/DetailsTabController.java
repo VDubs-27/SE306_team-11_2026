@@ -1,6 +1,7 @@
 package lavs.ui.loan.view;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import lavs.logic.model.loan.Loan;
+import lavs.logic.service.Result;
 import lavs.ui.common.DisplayFormat;
 import lavs.ui.common.LoanText;
 import lavs.ui.common.Nodes;
@@ -31,15 +33,20 @@ public class DetailsTabController {
 
     private Loan loan;
     private RecordEditor<Loan.Details> editor;
-    private Consumer<Loan.Details> onSaved = details -> { };
+    private Function<Loan.Details, Result<Loan>> save = details -> Result.success(loan);
+    private Consumer<Loan> onSaved = saved -> { };
 
     @FXML
     private void initialize() {
         editor = new RecordEditor<>(detailGrid, "loan details", detailsForm, detailsFormController).withoutRemove();
     }
 
-    /** What happens after Edit is saved: the loan screen updates itself. */
-    void setOnSaved(Consumer<Loan.Details> onSaved) {
+    /**
+     * How Edit saves: save stores the change, in the background, and says whether it worked (the pop-up
+     * stays open if not); onSaved then gets the saved loan, to show.
+     */
+    void setOnSaved(Function<Loan.Details, Result<Loan>> save, Consumer<Loan> onSaved) {
+        this.save = save;
         this.onSaved = onSaved;
     }
 
@@ -68,7 +75,7 @@ public class DetailsTabController {
 
     @FXML
     private void handleEdit() {
-        editor.edit(loan.details(), changed -> onSaved.accept(changed), () -> { });
+        editor.editAndSave(loan.details(), save, onSaved, () -> Result.success(null));
     }
 
     /** One read-only field: a small label with its value under it. */
