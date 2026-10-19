@@ -47,6 +47,16 @@ public final class DateInput {
         });
     }
 
+    /**
+     * Shows date, or an empty field when it is null. Forms fill dates through this rather than the
+     * picker, since the picker clearing itself is also how it rejects typed text, which is kept.
+     */
+    public void set(LocalDate date) {
+        typed = date == null ? "" : FORMAT.format(date);
+        picker.setValue(date);
+        picker.getEditor().setText(typed);
+    }
+
     /** True when nothing has been entered. */
     public boolean isBlank() {
         return typed.isBlank();

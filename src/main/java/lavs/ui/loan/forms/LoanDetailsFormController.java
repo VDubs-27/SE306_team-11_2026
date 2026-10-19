@@ -83,8 +83,8 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
         rateFrequencyBox.setValue(Choices.preferred(rateFrequencyBox, Loan.RateFrequency.YEARLY));
         paymentField.clear();
         paymentFrequencyBox.setValue(Choices.preferred(paymentFrequencyBox, Loan.PaymentFrequency.MONTHLY));
-        startDatePicker.setValue(LocalDate.now());
-        renewalDatePicker.setValue(null);
+        startDate.set(LocalDate.now());
+        renewalDate.set(null);
         errors.show(List.of());
     }
 
@@ -104,8 +104,8 @@ public class LoanDetailsFormController implements RecordForm<Loan.Details> {
         rateFrequencyBox.setValue(details.rateFrequency());
         paymentField.setText(plain(details.paymentAmount()));
         paymentFrequencyBox.setValue(details.paymentFrequency());
-        startDatePicker.setValue(details.startDate());
-        renewalDatePicker.setValue(details.renewalDate());
+        startDate.set(details.startDate());
+        renewalDate.set(details.renewalDate());
         errors.show(List.of());
     }
 

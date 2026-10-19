@@ -82,6 +82,14 @@
             <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- Headless JavaFX platform, so tests can use controls without opening a window or needing a display.
+             17.0.10 because the 21.x builds need Java 21; it runs JavaFX 21 controls on Java 17 -->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>17.0.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -96,6 +104,11 @@
                         <exclude>mainframe/client/messages/**</exclude>
                         <exclude>mainframe/client/HttpConnectionTests.java</exclude>
                     </excludes>
+                    <systemPropertyVariables>
+                        <glass.platform>Monocle</glass.platform>
+                        <monocle.platform>Headless</monocle.platform>
+                        <prism.order>sw</prism.order>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <!-- Pass 2 (non-blocking): live-server tests, reported but allowed to fail -->
