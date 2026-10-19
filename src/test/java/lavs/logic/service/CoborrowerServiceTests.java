@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 import lavs.logic.adapter.CoborrowerGateway;
+import lavs.logic.adapter.LoanGateway;
 import lavs.logic.adapter.MainframeAdapter;
 import lavs.logic.adapter.ScriptedConnection;
 import lavs.logic.model.FieldError;
@@ -33,17 +34,26 @@ class CoborrowerServiceTests {
             ConstantCategory.COBORROWER_TYPE, List.of("Coborrower")));
 
     private final ScriptedConnection connection = new ScriptedConnection();
+    private final MainframeAdapter adapter = new MainframeAdapter(connection);
     private final CoborrowerService service =
-            new CoborrowerService(new CoborrowerGateway(new MainframeAdapter(connection)), () -> CONSTANTS);
+            new CoborrowerService(new CoborrowerGateway(adapter), new LoanGateway(adapter), () -> CONSTANTS);
 
     private static Coborrower.Details details(Coborrower.Type type, CustomerNumber person) {
         return new Coborrower.Details(type, person);
     }
 
-    // PERSON is a customer, and the loan already has the given people
+    // The provided loan messages fail if the mainframe leaves out an amount
+    private ScriptedConnection loanIs(String status) {
+        return connection.reply("loan.retrieve", row("loanNumber", "01-0013-0001", "customerNumber", "01-0013",
+                "status", status, "principal", "250000.0", "rateType", "Fixed", "rateAmount", "5.5",
+                "rateFrequency", "Yearly", "startDate", "2026-01-15", "paymentAmount", "1500.0",
+                "paymentFrequency", "Monthly", "renewalDate", "2027-01-15"));
+    }
+
+    // The loan is New, PERSON is a customer, and the loan already has the given people
     @SafeVarargs
     private ScriptedConnection loanWith(Map<String, String>... people) {
-        return connection
+        return loanIs("New")
                 .reply("customer.retrieve", row("number", "01-0020"))
                 .replyList("loanCoborrower.list", people.length, people)
                 .reply("loan.addCoborrower", row("id", "9"))
@@ -56,14 +66,14 @@ class CoborrowerServiceTests {
 
     private CoborrowerService serviceOffering(String... types) {
         Constants offered = new Constants(Map.of(ConstantCategory.COBORROWER_TYPE, List.of(types)));
-        return new CoborrowerService(new CoborrowerGateway(new MainframeAdapter(connection)), () -> offered);
+        return new CoborrowerService(new CoborrowerGateway(adapter), new LoanGateway(adapter), () -> offered);
     }
 
-    // Co-borrower 9 is being replaced; the new person is a customer, and the loan has the given people.
-    // The first retrieve reads the original, the second reads back the replacement.
+    // Co-borrower 9 is being replaced on a New loan; the new person is a customer, and the loan has the given
+    // people. The first retrieve reads the original, the second reads back the replacement.
     @SafeVarargs
     private ScriptedConnection replacing(Map<String, String>... people) {
-        return connection
+        return loanIs("New")
                 .reply("loanCoborrower.retrieve", ORIGINAL)
                 .reply("loanCoborrower.retrieve", row(
                         "id", "10", "type", "Guarantor", "coborrowerNumber", "01-0020", "coborrowerName", "Jo Bloggs"))
@@ -135,7 +145,7 @@ class CoborrowerServiceTests {
 
     @Test
     void unknownCustomerCannotBeACoborrower() {
-        connection.fail("customer.retrieve", 3, "'01-0020' is not a valid customer number");
+        loanIs("New").fail("customer.retrieve", 3, "'01-0020' is not a valid customer number");
 
         Result<Coborrower> result = service.add(LOAN, details(Coborrower.Type.COBORROWER, PERSON));
 
@@ -159,7 +169,7 @@ class CoborrowerServiceTests {
 
     @Test
     void networkFailureDuringTheChecksIsReported() {
-        connection.fail("customer.retrieve", 10, "Unavailable");
+        loanIs("New").fail("customer.retrieve", 10, "Unavailable");
 
         Result<Coborrower> result = service.add(LOAN, details(Coborrower.Type.COBORROWER, PERSON));
 
@@ -178,7 +188,8 @@ class CoborrowerServiceTests {
                 () -> assertTrue(result.successful()),
                 () -> assertEquals(10, result.value().id()),
                 () -> assertEquals(Coborrower.Type.GUARANTOR, result.value().type()),
-                () -> assertEquals(List.of("loanCoborrower.retrieve", "customer.retrieve", "loanCoborrower.list",
+                () -> assertEquals(List.of("loanCoborrower.retrieve", "loan.retrieve", "customer.retrieve",
+                        "loanCoborrower.list",
                         "loan.deleteCoborrower", "loan.addCoborrower", "loanCoborrower.retrieve"),
                         connection.requestTypes()),
                 () -> assertEquals("9", connection.onlyRequest("loan.deleteCoborrower").getValue("id")),
@@ -210,7 +221,7 @@ class CoborrowerServiceTests {
 
     @Test
     void updateCannotMakeTheBorrowerACoborrower() {
-        connection.reply("loanCoborrower.retrieve", ORIGINAL);
+        loanIs("New").reply("loanCoborrower.retrieve", ORIGINAL);
 
         Result<Coborrower> result = service.update(LOAN, 9, details(Coborrower.Type.COBORROWER, BORROWER));
 
@@ -262,7 +273,7 @@ class CoborrowerServiceTests {
 
     @Test
     void deleteRemovesTheCoborrower() {
-        connection.reply("loan.deleteCoborrower", row("id", "9"));
+        loanIs("New").reply("loan.deleteCoborrower", row("id", "9"));
 
         Result<Void> result = service.delete(LOAN_NUMBER, 9);
 
@@ -272,13 +283,55 @@ class CoborrowerServiceTests {
         );
     }
 
+    // The screen may still hold the loan as New after it was submitted somewhere else
     @Test
-    void requiresEveryDependency() {
-        CoborrowerGateway coborrowers = new CoborrowerGateway(new MainframeAdapter(connection));
+    void noOneIsAddedToALoanThatIsNoLongerNew() {
+        loanIs("Pending");
+
+        Result<Coborrower> result = service.add(LOAN, details(Coborrower.Type.COBORROWER, PERSON));
 
         assertAll(
-                () -> assertThrows(NullPointerException.class, () -> new CoborrowerService(null, () -> CONSTANTS)),
-                () -> assertThrows(NullPointerException.class, () -> new CoborrowerService(coborrowers, null))
+                () -> assertEquals(List.of(Rules.LOAN_LOCKED), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.addCoborrower").isEmpty())
+        );
+    }
+
+    @Test
+    void noOneIsChangedOnALoanThatIsNoLongerNew() {
+        loanIs("Pending").reply("loanCoborrower.retrieve", ORIGINAL);
+
+        Result<Coborrower> result = serviceOffering("Coborrower", "Guarantor")
+                .update(LOAN, 9, details(Coborrower.Type.GUARANTOR, PERSON));
+
+        assertAll(
+                () -> assertEquals(List.of(Rules.LOAN_LOCKED), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.deleteCoborrower").isEmpty())
+        );
+    }
+
+    @Test
+    void noOneIsRemovedFromALoanThatIsNoLongerNew() {
+        loanIs("Pending");
+
+        Result<Void> result = service.delete(LOAN_NUMBER, 9);
+
+        assertAll(
+                () -> assertEquals(List.of(Rules.LOAN_LOCKED), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.deleteCoborrower").isEmpty())
+        );
+    }
+
+    @Test
+    void requiresEveryDependency() {
+        CoborrowerGateway coborrowers = new CoborrowerGateway(adapter);
+        LoanGateway loans = new LoanGateway(adapter);
+
+        assertAll(
+                () -> assertThrows(NullPointerException.class,
+                        () -> new CoborrowerService(null, loans, () -> CONSTANTS)),
+                () -> assertThrows(NullPointerException.class,
+                        () -> new CoborrowerService(coborrowers, null, () -> CONSTANTS)),
+                () -> assertThrows(NullPointerException.class, () -> new CoborrowerService(coborrowers, loans, null))
         );
     }
 }

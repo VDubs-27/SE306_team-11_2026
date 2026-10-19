@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import lavs.logic.adapter.CoborrowerGateway;
+import lavs.logic.adapter.LoanGateway;
 import lavs.logic.adapter.MainframeException;
 import lavs.logic.model.FieldError;
 import lavs.logic.model.Page;
@@ -27,10 +28,12 @@ public class CoborrowerService {
             "The co-borrower could not be changed, and the original could not be put back. Add them to the loan again.";
 
     private final CoborrowerGateway coborrowers;
+    private final LoanGateway loans;
     private final Supplier<Constants> constants;
 
-    public CoborrowerService(CoborrowerGateway coborrowers, Supplier<Constants> constants) {
+    public CoborrowerService(CoborrowerGateway coborrowers, LoanGateway loans, Supplier<Constants> constants) {
         this.coborrowers = Objects.requireNonNull(coborrowers, "coborrowers");
+        this.loans = Objects.requireNonNull(loans, "loans");
         this.constants = Objects.requireNonNull(constants, "constants");
     }
 
@@ -49,7 +52,10 @@ public class CoborrowerService {
             return Result.invalid(errors);
         }
         return Result.attempt(() -> {
-            FieldError problem = membershipProblem(loan, details.coborrowerNumber(), Rules.NEW_RECORD);
+            FieldError problem = lockProblem(loan.loanNumber());
+            if (problem == null) {
+                problem = membershipProblem(loan, details.coborrowerNumber(), Rules.NEW_RECORD);
+            }
             if (problem != null) {
                 return Result.invalid(List.of(problem));
             }
@@ -70,7 +76,10 @@ public class CoborrowerService {
             if (originalDetails.equals(details)) {
                 return Result.success(original);
             }
-            FieldError problem = membershipProblem(loan, details.coborrowerNumber(), id);
+            FieldError problem = lockProblem(loan.loanNumber());
+            if (problem == null) {
+                problem = membershipProblem(loan, details.coborrowerNumber(), id);
+            }
             if (problem != null) {
                 return Result.invalid(List.of(problem));
             }
@@ -81,6 +90,10 @@ public class CoborrowerService {
 
     public Result<Void> delete(LoanNumber loan, long id) {
         return Result.attempt(() -> {
+            FieldError problem = lockProblem(loan);
+            if (problem != null) {
+                return Result.invalid(List.of(problem));
+            }
             coborrowers.delete(loan, id);
             return Result.success(null);
         });
@@ -103,6 +116,11 @@ public class CoborrowerService {
             }
             return Result.failed(e.getMessage());
         }
+    }
+
+    // The loan is read again, so people aren't changed on a loan submitted since the screen loaded it
+    private FieldError lockProblem(LoanNumber loan) {
+        return loans.retrieve(loan).isEditable() ? null : Rules.LOAN_LOCKED;
     }
 
     // Checked in order of cost: the loan's customer, then whether the customer exists, then the loan's people.

@@ -71,7 +71,7 @@ public class CustomerProfileController implements NavigatorAware {
     private void initialize() {
         TabBars.setUp(tabPane);
         tabPane.getSelectionModel().selectedItemProperty().addListener((property, was, tab) -> open(tab));
-        loansController.setOnOpenLoan(loan -> navigator.showLoan(loan, profile.asApplicant(customer)));
+        loansController.setOnOpenLoan(loan -> navigator.showLoan(loan.loanNumber(), profile.asApplicant(customer)));
         detailsController.setOnSaved(
                 changed -> navigator.services().customer().customers().update(customer.number(), changed),
                 this::showSavedDetails);

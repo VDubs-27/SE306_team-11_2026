@@ -14,7 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import lavs.logic.model.loan.Loan;
+import lavs.logic.model.loan.LoanNumber;
 import lavs.logic.service.Result;
 import lavs.ui.common.Background;
 import lavs.ui.common.Choices;
@@ -144,7 +144,7 @@ public class Navigator {
      * Shows one of a customer's loans below the header.
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
-    public void showLoan(Loan loan, LoanPerson applicant) {
+    public void showLoan(LoanNumber loan, LoanPerson applicant) {
         openWhenLoaded(() -> LoanLoader.load(services, loan, applicant), "Couldn't open this loan", screen -> {
             FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
             LoanViewController controller = loader.getController();

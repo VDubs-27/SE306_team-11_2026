@@ -15,7 +15,7 @@ final class LoanLock {
     }
 
     static boolean isEditable(Loan loan) {
-        return loan.status() == Loan.Status.NEW;
+        return loan.isEditable();
     }
 
     /** Why part of a locked loan can't change, e.g. what = "its details". */

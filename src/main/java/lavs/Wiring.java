@@ -52,7 +52,7 @@ final class Wiring {
         return new LoanServices(
                 new LoanService(gateways.loans(), gateways.repayments(), gateways.customers(), gateways.addresses(),
                         gateways.phones(), gateways.emails(), gateways.employers(), gateways.coborrowers(), constants),
-                new CoborrowerService(gateways.coborrowers(), constants),
+                new CoborrowerService(gateways.coborrowers(), gateways.loans(), constants),
                 new DocumentService<>(DocumentGateway.forLoans(gateways.mainframe())),
                 new NoteService<>(NoteGateway.forLoans(gateways.mainframe())));
     }

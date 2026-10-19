@@ -184,7 +184,7 @@ class LoanServiceTests {
     void validChangesAreSaved() {
         Map<String, String> saved = loanRow("New");
         saved.putAll(row("principal", "300000.0", "rateType", "Floating"));
-        connection.reply("loan.update", saved);
+        connection.reply("loan.retrieve", loanRow("New")).reply("loan.update", saved);
         Loan.Details changed = detailsWith(Loan.RateType.FLOATING, new BigDecimal("300000.0"));
 
         Result<Loan> result = service.update(LOAN, changed);
@@ -193,6 +193,19 @@ class LoanServiceTests {
                 () -> assertTrue(result.successful()),
                 () -> assertEquals(changed, result.value().details()),
                 () -> assertEquals("Floating", connection.onlyRequest("loan.update").getValue("rateType"))
+        );
+    }
+
+    // The screen may still hold the loan as New after it was submitted somewhere else
+    @Test
+    void changesToALoanThatIsNoLongerNewAreRefused() {
+        connection.reply("loan.retrieve", loanRow("Pending"));
+
+        Result<Loan> result = service.update(LOAN, detailsWith(Loan.RateType.FLOATING, DETAILS.principal()));
+
+        assertAll(
+                () -> assertEquals(List.of(Rules.LOAN_LOCKED), result.fieldErrors()),
+                () -> assertTrue(connection.requests("loan.update").isEmpty())
         );
     }
 

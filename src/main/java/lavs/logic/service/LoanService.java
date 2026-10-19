@@ -91,7 +91,14 @@ public class LoanService {
         if (!errors.isEmpty()) {
             return Result.invalid(errors);
         }
-        return Result.attempt(() -> Result.success(loanGateway.update(loan, loanDetails)));
+        // Read again, so a loan submitted since the screen loaded it isn't changed
+        return Result.attempt(() -> {
+            Loan current = loanGateway.retrieve(loan.loanNumber());
+            if (!current.isEditable()) {
+                return Result.invalid(List.of(Rules.LOAN_LOCKED));
+            }
+            return Result.success(loanGateway.update(current, loanDetails));
+        });
     }
 
     // Table 1: the only status change an MMM can make is New to Pending. The loan is read again first, so the

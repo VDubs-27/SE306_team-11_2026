@@ -11,6 +11,7 @@ import lavs.logic.model.constants.Constants;
 final class Rules {
 
     static final long NEW_RECORD = 0;
+    static final FieldError LOAN_LOCKED = new FieldError("status", "Only a new loan can be changed.");
 
     private Rules() {
     }
