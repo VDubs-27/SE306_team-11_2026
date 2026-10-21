@@ -72,7 +72,7 @@ public class CustomerDetailsFormController implements RecordForm<Customer.Detail
         titleBox.setValue(details.title());
         firstNameField.setText(details.firstName());
         familyNameField.setText(details.familyName());
-        dateOfBirthPicker.setValue(details.dateOfBirth());
+        dateOfBirth.set(details.dateOfBirth());
         nationalityBox.setValue(details.nationality());
         errors.show(List.of());
     }
