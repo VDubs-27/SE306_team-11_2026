@@ -38,6 +38,11 @@ public record Loan(
             startDate, paymentAmount, paymentFrequency, renewalDate);
     }
 
+    // Its details and who is on it can change only while it's New; documents and notes stay open
+    public boolean isEditable() {
+        return status == Status.NEW;
+    }
+
     public Details details() {
         return new Details(
             principal, rateType, rateAmount, rateFrequency, startDate, paymentAmount, paymentFrequency, renewalDate);

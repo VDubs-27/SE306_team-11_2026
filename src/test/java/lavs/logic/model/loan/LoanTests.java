@@ -80,6 +80,13 @@ class LoanTests {
     }
 
     @Test
+    void onlyANewLoanIsEditable() {
+        for (Loan.Status status : Loan.Status.values()) {
+            Assertions.assertEquals(status == Loan.Status.NEW, loan(status).isEditable(), status.name());
+        }
+    }
+
+    @Test
     void detailsCopiesEveryEditableField() {
         Assertions.assertEquals(
                 new Loan.Details(

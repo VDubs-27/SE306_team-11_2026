@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import lavs.logic.model.Page;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
+import lavs.logic.model.loan.LoanNumber;
 import lavs.logic.service.Result;
 import lavs.ui.common.Fetch;
 import lavs.ui.loan.people.LoanPerson;
@@ -32,9 +33,13 @@ public final class LoanLoader {
                              Map<String, Long> coborrowerIds, long documents, long notes) {
     }
 
-    /** The screen for this loan, which the applicant has, or why it couldn't be read. */
-    public static Result<LoanScreen> load(Services all, Loan loan, LoanPerson applicant) {
+    /**
+     * The screen for this loan, which the applicant has, or why it couldn't be read. The loan itself is
+     * read too, so the screen shows its current status rather than one from a list read earlier.
+     */
+    public static Result<LoanScreen> load(Services all, LoanNumber number, LoanPerson applicant) {
         return Fetch.run(() -> {
+            Loan loan = Fetch.value(all.loan().loans().retrieve(number));
             List<Coborrower.Summary> coborrowers = Fetch.all(
                     page -> all.loan().coborrowers().list(loan.loanNumber(), page, Fetch.PAGE_SIZE));
             Map<String, Long> ids = new ConcurrentHashMap<>();
