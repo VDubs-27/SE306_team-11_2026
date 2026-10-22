@@ -17,7 +17,7 @@ import lavs.logic.service.Result;
  * time, read in the background, and adds, changes and removes them through a service with a
  * RecordEditor pop-up, showing the page again after every change. Like EditableList, but the
  * records live on the mainframe instead of on screen.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  *
  * @param <T> the record in each row, e.g. Address
  * @param <D> what the pop-up's form edits, e.g. Address.Details

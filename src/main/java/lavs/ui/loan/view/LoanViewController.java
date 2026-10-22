@@ -30,7 +30,7 @@ import lavs.ui.shell.NavigatorAware;
 /**
  * The loan screen, opened from a customer's Loans tab: the loan's number, status and terms, its
  * totals, and tabs for its details, schedule, co-borrowers, documents and notes.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoanViewController implements NavigatorAware {
 

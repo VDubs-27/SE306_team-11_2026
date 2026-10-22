@@ -17,7 +17,7 @@ import lavs.logic.model.Page;
  * A list of records kept on screen, such as a wizard's addresses or documents: shows a row for
  * each, adds and edits them through a RecordEditor, and redraws after every change. Rules such as
  * "only one primary" and paging are switched on per list.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  *
  * @param <T> the record in each row
  */

@@ -19,7 +19,7 @@ import lavs.logic.service.Result;
  * Pages a list on screen, such as a profile tab: loads a page, has the tab draw its items, and keeps the
  * Prev and Next buttons and "Page x of y" in step. Pages already on hand show straight away (show);
  * pages read from the mainframe load in the background (showLoading).
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class PagerController {
 

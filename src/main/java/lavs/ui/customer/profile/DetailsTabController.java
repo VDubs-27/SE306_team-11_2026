@@ -21,7 +21,7 @@ import lavs.ui.customer.forms.CustomerDetailsFormController;
 /**
  * The Details tab: the customer's personal details, read-only until Edit, which opens the same
  * form as the new customer wizard in a pop-up. The customer can also be made active or inactive.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class DetailsTabController {
 

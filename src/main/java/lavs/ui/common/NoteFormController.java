@@ -16,7 +16,7 @@ import lavs.logic.model.note.Note;
 /**
  * The form for one note, used in a pop-up to add or edit: what kind of note it is and what it says.
  * The mainframe records who wrote a note and when, so the form only has its type and text.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class NoteFormController implements RecordForm<NoteRow> {
 

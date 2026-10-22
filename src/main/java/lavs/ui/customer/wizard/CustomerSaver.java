@@ -17,7 +17,7 @@ import lavs.ui.shell.CustomerServices;
  * contacts and employers one by one. Once the customer exists it is never created again, so if a
  * record after that fails, the rest still save and the ones that didn't are listed, to add from the
  * profile. Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class CustomerSaver {
 

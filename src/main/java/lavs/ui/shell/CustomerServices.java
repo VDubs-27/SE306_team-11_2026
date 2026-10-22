@@ -11,7 +11,7 @@ import lavs.logic.service.PhoneService;
 
 /**
  * The services for customers and everything recorded about them.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record CustomerServices(
         CustomerService customers,

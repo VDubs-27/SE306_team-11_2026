@@ -37,7 +37,7 @@ import javafx.util.Duration;
  * While busy (see setBusy), such as saving to the mainframe, nothing on the card can be used and it
  * can't be closed, until the work is done.
  * Used for the add/edit forms and for confirmations.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Modal {
 

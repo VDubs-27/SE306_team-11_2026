@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 /**
  * A Notes tab, on a customer's profile or a loan: notes staff have written, a page at a time from the
  * mainframe, which can be added, changed or removed there. The mainframe records who wrote each note.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class NotesTabController {
 

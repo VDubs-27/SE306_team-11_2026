@@ -6,7 +6,7 @@ import lavs.logic.service.Session;
 /**
  * The logic services the screens use, built once when the app starts and handed out by the
  * navigator. Every call to the mainframe goes through one of these.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record Services(Session session, LoginService login, CustomerServices customer, LoanServices loan) {
 }

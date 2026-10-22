@@ -13,7 +13,7 @@ import lavs.logic.model.customer.Phone;
 
 /**
  * How phone numbers and email addresses are shown as rows, wherever they are listed.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class ContactRows {
 

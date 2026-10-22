@@ -20,7 +20,7 @@ import lavs.logic.service.Result;
  * open, saying "Saving…". If it fails, everything entered stays: a problem with a field shows under
  * that field, and anything else, such as the mainframe being unreachable, shows in a banner at the
  * top of the pop-up.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  *
  * @param <T> the record the form edits
  */

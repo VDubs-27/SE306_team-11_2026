@@ -16,7 +16,7 @@ import lavs.ui.customer.forms.EmployerFormController;
 /**
  * The Employment tab: one tile per employer, a page at a time from the mainframe. Add and Edit use
  * the same employer pop-up as the new customer wizard.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class EmploymentTabController {
 
