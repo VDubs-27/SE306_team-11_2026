@@ -24,9 +24,10 @@ import lavs.ui.common.TabBars;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
+import lavs.ui.shell.Refreshable;
 
 /** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
-public class CustomerProfileController implements NavigatorAware {
+public class CustomerProfileController implements NavigatorAware, Refreshable {
 
     /** How many items each paged tab shows at once. */
     private static final int PAGE_SIZE = 5;
@@ -61,6 +62,7 @@ public class CustomerProfileController implements NavigatorAware {
     /** True while checking the customer can have a loan, so a second click doesn't open two wizards. */
     private boolean checkingLoan;
     private Navigator navigator;
+    private ProfileSources sources;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -103,13 +105,17 @@ public class CustomerProfileController implements NavigatorAware {
             TabBars.setCount(employmentTab, count);
             profile = profile.withEmployers(count);
         }));
-        unopened.put(loansTab, () -> loansController.show(page -> sources.loans(page, PAGE_SIZE),
-                count -> TabBars.setCount(loansTab, count)));
+        unopened.put(loansTab, this::showLoans);
         unopened.put(documentsTab, () -> documentsController.show(sources.documents(),
                 count -> TabBars.setCount(documentsTab, count)));
         unopened.put(notesTab, () -> notesController.show(sources.notes(),
                 count -> TabBars.setCount(notesTab, count)));
         open(tabPane.getSelectionModel().getSelectedItem());
+    }
+
+    private void showLoans() {
+        loansController.show(page -> sources.loans(page, PAGE_SIZE),
+                count -> TabBars.setCount(loansTab, count));
     }
 
     @FXML
@@ -127,8 +133,12 @@ public class CustomerProfileController implements NavigatorAware {
             return;
         }
         checkingLoan = true;
+        long here = navigator.position();
         Background.run(() -> navigator.services().loan().loans().canStartLoan(customer.number()), ready -> {
             checkingLoan = false;
+            if (!navigator.isAt(here)) {
+                return; // the user moved on while it was checked, so nothing opens over where they went
+            }
             if (ready.successful()) {
                 navigator.showNewLoanWizard(profile.asApplicant(customer));
             } else if (ready.errorMessage() == null) {
@@ -198,6 +208,24 @@ public class CustomerProfileController implements NavigatorAware {
 
         suburbLabel.setText(profile.primarySuburb());
         showIfPresent(suburbLabel, suburbFact);
+    }
+
+    /**
+     * Back from a loan or a wizard: loans are what those can change, so the Loans tab and its count
+     * are read again. The other tabs are left as they were.
+     */
+    @Override
+    public void refresh() {
+        if (!unopened.containsKey(loansTab)) {
+            showLoans();
+            return;
+        }
+        // Not opened yet, so it reads fresh when it is; only the count in the tab bar can be out of date
+        Background.run(() -> navigator.services().loan().loans().listForCustomer(customer.number(), 1, 1), listed -> {
+            if (listed.successful()) {
+                TabBars.setCount(loansTab, listed.value().total());
+            }
+        });
     }
 
     /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */

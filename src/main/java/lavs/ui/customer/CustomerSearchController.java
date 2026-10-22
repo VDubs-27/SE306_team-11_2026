@@ -24,13 +24,14 @@ import lavs.ui.common.Tables;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
+import lavs.ui.shell.Refreshable;
 
 /**
  * Customer search: find a customer by name or customer number, a page of results at a time, read
  * from the mainframe, and open their profile; or start a new customer.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
-public class CustomerSearchController implements NavigatorAware {
+public class CustomerSearchController implements NavigatorAware, Refreshable {
 
     /** Corner radius of .card in app.css. */
     private static final double CARD_RADIUS = 16;
@@ -60,6 +61,7 @@ public class CustomerSearchController implements NavigatorAware {
     @FXML private PagerController pagerController;
 
     private Navigator navigator;
+    private String lastTerm;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -89,6 +91,19 @@ public class CustomerSearchController implements NavigatorAware {
             showPrompt();
             return;
         }
+        search(term);
+    }
+
+    /** Back from a customer's profile: searches again, so a customer edited there shows as it is now. */
+    @Override
+    public void refresh() {
+        if (lastTerm != null) {
+            search(lastTerm);
+        }
+    }
+
+    private void search(String term) {
+        lastTerm = term;
         resultsTitle.setText("Search results for “" + term + "”");
         resultCount.setText("Searching…");
         searchButton.setDisable(true);
@@ -123,6 +138,7 @@ public class CustomerSearchController implements NavigatorAware {
 
     /** Starting state: nothing searched yet. */
     private void showPrompt() {
+        lastTerm = null;
         pagerController.cancel();
         searchButton.setDisable(false);
         resultsTitle.setText("Customers");
