@@ -13,7 +13,7 @@ import lavs.ui.loan.forms.LoanDetailsFormController;
 /**
  * Step 1 of the new loan wizard: the loan details form in a card. The form itself is shared with
  * Edit on the loan screen.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoanDetailsStepController {
 

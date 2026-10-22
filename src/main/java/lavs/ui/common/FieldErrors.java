@@ -18,7 +18,7 @@ import lavs.logic.model.FieldError;
 /**
  * Shows the model's validation errors on a form: a red outline on each input with a problem and
  * its message underneath. An error clears as soon as the user changes that input.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class FieldErrors {
 

@@ -28,7 +28,7 @@ import lavs.ui.shell.NavigatorAware;
 /**
  * Customer search: find a customer by name or customer number, a page of results at a time, read
  * from the mainframe, and open their profile; or start a new customer.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class CustomerSearchController implements NavigatorAware {
 

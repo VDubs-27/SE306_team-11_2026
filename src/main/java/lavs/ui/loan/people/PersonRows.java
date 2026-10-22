@@ -20,7 +20,7 @@ import lavs.ui.common.RecordTiles;
 /**
  * Rows showing a person on a loan: an initials avatar, their name and customer number, a line of
  * detail, their role and (except for the applicant) a Remove button.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class PersonRows {
 

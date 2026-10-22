@@ -19,7 +19,7 @@ import lavs.ui.common.RecordForm;
 /**
  * The form for one email address, used in a pop-up to add or edit. It checks itself with the
  * model's Email.Details.validate().
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class EmailFormController implements RecordForm<Email.Details> {
 

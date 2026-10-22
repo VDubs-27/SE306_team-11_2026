@@ -8,7 +8,7 @@ import javafx.scene.Node;
 /**
  * One step of a wizard: its name in the stepper, what it shows, a check that runs before moving on
  * (showing any errors and returning false to stay put), and anything to refresh just before it shows.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record WizardStep(String title, Node content, BooleanSupplier check, Runnable onShow) {
 

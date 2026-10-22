@@ -7,7 +7,7 @@ import lavs.ui.customer.forms.CustomerDetailsFormController;
 /**
  * Step 1 of the new customer wizard: the customer details form in a card. The form itself is
  * shared with Edit on the customer's profile.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class DetailsStepController {
 

@@ -30,7 +30,7 @@ import lavs.ui.loan.view.ScheduleTabController;
  * Step 2 of the new loan wizard: the loan as sent to the mainframe in step 1, with its number and
  * status, a summary with its totals, and its first repayments, to go through with the customer. The
  * whole schedule opens in a pop-up. Going back to step 1 sends any changes as an update to the same loan.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class UploadStepController {
 

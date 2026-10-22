@@ -11,7 +11,7 @@ import javafx.util.StringConverter;
 /**
  * A date picker that takes typed dates as dd/MM/yyyy. A DatePicker on its own quietly clears text it
  * can't read (such as 09/13/1978), so this keeps what was typed and can say whether it was a real date.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class DateInput {
 

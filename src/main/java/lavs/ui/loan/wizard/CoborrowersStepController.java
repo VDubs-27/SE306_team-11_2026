@@ -13,7 +13,7 @@ import lavs.ui.shell.CustomerServices;
 /**
  * Step 3 of the new loan wizard: who else is on the loan. The applicant is listed first; others
  * are found among existing customers or created through the new customer wizard.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class CoborrowersStepController {
 

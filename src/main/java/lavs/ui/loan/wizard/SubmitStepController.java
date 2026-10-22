@@ -19,7 +19,7 @@ import lavs.ui.loan.people.LoanPerson;
 /**
  * Step 4 of the new loan wizard: a checklist of what has been entered and a summary of the loan,
  * shown just before submitting. It is rebuilt from the draft every time it shows.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class SubmitStepController {
 

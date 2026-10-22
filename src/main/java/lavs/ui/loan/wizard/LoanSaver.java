@@ -19,7 +19,7 @@ import lavs.ui.shell.LoanServices;
  * adds its co-borrowers and guarantors one by one, then submits it for approval; if one of them
  * fails, the rest still goes ahead and what didn't is listed, and a loan that can't be submitted yet
  * stays New, to submit from the loan screen. Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class LoanSaver {
 

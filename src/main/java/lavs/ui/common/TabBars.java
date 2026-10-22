@@ -7,7 +7,7 @@ import javafx.scene.control.TabPane;
 /**
  * Makes a pill-style tab bar behave well: tabs share the width evenly (so the bar fills the card and
  * doesn't shift when the bold selected tab changes), the card fits the open tab, and tabs can show a count.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class TabBars {
 

@@ -8,7 +8,7 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * Small helpers for parts of a screen.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Nodes {
 

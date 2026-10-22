@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * Reads numbers typed into forms, allowing the way people write them: "$450,000", "6.29%".
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Numbers {
 

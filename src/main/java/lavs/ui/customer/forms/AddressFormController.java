@@ -18,7 +18,7 @@ import lavs.ui.common.RecordForm;
 /**
  * The form for one address, used in a pop-up to add or edit. It checks itself with the model's
  * Address.Details.validate(), so the rules live in one place.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class AddressFormController implements RecordForm<Address.Details> {
 

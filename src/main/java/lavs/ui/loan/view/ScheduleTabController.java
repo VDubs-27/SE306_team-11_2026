@@ -22,7 +22,7 @@ import lavs.ui.common.Tables;
 /**
  * The loan screen's Schedule tab, also shown in the new loan wizard: every repayment due over the
  * life of the loan, split into principal and interest, with the balance left after it, a page at a time.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class ScheduleTabController {
 

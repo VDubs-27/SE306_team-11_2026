@@ -18,7 +18,7 @@ import lavs.ui.customer.forms.PhoneFormController;
 /**
  * Step 3 of the new customer wizard: phone numbers and email addresses, added and edited in a
  * pop-up. The customer needs at least one of either before moving on.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class ContactsStepController {
 

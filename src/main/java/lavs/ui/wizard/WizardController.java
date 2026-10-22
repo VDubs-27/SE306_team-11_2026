@@ -19,7 +19,7 @@ import javafx.scene.layout.StackPane;
  * The frame shared by every wizard (new customer, new loan): a header with a stepper, the current
  * step, and Back/Next along the bottom. A specific wizard gives it the steps and says what Cancel
  * and Finish do; the frame handles moving between steps.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class WizardController {
 

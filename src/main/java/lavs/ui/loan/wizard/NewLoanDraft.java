@@ -9,7 +9,7 @@ import lavs.ui.loan.people.LoanPerson;
 /**
  * What has been entered in the new loan wizard so far. Each step reads and fills its part. The loan
  * is on the mainframe once Loan details is passed; its people are added when it is submitted.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class NewLoanDraft {
 

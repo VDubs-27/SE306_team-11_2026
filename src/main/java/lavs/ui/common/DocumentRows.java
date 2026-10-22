@@ -12,7 +12,7 @@ import javafx.scene.shape.SVGPath;
 /**
  * How a document is shown as a row, for a customer or a loan: a file icon, the file name,
  * "PDF · 184 KB", its type as a badge and an Edit button.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class DocumentRows {
 

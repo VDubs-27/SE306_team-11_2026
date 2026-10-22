@@ -6,7 +6,7 @@ import lavs.logic.model.Page;
 
 /**
  * Pages a list already held on screen, the same way the mainframe pages the lists it returns.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Pages {
 

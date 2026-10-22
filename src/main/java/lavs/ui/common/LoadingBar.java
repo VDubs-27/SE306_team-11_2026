@@ -14,7 +14,7 @@ import javafx.util.Duration;
  * Turns a thin bar, such as the red line along the top of the login screen, into a "working on it"
  * indicator: while running, a bright highlight sweeps along it from left to right, over and over.
  * It doesn't show progress, only that something is happening.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class LoadingBar {
 

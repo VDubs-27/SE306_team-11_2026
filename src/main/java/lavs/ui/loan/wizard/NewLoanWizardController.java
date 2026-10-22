@@ -21,7 +21,7 @@ import lavs.ui.wizard.WizardStep;
 
 /**
  * The new loan wizard for one customer: loan details, upload and review, co-borrowers, then submit.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class NewLoanWizardController implements NavigatorAware {
 

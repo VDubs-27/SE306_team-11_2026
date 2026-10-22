@@ -21,7 +21,7 @@ import javafx.util.Duration;
  * a tinted card with a round icon, a title and a line of detail. They don't block the screen,
  * a click dismisses one straight away, and a new one replaces any still showing, so an
  * out-of-date message never sits beside the latest.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Toasts {
 
