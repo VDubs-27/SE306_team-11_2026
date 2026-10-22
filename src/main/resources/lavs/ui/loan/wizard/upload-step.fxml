@@ -6,13 +6,86 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="lavs.ui.loan.wizard.UploadStepController"
       spacing="16">
-    <!-- The loan details, to check before adding people -->
-    <VBox styleClass="card, card-flush">
-        <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
-            <Label text="Review loan details" styleClass="section-heading"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Hyperlink text="Change" styleClass="link-strong" onAction="#handleChangeDetails"/>
-        </HBox>
-        <VBox fx:id="summary" styleClass="card-section"/>
-    </VBox>
+    <fx:define>
+        <!-- Every repayment, a page at a time, shown in a pop-up from "Show full schedule" -->
+        <VBox fx:id="fullSchedule" prefWidth="760">
+            <fx:include fx:id="schedule" source="/lavs/ui/loan/view/schedule-tab.fxml"/>
+        </VBox>
+    </fx:define>
+
+    <!-- What the mainframe did with the loan -->
+    <!-- One sentence in parts, so no gaps between them (the banner style spaces its children) -->
+    <HBox styleClass="banner-success" alignment="CENTER_LEFT" style="-fx-spacing: 0;">
+        <Label text="✓  " minWidth="-Infinity"/>
+        <Label text="Uploaded to mainframe. " minWidth="-Infinity" styleClass="text-bold"/>
+        <Label text="Loan " minWidth="-Infinity"/>
+        <Label fx:id="loanNumberLabel" minWidth="-Infinity" styleClass="mono"/>
+        <Label fx:id="statusLabel" minWidth="-Infinity"/>
+    </HBox>
+
+    <HBox spacing="16">
+        <!-- The loan at a glance, with the totals from the mainframe -->
+        <VBox styleClass="card" minWidth="280" prefWidth="300" spacing="12">
+            <Label text="Loan summary" styleClass="section-heading"/>
+            <VBox spacing="2">
+                <Label fx:id="repaymentCaption" styleClass="detail-label"/>
+                <Label fx:id="repaymentValue" styleClass="repayment-value"/>
+            </VBox>
+            <Separator/>
+            <GridPane hgap="16" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Principal" styleClass="detail-label"/>
+                    <Label fx:id="principalValue" styleClass="stat-value"/>
+                </VBox>
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Loan term" styleClass="detail-label"/>
+                    <Label fx:id="termValue" styleClass="stat-value"/>
+                </VBox>
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Total interest paid" styleClass="detail-label"/>
+                    <Label fx:id="totalInterestValue" styleClass="stat-value"/>
+                </VBox>
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Total cost of loan" styleClass="detail-label"/>
+                    <Label fx:id="totalPaidValue" styleClass="stat-value"/>
+                </VBox>
+            </GridPane>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label fx:id="termsLabel" styleClass="text-muted, text-small" wrapText="true"/>
+        </VBox>
+
+        <!-- The first few repayments, to go through with the customer -->
+        <VBox styleClass="card, card-flush" HBox.hgrow="ALWAYS">
+            <HBox styleClass="card-section, card-divider" alignment="CENTER_LEFT">
+                <Label text="Repayment schedule" styleClass="section-heading"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="previewCountLabel" styleClass="text-muted, text-small"/>
+            </HBox>
+            <StackPane fx:id="previewBox">
+                <TableView fx:id="previewTable">
+                    <columns>
+                        <TableColumn fx:id="numberColumn" text="#" sortable="false" resizable="false"
+                                     minWidth="48" maxWidth="48" prefWidth="48"/>
+                        <TableColumn fx:id="dateColumn" text="Date" sortable="false"/>
+                        <TableColumn fx:id="paymentColumn" text="Payment" sortable="false" styleClass="number-column"/>
+                        <TableColumn fx:id="principalColumn" text="Principal" sortable="false" styleClass="number-column"/>
+                        <TableColumn fx:id="interestColumn" text="Interest" sortable="false" styleClass="number-column"/>
+                        <TableColumn fx:id="balanceColumn" text="Balance" sortable="false" styleClass="number-column"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+                    </columnResizePolicy>
+                </TableView>
+            </StackPane>
+            <Label fx:id="previewEmpty" styleClass="text-muted, card-section" wrapText="true"/>
+            <HBox styleClass="card-section" alignment="CENTER">
+                <Button fx:id="fullScheduleButton" text="Show full schedule" styleClass="button-secondary"
+                        onAction="#handleShowFullSchedule"/>
+            </HBox>
+        </VBox>
+    </HBox>
 </VBox>

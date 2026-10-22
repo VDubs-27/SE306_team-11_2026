@@ -20,8 +20,8 @@ import lavs.ui.common.PagerController;
 import lavs.ui.common.Tables;
 
 /**
- * The loan screen's Schedule tab: every repayment due over the life of the loan, split into
- * principal and interest, with the balance left after it, a page at a time.
+ * The loan screen's Schedule tab, also shown in the new loan wizard: every repayment due over the
+ * life of the loan, split into principal and interest, with the balance left after it, a page at a time.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
  */
 public class ScheduleTabController {
@@ -56,7 +56,7 @@ public class ScheduleTabController {
     }
 
     /** Shows the loan's schedule from the mainframe, a page at a time, read in the background with loadPage. */
-    void show(LongFunction<Result<Page<ScheduledRepayment>>> loadPage) {
+    public void show(LongFunction<Result<Page<ScheduledRepayment>>> loadPage) {
         countLabel.setText("");
         emptyState.setText("Loading…");
         Tables.show(scheduleTable, tableBox, emptyState, List.of());
@@ -74,7 +74,7 @@ public class ScheduleTabController {
     }
 
     /** How many repayments a page shows. */
-    static long pageSize() {
+    public static long pageSize() {
         return PAGE_SIZE;
     }
 

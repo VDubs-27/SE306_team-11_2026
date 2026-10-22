@@ -617,6 +617,9 @@
 }
 .stat-tile { -fx-spacing: 4; -fx-padding: 14 18 14 18; }
 .stat-value { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: -text; }
+/* New loan wizard, Upload & review: the repayment leading the loan summary */
+.repayment-value { -fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: -brand-blue; }
+.text-bold { -fx-font-weight: bold; }
 
 /* People on a loan: avatar colours, the customer number beside a name, and search results */
 .avatar.avatar-tone-0 { -fx-background-color: -brand-blue; }

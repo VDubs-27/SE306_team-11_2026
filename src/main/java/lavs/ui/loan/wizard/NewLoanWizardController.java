@@ -53,10 +53,12 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setSteps(List.of(
                 new WizardStep("Loan details", loanDetails,
                         () -> loanDetailsController.check(draft) && sendLoan(), null),
-                new WizardStep("Upload & review", upload, null, () -> uploadController.showSummary()),
+                new WizardStep("Upload & review", upload, null,
+                        () -> uploadController.show(navigator.services().loan().loans())),
                 new WizardStep("Co-borrowers", coborrowers, coborrowersController::check,
                         () -> coborrowersController.showLoanSummary()),
                 new WizardStep("Submit", submit, null, () -> submitController.show(draft))));
+        wizardController.setBackText(1, "Edit loan details");
     }
 
     /** Sets the wizard up for the person the loan is for: their initials and "for John Smith · number". */
@@ -68,7 +70,6 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setSubtitle("for " + customer.fullName() + " · " + customer.number().value());
         draft = new NewLoanDraft(applicant);
         uploadController.use(draft);
-        uploadController.setOnChangeDetails(() -> wizardController.goBackTo(0));
         coborrowersController.use(draft, navigator.services().customer());
         coborrowersController.setOnAddNewCustomer(
                 () -> navigator.showNewCustomerWizard(coborrowersController::addNewCustomer));

@@ -1,7 +1,9 @@
 package lavs.ui.wizard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -39,6 +41,7 @@ public class WizardController {
     private List<WizardStep> steps = List.of();
     private int current;
     private String finishText = "Finish";
+    private final Map<Integer, String> backTexts = new HashMap<>();
     private Runnable onFinish = () -> { };
     private Runnable onCancel = () -> { };
 
@@ -58,6 +61,12 @@ public class WizardController {
     /** Text on the last step's button, e.g. "Save customer". */
     public void setFinishText(String finishText) {
         this.finishText = finishText;
+        update();
+    }
+
+    /** Text on the back button while a step shows, e.g. "Edit loan details", instead of "Back". */
+    public void setBackText(int step, String backText) {
+        backTexts.put(step, backText);
         update();
     }
 
@@ -195,7 +204,7 @@ public class WizardController {
             return;
         }
         boolean last = current == steps.size() - 1;
-        backButton.setText(current == 0 ? "Cancel" : "←  Back");
+        backButton.setText(current == 0 ? "Cancel" : "←  " + backTexts.getOrDefault(current, "Back"));
         nextButton.setText(last ? "✓  " + finishText : "Next: " + steps.get(current + 1).title() + "  →");
     }
 
