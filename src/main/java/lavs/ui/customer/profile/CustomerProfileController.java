@@ -96,7 +96,7 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
         TabBars.setCount(documentsTab, profile.documents());
         TabBars.setCount(notesTab, profile.notes());
 
-        ProfileSources sources = new ProfileSources(navigator.services(), customer.number());
+        sources = new ProfileSources(navigator.services(), customer.number());
         unopened.put(addressesTab, () -> addressesController.show(sources.addresses(),
                 count -> TabBars.setCount(addressesTab, count), this::refreshSuburb));
         unopened.put(contactsTab, () -> contactsController.show(sources.phones(), sources.emails(),
