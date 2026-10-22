@@ -116,3 +116,15 @@ Add an entry here whenever a change knowingly departs from the proposal.
 - **Justification:** customer and loan documents have the same fields, so one `Document` record serves both, as `Note` does for notes.
   Every request already names the owner, so storing it again on the record would only duplicate the caller's value.
 - **Introduced in:** the PR that shared the document classes and added customer documents.
+
+## 15. Multi-step wizard input is held in the UI layer
+
+- **Proposal:** Section 3 says the only data LAVS holds is the current session's records, kept as domain objects in the business logic layer, plus the constants loaded at login.
+- **Code:** `NewCustomerDraft` and `NewLoanDraft`, in the UI's wizard packages, hold what each step has entered until the wizard sends it.
+  `CustomerSaver` then creates the customer and adds its addresses, contacts and employers one by one.
+  `LoanSaver` sends the loan when Loan details is left, and adds its co-borrowers and guarantors when it is submitted.
+- **Justification:** a wizard collects one record over several screens, and the mainframe has no message for a part-finished customer or loan, so the input has to be kept somewhere until it is sent.
+  The drafts only hold the domain `Details` records the steps have already checked. They don't talk to the mainframe or validate anything themselves:
+  each step's check calls the record's own `validate()` in the business logic layer, and every send still goes through the services.
+  Keeping the drafts in the UI layer means the services stay stateless, and an abandoned wizard leaves nothing behind in the business logic layer.
+- **Introduced in:** PR #21 for the new customer wizard, PR #24 for the new loan wizard.
