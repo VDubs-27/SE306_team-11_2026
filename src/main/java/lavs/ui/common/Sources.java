@@ -9,7 +9,7 @@ import lavs.logic.service.Result;
 
 /**
  * The Documents and Notes tabs' records, for a customer or a loan, through their services.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Sources {
 

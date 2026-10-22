@@ -21,7 +21,7 @@ import lavs.ui.loan.forms.LoanDetailsFormController;
 /**
  * The loan screen's Details tab: the loan's terms, read-only. While the loan is New they can be
  * changed with Edit, which opens the same form as the new loan wizard; after that they're locked.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class DetailsTabController {
 

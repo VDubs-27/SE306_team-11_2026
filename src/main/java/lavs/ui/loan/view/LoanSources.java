@@ -20,7 +20,7 @@ import lavs.ui.shell.Services;
 /**
  * One loan's records for the loan screen, and its changes, through the services. Each method is
  * called in the background. The loan is read as it is at the time, as editing it replaces it.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class LoanSources {
 

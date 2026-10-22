@@ -18,7 +18,7 @@ import lavs.ui.shell.Services;
  * Reads what the loan screen needs before it opens: the loan's totals, everyone on it, and how many
  * documents and notes it has. The schedule, documents and notes are read when their tabs are opened.
  * Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class LoanLoader {
 

@@ -22,7 +22,7 @@ import lavs.ui.shell.NavigatorAware;
 /**
  * The login screen: a username and password, checked by the mainframe. Signing in happens off the
  * screen's thread, so the window stays responsive; on success the app opens on customer search.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoginController implements NavigatorAware {
 

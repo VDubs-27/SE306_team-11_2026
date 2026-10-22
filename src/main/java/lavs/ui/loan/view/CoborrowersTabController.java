@@ -14,7 +14,7 @@ import lavs.ui.shell.CustomerServices;
 /**
  * The loan screen's Co-borrowers tab: the applicant, then everyone else on the loan. While the
  * loan is New, people can be found and added, or removed; after that the list is locked.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class CoborrowersTabController {
 

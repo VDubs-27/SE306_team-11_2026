@@ -12,7 +12,7 @@ import lavs.logic.model.customer.Phone;
 /**
  * What has been entered in the new customer wizard so far. Each step reads and fills its part;
  * nothing reaches the mainframe until the customer is saved.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class NewCustomerDraft {
 

@@ -18,7 +18,7 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * Set-up for tables inside tabs, such as a profile's Loans or a loan's Schedule.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Tables {
 

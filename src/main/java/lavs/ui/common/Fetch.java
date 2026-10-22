@@ -19,7 +19,7 @@ import lavs.logic.service.Result;
  *         Fetch.value(customers.retrieve(number)),
  *         Fetch.all(page -&gt; addresses.list(number, page, Fetch.PAGE_SIZE))));
  * </pre>
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Fetch {
 

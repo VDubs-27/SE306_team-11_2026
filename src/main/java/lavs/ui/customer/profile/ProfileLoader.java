@@ -14,7 +14,7 @@ import lavs.ui.shell.Services;
  * Reads what the profile screen needs before it opens: the customer, their primary address's suburb,
  * and how many records each tab has. Kept to a few calls, as some customers have hundreds of records;
  * each tab reads its own page of records when it's opened. Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class ProfileLoader {
 

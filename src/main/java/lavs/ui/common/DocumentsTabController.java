@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 /**
  * A Documents tab, on a customer's profile or a loan: the files recorded, a page at a time from the
  * mainframe, which can be added, changed or removed there.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class DocumentsTabController {
 

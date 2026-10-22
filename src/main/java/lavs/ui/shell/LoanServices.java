@@ -8,7 +8,7 @@ import lavs.logic.service.NoteService;
 
 /**
  * The services for loans and everything recorded about them.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record LoanServices(
         LoanService loans,

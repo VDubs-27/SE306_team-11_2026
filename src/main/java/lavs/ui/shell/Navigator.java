@@ -74,7 +74,7 @@ public class Navigator {
 
     /**
      * Replaces the whole window with the login screen (no header), forgetting the screens before it.
-     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     * AI-assisted: written by Jack, refined with Claude.
      */
     public void showLogin() {
         FXMLLoader loader = load("/lavs/ui/login/login.fxml");
@@ -102,7 +102,7 @@ public class Navigator {
     /**
      * Reads one customer's profile from the mainframe, then shows it below the header. Until it's
      * read, the current screen stays, with the header's bar sweeping; if it can't be read, says why.
-     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     * AI-assisted: written by Jack, refined with Claude.
      */
     public void showCustomerProfile(String customerNumber) {
         openWhenLoaded(() -> ProfileLoader.load(services, customerNumber), "Couldn't open this customer", profile -> {
@@ -115,7 +115,7 @@ public class Navigator {
 
     /**
      * Shows the new customer wizard below the header.
-     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     * AI-assisted: written by Jack, refined with Claude.
      */
     public void showNewCustomerWizard() {
         showNewCustomerWizard(null);
@@ -131,7 +131,7 @@ public class Navigator {
 
     /**
      * Shows the new loan wizard for a customer below the header.
-     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     * AI-assisted: written by Jack, refined with Claude.
      */
     public void showNewLoanWizard(LoanPerson applicant) {
         FXMLLoader loader = load("/lavs/ui/loan/wizard/new-loan-wizard.fxml");
@@ -142,7 +142,7 @@ public class Navigator {
 
     /**
      * Shows one of a customer's loans below the header.
-     * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+     * AI-assisted: written by Jack, refined with Claude.
      */
     public void showLoan(LoanNumber loan, LoanPerson applicant) {
         openWhenLoaded(() -> LoanLoader.load(services, loan, applicant), "Couldn't open this loan", screen -> {

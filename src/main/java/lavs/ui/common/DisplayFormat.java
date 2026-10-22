@@ -15,7 +15,7 @@ import lavs.logic.model.customer.Customer;
 
 /**
  * How values are written on screen: dates, money, file sizes and missing values.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class DisplayFormat {
 

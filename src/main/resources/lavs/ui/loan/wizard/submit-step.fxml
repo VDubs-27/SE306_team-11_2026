@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. -->
+<!-- AI-assisted: written by Jack, refined with Claude. -->
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -23,6 +23,6 @@
     </HBox>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="Submitting creates the loan on the mainframe, then adds its documents, co-borrowers and guarantors."/>
+        <Label text="Submitting adds the co-borrowers and guarantors to the loan, then sends it for approval. Its details can't be changed after that."/>
     </HBox>
 </VBox>

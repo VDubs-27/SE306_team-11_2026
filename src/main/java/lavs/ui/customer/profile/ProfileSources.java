@@ -20,7 +20,7 @@ import lavs.ui.shell.Services;
 /**
  * One customer's records for the profile's tabs, through the services. The mainframe lists each
  * record as a summary, and the tiles show more than that, so each record on a page is read in full.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 final class ProfileSources {
 

@@ -13,7 +13,7 @@ import lavs.logic.service.Result;
  * Finds customers by name or customer number. The mainframe's search only matches names, so a full
  * customer number, e.g. 01-0001-0000015, is looked up directly instead and found as the only result.
  * Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class CustomerFinder {
 

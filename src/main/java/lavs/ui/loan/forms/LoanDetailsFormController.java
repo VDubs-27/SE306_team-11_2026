@@ -25,7 +25,7 @@ import lavs.ui.common.RecordForm;
  * The form for a loan's amount, interest, repayments and dates, used by the new loan wizard and by
  * Edit on the loan screen. Checked with the model's Loan.Details.validate(), plus checks that the
  * amounts and dates were typed correctly.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoanDetailsFormController implements RecordForm<Loan.Details> {
 

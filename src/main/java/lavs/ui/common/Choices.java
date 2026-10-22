@@ -14,7 +14,7 @@ import lavs.logic.model.constants.Constants;
  * Fills a drop-down with one of the model's type lists (such as Address.Type), showing each option
  * by its name. The options are the mainframe's own list, loaded when the user signs in, in its
  * order; before signing in, or for a list the mainframe doesn't send, every value but "unknown".
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Choices {
 

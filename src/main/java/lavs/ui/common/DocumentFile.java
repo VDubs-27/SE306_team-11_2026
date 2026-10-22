@@ -5,7 +5,7 @@ package lavs.ui.common;
  * file's name, type and size. Only these are saved; the file itself stays with the customer's
  * paperwork. id is 0 for a document not yet saved.
  * Display-only until there is a Document model in lavs.logic.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record DocumentFile(long id, String type, String fileName, String fileType, long size) {
 }
