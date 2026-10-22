@@ -7,7 +7,7 @@ import lavs.ui.loan.people.LoanPerson;
  * What the profile screen needs before it opens: the customer, the suburb of their primary address
  * for the card at the top ("" when there isn't one), and how many of each record they have, for the
  * tabs' counts. Each tab reads its own records when it's first opened.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public record CustomerProfile(
         Customer customer,

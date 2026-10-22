@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 /**
  * What a screen shows when it couldn't load, e.g. the mainframe was unreachable: a card with the
  * error icon, what couldn't be loaded and why, then Try again and Back.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class ErrorPanel {
 

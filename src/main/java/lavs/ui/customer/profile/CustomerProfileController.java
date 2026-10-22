@@ -25,7 +25,7 @@ import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
 import lavs.ui.shell.Refreshable;
 
-/** AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston. */
+/** AI-assisted: written by Jack, refined with Claude. */
 public class CustomerProfileController implements NavigatorAware, Refreshable {
 
     /** How many items each paged tab shows at once. */

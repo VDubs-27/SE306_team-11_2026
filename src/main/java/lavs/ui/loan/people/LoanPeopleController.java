@@ -32,7 +32,7 @@ import lavs.ui.shell.CustomerServices;
  * each co-borrower and guarantor, a page at a time. People are found among existing customers on the
  * mainframe and removed after a check; on a loan already made, each change is saved to it straight
  * away (see useServices). An applicant who isn't employed needs a guarantor.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoanPeopleController {
 

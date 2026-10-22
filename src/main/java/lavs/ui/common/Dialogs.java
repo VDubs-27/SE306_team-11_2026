@@ -4,7 +4,7 @@ import javafx.scene.Node;
 
 /**
  * Small pop-up questions, styled like the rest of the app.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Dialogs {
 

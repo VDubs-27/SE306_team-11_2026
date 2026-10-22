@@ -13,7 +13,7 @@ import lavs.ui.shell.CustomerServices;
 /**
  * Step 3 of the new loan wizard: who else is on the loan. The applicant is listed first; others
  * are found among existing customers or created through the new customer wizard.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class CoborrowersStepController {
 
@@ -29,13 +29,13 @@ public class CoborrowersStepController {
         peopleController.use(draft.applicant(), draft.others());
     }
 
-    /** The loan this is for, in the heading: "$450,000 · Fixed · not yet submitted". */
+    /** The loan this is for, in the heading: "01-0001-0000015-002 · $450,000 · Fixed · not yet submitted". */
     void showLoanSummary() {
-        Loan.Details details = draft.details();
-        loanSummary.setText(details == null
+        Loan loan = draft.loan();
+        loanSummary.setText(loan == null
                 ? "New loan · not yet submitted"
-                : DisplayFormat.money(details.principal()) + " · "
-                        + LoanText.rateTypeName(details.rateType())
+                : loan.loanNumber().value() + " · " + DisplayFormat.money(loan.principal()) + " · "
+                        + LoanText.rateTypeName(loan.rateType())
                         + " · not yet submitted");
     }
 

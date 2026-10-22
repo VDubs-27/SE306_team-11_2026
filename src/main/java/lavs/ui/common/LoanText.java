@@ -9,7 +9,7 @@ import lavs.logic.model.loan.Loan;
 /**
  * How a loan's details are put into words, so the profile, the new loan wizard and the loan screen
  * all say them the same way.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class LoanText {
 

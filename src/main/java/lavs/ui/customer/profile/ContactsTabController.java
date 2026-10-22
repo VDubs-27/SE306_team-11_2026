@@ -18,7 +18,7 @@ import lavs.ui.customer.forms.PhoneFormController;
 /**
  * The Contacts tab: the customer's phone numbers and email addresses, each a page at a time from the
  * mainframe. Add and Edit use the same pop-ups as the new customer wizard.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class ContactsTabController {
 

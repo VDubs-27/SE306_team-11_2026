@@ -10,7 +10,7 @@ import lavs.logic.model.customer.Employer;
 
 /**
  * How an employer is shown as a row, wherever employers are listed.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class EmployerRows {
 

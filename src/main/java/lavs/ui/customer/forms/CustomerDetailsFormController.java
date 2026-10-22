@@ -20,7 +20,7 @@ import lavs.ui.common.RecordForm;
  * The form for a customer's personal details: title, names, date of birth and nationality. Used
  * as the first step of the new customer wizard, and in a pop-up to edit them from the profile.
  * Checked with the model's Customer.Details.validate(), plus a check that the date is a real one.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class CustomerDetailsFormController implements RecordForm<Customer.Details> {
 

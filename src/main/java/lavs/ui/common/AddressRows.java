@@ -16,7 +16,7 @@ import lavs.logic.model.customer.Address;
 /**
  * How an address is shown as a row, wherever addresses are listed: the type, the street,
  * the suburb and city, and Primary / Mailing badges.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class AddressRows {
 

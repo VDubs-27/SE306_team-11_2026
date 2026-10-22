@@ -21,7 +21,7 @@ import lavs.logic.model.FieldError;
 /**
  * The form for one document, used in a pop-up to add or edit: a document type and a file chosen
  * from the computer. Only the file's name, type and size are kept, within the mainframe's limits.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class DocumentFormController implements RecordForm<DocumentFile> {
 

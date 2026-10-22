@@ -20,7 +20,7 @@ import javafx.scene.text.Text;
 /**
  * How a note is shown, for a customer or a loan: a card with the author, date and type labelled
  * along the top, an Edit button, then the note's text cut to three lines.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class NoteCards {
 

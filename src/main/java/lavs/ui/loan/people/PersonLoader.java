@@ -10,7 +10,7 @@ import lavs.ui.shell.CustomerServices;
 /**
  * Reads what a loan's people list shows about someone: who they are, where they live and whether
  * they work. Run it in the background.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class PersonLoader {
 

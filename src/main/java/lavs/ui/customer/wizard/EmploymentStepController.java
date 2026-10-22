@@ -16,7 +16,7 @@ import lavs.ui.customer.forms.EmployerFormController;
 
 /**
  * Step 4 of the new customer wizard: whether the customer is employed and, if so, who by.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class EmploymentStepController {
 

@@ -20,7 +20,7 @@ import lavs.ui.common.RecordForm;
 /**
  * The form for one employer, used in a pop-up to add or edit. It checks itself with the model's
  * Employer.Details.validate(), plus a check that the salary is a number.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class EmployerFormController implements RecordForm<Employer.Details> {
 

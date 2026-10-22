@@ -3,7 +3,7 @@ package lavs.ui.common;
 /**
  * A form for one record, such as an address or a note, that can be shown in a pop-up to add or
  * edit it. Each form is written once and reused wherever that kind of record is edited.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  *
  * @param <T> what the form edits, e.g. Address.Details
  */

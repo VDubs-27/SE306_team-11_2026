@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 /**
  * Builds the bordered rows used to list addresses, contacts and employers.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class RecordTiles {
 

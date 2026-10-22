@@ -16,7 +16,7 @@ import lavs.logic.service.Result;
  * hands the result back on the screen's thread. Work runs one piece at a time, in the order asked
  * for, as the mainframe connection handles one request at a time. While any is waiting or running,
  * busy is true, and the header's loading bar sweeps.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public final class Background {
 

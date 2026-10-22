@@ -19,7 +19,7 @@ import lavs.ui.common.RecordForm;
 /**
  * The form for one phone number, used in a pop-up to add or edit. It checks itself with the
  * model's Phone.Details.validate().
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class PhoneFormController implements RecordForm<Phone.Details> {
 

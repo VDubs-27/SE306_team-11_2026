@@ -24,7 +24,7 @@ import lavs.ui.common.Tables;
 
 /**
  * The Loans tab: a table of the customer's loans, a page at a time.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class LoansTabController {
 

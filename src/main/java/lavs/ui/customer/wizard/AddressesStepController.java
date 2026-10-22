@@ -16,7 +16,7 @@ import lavs.ui.customer.forms.AddressFormController;
 /**
  * Step 2 of the new customer wizard: the customer's addresses, added and edited in a pop-up.
  * At least one must be the mailing address before moving on.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class AddressesStepController {
 

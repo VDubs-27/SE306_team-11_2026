@@ -23,7 +23,7 @@ import lavs.ui.common.ReviewRows;
 /**
  * Step 5 of the new customer wizard: a checklist of what has been entered and a summary of the
  * customer, shown just before saving. It is rebuilt from the draft every time it shows.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class ReviewStepController {
 

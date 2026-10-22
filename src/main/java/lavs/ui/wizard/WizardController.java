@@ -1,7 +1,9 @@
 package lavs.ui.wizard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,7 +19,7 @@ import javafx.scene.layout.StackPane;
  * The frame shared by every wizard (new customer, new loan): a header with a stepper, the current
  * step, and Back/Next along the bottom. A specific wizard gives it the steps and says what Cancel
  * and Finish do; the frame handles moving between steps.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class WizardController {
 
@@ -39,6 +41,7 @@ public class WizardController {
     private List<WizardStep> steps = List.of();
     private int current;
     private String finishText = "Finish";
+    private final Map<Integer, String> backTexts = new HashMap<>();
     private Runnable onFinish = () -> { };
     private Runnable onCancel = () -> { };
 
@@ -58,6 +61,12 @@ public class WizardController {
     /** Text on the last step's button, e.g. "Save customer". */
     public void setFinishText(String finishText) {
         this.finishText = finishText;
+        update();
+    }
+
+    /** Text on the back button while a step shows, e.g. "Edit loan details", instead of "Back". */
+    public void setBackText(int step, String backText) {
+        backTexts.put(step, backText);
         update();
     }
 
@@ -107,6 +116,16 @@ public class WizardController {
     public void goBackTo(int index) {
         if (index >= 0 && index < current) {
             showStep(index);
+        }
+    }
+
+    /**
+     * Moves on to the next step without checking the current one again, for a step whose check
+     * finishes in the background, e.g. once the mainframe has accepted what was entered.
+     */
+    public void advance() {
+        if (current < steps.size() - 1) {
+            showStep(current + 1);
         }
     }
 
@@ -185,7 +204,7 @@ public class WizardController {
             return;
         }
         boolean last = current == steps.size() - 1;
-        backButton.setText(current == 0 ? "Cancel" : "←  Back");
+        backButton.setText(current == 0 ? "Cancel" : "←  " + backTexts.getOrDefault(current, "Back"));
         nextButton.setText(last ? "✓  " + finishText : "Next: " + steps.get(current + 1).title() + "  →");
     }
 

@@ -16,7 +16,7 @@ import lavs.ui.customer.forms.AddressFormController;
 /**
  * The Addresses tab: one tile per address, a page at a time from the mainframe, plus a way to add
  * another. Add and Edit use the same address pop-up as the new customer wizard.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class AddressesTabController {
 

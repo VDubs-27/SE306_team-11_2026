@@ -23,7 +23,7 @@ import lavs.ui.wizard.WizardStep;
 /**
  * The new customer wizard: details, addresses, contacts, employment, then review and save. Opened
  * from another screen (such as the loan wizard), saving goes back there with the new customer.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class NewCustomerWizardController implements NavigatorAware {
 

@@ -24,7 +24,7 @@ import lavs.ui.common.Nodes;
 /**
  * The pop-up for adding an existing customer to a loan: choose co-borrower or guarantor, search the
  * mainframe, then click the person. People already on the loan are left out of the results.
- * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
+ * AI-assisted: written by Jack, refined with Claude.
  */
 public class FindCustomerController {
 
