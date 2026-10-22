@@ -135,8 +135,7 @@ public class NewLoanWizardController implements NavigatorAware {
     private void finish(LoanSaver.Saved saved) {
         Scene scene = wizard.getScene();
         String number = saved.loan().loanNumber().value();
-        navigator.back();
-        navigator.showLoan(saved.loan().loanNumber(), draft.applicant());
+        navigator.showLoanInstead(saved.loan().loanNumber(), draft.applicant());
         if (saved.notSubmitted() != null) {
             Toasts.show(scene, Toasts.Kind.WARNING, "Loan " + number + " saved, but not submitted yet",
                     saved.notSubmitted() + " Fix this, then submit it from the loan. "

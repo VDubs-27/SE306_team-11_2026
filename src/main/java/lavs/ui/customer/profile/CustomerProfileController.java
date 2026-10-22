@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -24,9 +23,10 @@ import lavs.ui.common.TabBars;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
+import lavs.ui.shell.Refreshable;
 
 /** AI-assisted: written by Jack, refined with Claude. */
-public class CustomerProfileController implements NavigatorAware {
+public class CustomerProfileController implements NavigatorAware, Refreshable {
 
     /** How many items each paged tab shows at once. */
     private static final int PAGE_SIZE = 5;
@@ -127,8 +127,12 @@ public class CustomerProfileController implements NavigatorAware {
             return;
         }
         checkingLoan = true;
+        long here = navigator.position();
         Background.run(() -> navigator.services().loan().loans().canStartLoan(customer.number()), ready -> {
             checkingLoan = false;
+            if (!navigator.isAt(here)) {
+                return; // the user moved on while it was checked, so nothing opens over where they went
+            }
             if (ready.successful()) {
                 navigator.showNewLoanWizard(profile.asApplicant(customer));
             } else if (ready.errorMessage() == null) {
@@ -191,17 +195,30 @@ public class CustomerProfileController implements NavigatorAware {
         statusBadge.getStyleClass().removeAll("badge-active", "badge-neutral");
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
-        showIfPresent(statusBadge, statusBadge);
+        Nodes.show(statusBadge, !isBlank(statusBadge.getText()));
 
         dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
-        showIfPresent(dateOfBirthLabel, dateOfBirthFact);
+        Nodes.show(dateOfBirthFact, !isBlank(dateOfBirthLabel.getText()));
 
         suburbLabel.setText(profile.primarySuburb());
-        showIfPresent(suburbLabel, suburbFact);
+        Nodes.show(suburbFact, !isBlank(suburbLabel.getText()));
     }
 
-    /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */
-    private static void showIfPresent(Label label, Node holder) {
-        Nodes.show(holder, !isBlank(label.getText()));
+    /**
+     * Back from a loan or a wizard: loans are what those can change, so the Loans tab and its count
+     * are read again. The other tabs are left as they were.
+     */
+    @Override
+    public void refresh() {
+        if (!unopened.containsKey(loansTab)) {
+            loansController.reload();
+            return;
+        }
+        // Not opened yet, so it reads fresh when it is; only the count in the tab bar can be out of date
+        Background.run(() -> navigator.services().loan().loans().listForCustomer(customer.number(), 1, 1), listed -> {
+            if (listed.successful()) {
+                TabBars.setCount(loansTab, listed.value().total());
+            }
+        });
     }
 }

@@ -24,13 +24,14 @@ import lavs.ui.common.Tables;
 import lavs.ui.common.Toasts;
 import lavs.ui.shell.Navigator;
 import lavs.ui.shell.NavigatorAware;
+import lavs.ui.shell.Refreshable;
 
 /**
  * Customer search: find a customer by name or customer number, a page of results at a time, read
  * from the mainframe, and open their profile; or start a new customer.
  * AI-assisted: written by Jack, refined with Claude.
  */
-public class CustomerSearchController implements NavigatorAware {
+public class CustomerSearchController implements NavigatorAware, Refreshable {
 
     /** Corner radius of .card in app.css. */
     private static final double CARD_RADIUS = 16;
@@ -60,6 +61,8 @@ public class CustomerSearchController implements NavigatorAware {
     @FXML private PagerController pagerController;
 
     private Navigator navigator;
+    /** True while results are showing, so Back has a page to read again. */
+    private boolean searched;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -89,11 +92,23 @@ public class CustomerSearchController implements NavigatorAware {
             showPrompt();
             return;
         }
+        searched = true;
         resultsTitle.setText("Search results for “" + term + "”");
         resultCount.setText("Searching…");
         searchButton.setDisable(true);
         pagerController.showLoading(page -> CustomerFinder.find(navigator.services().customer().customers(), term, page),
                 rows -> Tables.show(resultsTable, tableBox, emptyState, rows), this::showFound);
+    }
+
+    /**
+     * Back from a customer's profile: reads the page of results that was open again, so a customer
+     * edited there shows as it is now.
+     */
+    @Override
+    public void refresh() {
+        if (searched) {
+            pagerController.reload();
+        }
     }
 
     /** Shows how many were found and whether there's more than a page, or why the search didn't work. */
@@ -123,6 +138,7 @@ public class CustomerSearchController implements NavigatorAware {
 
     /** Starting state: nothing searched yet. */
     private void showPrompt() {
+        searched = false;
         pagerController.cancel();
         searchButton.setDisable(false);
         resultsTitle.setText("Customers");
