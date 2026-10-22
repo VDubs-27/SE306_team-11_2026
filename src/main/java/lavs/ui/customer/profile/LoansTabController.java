@@ -96,6 +96,11 @@ public class LoansTabController {
         });
     }
 
+    /** Reads the page of loans that's open again, e.g. after one of them changed, keeping it on screen until then. */
+    void reload() {
+        pagerController.reload();
+    }
+
     /** What clicking a loan does: the profile opens the loan screen. */
     void setOnOpenLoan(Consumer<Loan> onOpenLoan) {
         this.onOpenLoan = onOpenLoan;

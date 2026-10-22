@@ -1,5 +1,6 @@
 package lavs.ui.shell;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -90,7 +91,7 @@ class ScreenTrackerTests {
         Object screen = new Object();
         tracker.remember(screen, new Object());
 
-        tracker.refresh(screen);
+        assertDoesNotThrow(() -> tracker.refresh(screen));
     }
 
     @Test
@@ -122,6 +123,6 @@ class ScreenTrackerTests {
 
     @Test
     void refreshingAScreenNeverRememberedDoesNothing() {
-        tracker.refresh(new Object());
+        assertDoesNotThrow(() -> tracker.refresh(new Object()));
     }
 }

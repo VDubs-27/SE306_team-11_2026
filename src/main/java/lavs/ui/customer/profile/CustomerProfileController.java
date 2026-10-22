@@ -61,7 +61,6 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
     /** True while checking the customer can have a loan, so a second click doesn't open two wizards. */
     private boolean checkingLoan;
     private Navigator navigator;
-    private ProfileSources sources;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -95,7 +94,7 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
         TabBars.setCount(documentsTab, profile.documents());
         TabBars.setCount(notesTab, profile.notes());
 
-        sources = new ProfileSources(navigator.services(), customer.number());
+        ProfileSources sources = new ProfileSources(navigator.services(), customer.number());
         unopened.put(addressesTab, () -> addressesController.show(sources.addresses(),
                 count -> TabBars.setCount(addressesTab, count), this::refreshSuburb));
         unopened.put(contactsTab, () -> contactsController.show(sources.phones(), sources.emails(),
@@ -104,17 +103,13 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
             TabBars.setCount(employmentTab, count);
             profile = profile.withEmployers(count);
         }));
-        unopened.put(loansTab, this::showLoans);
+        unopened.put(loansTab, () -> loansController.show(page -> sources.loans(page, PAGE_SIZE),
+                count -> TabBars.setCount(loansTab, count)));
         unopened.put(documentsTab, () -> documentsController.show(sources.documents(),
                 count -> TabBars.setCount(documentsTab, count)));
         unopened.put(notesTab, () -> notesController.show(sources.notes(),
                 count -> TabBars.setCount(notesTab, count)));
         open(tabPane.getSelectionModel().getSelectedItem());
-    }
-
-    private void showLoans() {
-        loansController.show(page -> sources.loans(page, PAGE_SIZE),
-                count -> TabBars.setCount(loansTab, count));
     }
 
     @FXML
@@ -216,7 +211,7 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
     @Override
     public void refresh() {
         if (!unopened.containsKey(loansTab)) {
-            showLoans();
+            loansController.reload();
             return;
         }
         // Not opened yet, so it reads fresh when it is; only the count in the tab bar can be out of date

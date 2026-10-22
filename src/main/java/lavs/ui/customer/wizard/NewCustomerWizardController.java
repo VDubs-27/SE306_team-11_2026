@@ -113,11 +113,11 @@ public class NewCustomerWizardController implements NavigatorAware {
     private void finish(CustomerSaver.Saved saved) {
         Customer customer = saved.customer();
         Scene scene = wizard.getScene();
-        navigator.back();
         if (onSaved != null) {
+            navigator.back();
             onSaved.accept(new NewCustomer(customer, primarySuburb(), draft.isEmployed() && !draft.employers().isEmpty()));
         } else {
-            navigator.showCustomerProfile(customer.number().value());
+            navigator.showCustomerProfileInstead(customer.number().value());
         }
         if (saved.notSaved().isEmpty()) {
             Toasts.show(scene, Toasts.Kind.SUCCESS, "Customer saved", customer.fullName() + " has been added.");

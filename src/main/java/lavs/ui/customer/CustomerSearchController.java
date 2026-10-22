@@ -61,7 +61,8 @@ public class CustomerSearchController implements NavigatorAware, Refreshable {
     @FXML private PagerController pagerController;
 
     private Navigator navigator;
-    private String lastTerm;
+    /** True while results are showing, so Back has a page to read again. */
+    private boolean searched;
 
     @Override
     public void setNavigator(Navigator navigator) {
@@ -91,24 +92,23 @@ public class CustomerSearchController implements NavigatorAware, Refreshable {
             showPrompt();
             return;
         }
-        search(term);
-    }
-
-    /** Back from a customer's profile: searches again, so a customer edited there shows as it is now. */
-    @Override
-    public void refresh() {
-        if (lastTerm != null) {
-            search(lastTerm);
-        }
-    }
-
-    private void search(String term) {
-        lastTerm = term;
+        searched = true;
         resultsTitle.setText("Search results for “" + term + "”");
         resultCount.setText("Searching…");
         searchButton.setDisable(true);
         pagerController.showLoading(page -> CustomerFinder.find(navigator.services().customer().customers(), term, page),
                 rows -> Tables.show(resultsTable, tableBox, emptyState, rows), this::showFound);
+    }
+
+    /**
+     * Back from a customer's profile: reads the page of results that was open again, so a customer
+     * edited there shows as it is now.
+     */
+    @Override
+    public void refresh() {
+        if (searched) {
+            pagerController.reload();
+        }
     }
 
     /** Shows how many were found and whether there's more than a page, or why the search didn't work. */
@@ -138,7 +138,7 @@ public class CustomerSearchController implements NavigatorAware, Refreshable {
 
     /** Starting state: nothing searched yet. */
     private void showPrompt() {
-        lastTerm = null;
+        searched = false;
         pagerController.cancel();
         searchButton.setDisable(false);
         resultsTitle.setText("Customers");

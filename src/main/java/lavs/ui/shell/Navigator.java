@@ -121,12 +121,26 @@ public class Navigator {
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showCustomerProfile(String customerNumber) {
-        openWhenLoaded(() -> ProfileLoader.load(services, customerNumber), "Couldn't open this customer", profile -> {
-            FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
-            CustomerProfileController controller = loader.getController();
-            controller.showCustomer(profile);
-            show(loader.getRoot());
-        });
+        openCustomerProfile(customerNumber, this::show, () -> { });
+    }
+
+    /**
+     * Opens a customer's profile in place of the current screen, such as the wizard that just saved them,
+     * so Back from the profile skips the wizard. The current screen stays until the profile is read; if
+     * it can't be, goes back instead.
+     */
+    public void showCustomerProfileInstead(String customerNumber) {
+        openCustomerProfile(customerNumber, this::replace, this::back);
+    }
+
+    private void openCustomerProfile(String customerNumber, Consumer<Parent> place, Runnable onFailed) {
+        openWhenLoaded(() -> ProfileLoader.load(services, customerNumber), "Couldn't open this customer", onFailed,
+                profile -> {
+                    FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
+                    CustomerProfileController controller = loader.getController();
+                    controller.showCustomer(profile);
+                    place.accept(loader.getRoot());
+                });
     }
 
     /**
@@ -162,12 +176,26 @@ public class Navigator {
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
     public void showLoan(LoanNumber loanNumber, LoanPerson applicant) {
-        openWhenLoaded(() -> LoanLoader.load(services, loanNumber, applicant), "Couldn't open this loan", screen -> {
-            FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
-            LoanViewController controller = loader.getController();
-            controller.showLoan(screen);
-            show(loader.getRoot());
-        });
+        openLoan(loanNumber, applicant, this::show, () -> { });
+    }
+
+    /**
+     * Opens a loan in place of the current screen, such as the wizard that just made it, so Back from
+     * the loan skips the wizard. The current screen stays until the loan is read; if it can't be, goes
+     * back instead, where the screen before reads its loans again.
+     */
+    public void showLoanInstead(LoanNumber loanNumber, LoanPerson applicant) {
+        openLoan(loanNumber, applicant, this::replace, this::back);
+    }
+
+    private void openLoan(LoanNumber loanNumber, LoanPerson applicant, Consumer<Parent> place, Runnable onFailed) {
+        openWhenLoaded(() -> LoanLoader.load(services, loanNumber, applicant), "Couldn't open this loan", onFailed,
+                screen -> {
+                    FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
+                    LoanViewController controller = loader.getController();
+                    controller.showLoan(screen);
+                    place.accept(loader.getRoot());
+                });
     }
 
     /**
@@ -180,11 +208,12 @@ public class Navigator {
 
     /**
      * Loads what a screen needs in the background, then shows it with show. While loading, another
-     * open from the same screen is ignored; if loading fails, a message titled failTitle says why and
-     * nothing opens. If the user moves to another screen (or signs out) while it loads, the result is
-     * dropped, so a screen never opens over somewhere the user has since gone.
+     * open from the same screen is ignored; if loading fails, a message titled failTitle says why,
+     * nothing opens, and onFailed runs. If the user moves to another screen (or signs out) while it
+     * loads, the result is dropped, so a screen never opens over somewhere the user has since gone.
      */
-    private <T> void openWhenLoaded(Supplier<Result<T>> loadData, String failTitle, Consumer<T> show) {
+    private <T> void openWhenLoaded(Supplier<Result<T>> loadData, String failTitle, Runnable onFailed,
+                                    Consumer<T> show) {
         if (shell == null) {
             return; // signed out: there is no header to open a screen under
         }
@@ -200,6 +229,7 @@ public class Navigator {
                 show.accept(loaded.value());
             } else {
                 Toasts.show(stage.getScene(), Toasts.Kind.ERROR, failTitle, loaded.errorMessage());
+                onFailed.run();
             }
         });
     }
@@ -232,6 +262,14 @@ public class Navigator {
         if (currentScreen != null) {
             history.push(currentScreen);
         }
+        currentScreen = screen;
+        tracker.moved();
+        shell.setContent(screen);
+    }
+
+    /** Shows a screen below the header in place of the current one, which isn't returned to. */
+    private void replace(Parent screen) {
+        tracker.forget(currentScreen);
         currentScreen = screen;
         tracker.moved();
         shell.setContent(screen);
