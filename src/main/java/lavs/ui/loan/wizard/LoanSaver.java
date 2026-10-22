@@ -5,19 +5,17 @@ import java.util.List;
 import java.util.function.Function;
 
 import lavs.logic.model.customer.CustomerNumber;
-import lavs.logic.model.document.Document;
 import lavs.logic.model.loan.Coborrower;
 import lavs.logic.model.loan.Loan;
 import lavs.logic.model.loan.LoanNumber;
 import lavs.logic.service.Result;
-import lavs.ui.common.DocumentFile;
 import lavs.ui.common.Fetch;
 import lavs.ui.loan.people.LoanPerson;
 import lavs.ui.shell.LoanServices;
 
 /**
- * Sends what the new loan wizard collected: creates the loan, adds its co-borrowers, guarantors and
- * documents one by one, then submits it for approval. Once the loan exists it is never created again,
+ * Sends what the new loan wizard collected: creates the loan, adds its co-borrowers and guarantors
+ * one by one, then submits it for approval. Once the loan exists it is never created again,
  * so if something after that fails, the rest still goes ahead and what didn't is listed; a loan that
  * can't be submitted yet stays New, to submit from the loan screen. Run it in the background.
  * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
@@ -46,8 +44,6 @@ final class LoanSaver {
         List<String> notSaved = new ArrayList<>();
         addEach(draft.others(), person -> services.coborrowers().add(loan,
                 new Coborrower.Details(person.role(), person.customer().number())), LoanSaver::name, notSaved);
-        addEach(draft.documents(), document -> services.documents().add(number, details(document)),
-                document -> "Document " + document.fileName(), notSaved);
 
         Result<Loan> submitted = services.loans().submit(number);
         if (submitted.successful()) {
@@ -79,9 +75,5 @@ final class LoanSaver {
         return new Loan(number, customer, Loan.Status.NEW, details.principal(), details.rateType(),
                 details.rateAmount(), details.rateFrequency(), details.startDate(), details.paymentAmount(),
                 details.paymentFrequency(), details.renewalDate());
-    }
-
-    private static Document.Details details(DocumentFile document) {
-        return new Document.Details(document.type(), document.fileName(), document.fileType(), document.size());
     }
 }

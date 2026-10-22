@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lavs.logic.model.loan.Loan;
-import lavs.ui.common.DocumentFile;
 import lavs.ui.loan.people.LoanPerson;
 
 /**
@@ -17,7 +16,6 @@ final class NewLoanDraft {
     private final LoanPerson applicant;
     private final List<LoanPerson> others = new ArrayList<>();
     private Loan.Details details;
-    private final List<DocumentFile> documents = new ArrayList<>();
 
     NewLoanDraft(LoanPerson applicant) {
         this.applicant = applicant;
@@ -35,11 +33,6 @@ final class NewLoanDraft {
 
     void setDetails(Loan.Details details) {
         this.details = details;
-    }
-
-    /** Supporting documents, added to the loan once it is submitted. The Upload step edits this list. */
-    List<DocumentFile> documents() {
-        return documents;
     }
 
     /** Co-borrowers and guarantors, in the order they were added. The Co-borrowers step edits this list. */
