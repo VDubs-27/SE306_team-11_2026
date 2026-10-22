@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -35,15 +36,18 @@ import lavs.ui.loan.wizard.NewLoanWizardController;
  */
 public class Navigator {
 
+    /** Where a screen's controller is kept on the screen, when it wants refreshing on Back. */
+    private static final String REFRESH_KEY = "lavs.navigator.refreshable";
+
     private final Stage stage;
     private final Services services;
     /** The window's root for good: the current screen first, then the layer that short messages appear in. */
     private final StackPane windowRoot = new StackPane();
     private final Deque<Parent> history = new ArrayDeque<>();
+    /** Which screen the user is on, so a load that finishes late can be told from one they still want. */
+    private final ScreenTracker tracker = new ScreenTracker();
     private ShellController shell;
     private Parent currentScreen;
-    /** True while a screen is loading before it opens, so a second click doesn't open it twice. */
-    private boolean opening;
 
     public Navigator(Stage stage, Services services) {
         this.stage = stage;
@@ -58,6 +62,19 @@ public class Navigator {
         return services;
     }
 
+    /**
+     * Where the user is now. A background call can keep this and ask isAt when it finishes, to see
+     * whether they have moved to another screen since.
+     */
+    public long position() {
+        return tracker.position();
+    }
+
+    /** True if the user has not moved to another screen since position() gave this. */
+    public boolean isAt(long position) {
+        return tracker.isAt(position);
+    }
+
     /** Replaces the whole window with the shell (header + empty content area). */
     public void showShell() {
         FXMLLoader loader = load("/lavs/ui/shell/shell.fxml");
@@ -70,6 +87,7 @@ public class Navigator {
         showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
+        tracker.moved();
     }
 
     /**
@@ -82,6 +100,7 @@ public class Navigator {
         shell = null;
         history.clear();
         currentScreen = null;
+        tracker.moved();
     }
 
     /** Signs out of the mainframe and goes back to the login screen, saying it worked. */
@@ -106,11 +125,11 @@ public class Navigator {
      */
     public void showCustomerProfile(String customerNumber) {
         openWhenLoaded(() -> ProfileLoader.load(services, customerNumber), "Couldn't open this customer", profile -> {
-                    FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
-                    CustomerProfileController controller = loader.getController();
-                    controller.showCustomer(profile);
-                    show(loader.getRoot());
-                });
+            FXMLLoader loader = load("/lavs/ui/customer/profile/customer-profile.fxml");
+            CustomerProfileController controller = loader.getController();
+            controller.showCustomer(profile);
+            show(loader.getRoot());
+        });
     }
 
     /**
@@ -141,11 +160,12 @@ public class Navigator {
     }
 
     /**
-     * Shows one of a customer's loans below the header.
+     * Shows one of a customer's loans below the header. The loan is read again first, so the screen
+     * shows its current status.
      * AI-assisted: written with Claude from the team's mockups; reviewed by Jack Preston.
      */
-    public void showLoan(LoanNumber loan, LoanPerson applicant) {
-        openWhenLoaded(() -> LoanLoader.load(services, loan, applicant), "Couldn't open this loan", screen -> {
+    public void showLoan(LoanNumber loanNumber, LoanPerson applicant) {
+        openWhenLoaded(() -> LoanLoader.load(services, loanNumber, applicant), "Couldn't open this loan", screen -> {
             FXMLLoader loader = load("/lavs/ui/loan/view/loan-view.fxml");
             LoanViewController controller = loader.getController();
             controller.showLoan(screen);
@@ -163,15 +183,22 @@ public class Navigator {
 
     /**
      * Loads what a screen needs in the background, then shows it with show. While loading, another
-     * open is ignored; if loading fails, a message titled failTitle says why and nothing opens.
+     * open from the same screen is ignored; if loading fails, a message titled failTitle says why and
+     * nothing opens. If the user moves to another screen (or signs out) while it loads, the result is
+     * dropped, so a screen never opens over somewhere the user has since gone.
      */
     private <T> void openWhenLoaded(Supplier<Result<T>> loadData, String failTitle, Consumer<T> show) {
-        if (opening) {
+        if (shell == null) {
+            return; // signed out: there is no header to open a screen under
+        }
+        long ticket = tracker.startLoad();
+        if (ticket == ScreenTracker.NO_LOAD) {
             return;
         }
-        opening = true;
         Background.run(loadData, loaded -> {
-            opening = false;
+            if (!tracker.finishLoad(ticket)) {
+                return;
+            }
             if (loaded.successful()) {
                 show.accept(loaded.value());
             } else {
@@ -180,13 +207,20 @@ public class Navigator {
         });
     }
 
-    /** Returns to the previous screen, if there is one. */
+    /**
+     * Returns to the previous screen, if there is one. A screen that can go out of date (see
+     * Refreshable) reads again what may have changed while another was open on top of it.
+     */
     public void back() {
         if (history.isEmpty()) {
             return;
         }
         currentScreen = history.pop();
+        tracker.moved();
         shell.setContent(currentScreen);
+        if (currentScreen.getProperties().get(REFRESH_KEY) instanceof Refreshable stale) {
+            stale.refresh();
+        }
     }
 
     /** Fills the whole window with a screen (the shell, or the login screen), under any messages. */
@@ -196,10 +230,14 @@ public class Navigator {
 
     /** Shows a screen below the header, remembering the current one for back(). */
     private void show(Parent screen) {
+        if (shell == null) {
+            return; // signed out, e.g. a save that finished after logging out: nowhere to show it
+        }
         if (currentScreen != null) {
             history.push(currentScreen);
         }
         currentScreen = screen;
+        tracker.moved();
         shell.setContent(screen);
     }
 
@@ -212,8 +250,12 @@ public class Navigator {
         } catch (IOException e) {
             throw new UncheckedIOException("Could not load " + path, e);
         }
-        if (loader.getController() instanceof NavigatorAware aware) {
+        Object controller = loader.getController();
+        if (controller instanceof NavigatorAware aware) {
             aware.setNavigator(this);
+        }
+        if (controller instanceof Refreshable && loader.getRoot() instanceof Node root) {
+            root.getProperties().put(REFRESH_KEY, controller);
         }
         return loader;
     }
