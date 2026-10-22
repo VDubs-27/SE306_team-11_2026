@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -201,13 +200,13 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
         statusBadge.getStyleClass().removeAll("badge-active", "badge-neutral");
         statusBadge.getStyleClass().add(
                 customer.status() == Customer.Status.ACTIVE ? "badge-active" : "badge-neutral");
-        showIfPresent(statusBadge, statusBadge);
+        Nodes.show(statusBadge, !isBlank(statusBadge.getText()));
 
         dateOfBirthLabel.setText(customer.dateOfBirth() == null ? "" : DisplayFormat.date(customer.dateOfBirth()));
-        showIfPresent(dateOfBirthLabel, dateOfBirthFact);
+        Nodes.show(dateOfBirthFact, !isBlank(dateOfBirthLabel.getText()));
 
         suburbLabel.setText(profile.primarySuburb());
-        showIfPresent(suburbLabel, suburbFact);
+        Nodes.show(suburbFact, !isBlank(suburbLabel.getText()));
     }
 
     /**
@@ -226,10 +225,5 @@ public class CustomerProfileController implements NavigatorAware, Refreshable {
                 TabBars.setCount(loansTab, listed.value().total());
             }
         });
-    }
-
-    /** Hides what holds a label (the label itself, or its fact and divider) when it has no text, leaving no gap. */
-    private static void showIfPresent(Label label, Node holder) {
-        Nodes.show(holder, !isBlank(label.getText()));
     }
 }

@@ -9,9 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -36,9 +34,6 @@ import lavs.ui.loan.wizard.NewLoanWizardController;
  */
 public class Navigator {
 
-    /** Where a screen's controller is kept on the screen, when it wants refreshing on Back. */
-    private static final String REFRESH_KEY = "lavs.navigator.refreshable";
-
     private final Stage stage;
     private final Services services;
     /** The window's root for good: the current screen first, then the layer that short messages appear in. */
@@ -52,7 +47,7 @@ public class Navigator {
     public Navigator(Stage stage, Services services) {
         this.stage = stage;
         this.services = services;
-        windowRoot.getChildren().add(new Region());
+        windowRoot.getChildren().add(new StackPane());
         stage.getScene().setRoot(windowRoot);
         Toasts.install(stage.getScene(), windowRoot);
     }
@@ -87,6 +82,7 @@ public class Navigator {
         showWindow(loader.getRoot());
         history.clear();
         currentScreen = null;
+        tracker.forgetAll();
         tracker.moved();
     }
 
@@ -100,6 +96,7 @@ public class Navigator {
         shell = null;
         history.clear();
         currentScreen = null;
+        tracker.forgetAll();
         tracker.moved();
     }
 
@@ -215,12 +212,11 @@ public class Navigator {
         if (history.isEmpty()) {
             return;
         }
+        tracker.forget(currentScreen);
         currentScreen = history.pop();
         tracker.moved();
         shell.setContent(currentScreen);
-        if (currentScreen.getProperties().get(REFRESH_KEY) instanceof Refreshable stale) {
-            stale.refresh();
-        }
+        tracker.refresh(currentScreen);
     }
 
     /** Fills the whole window with a screen (the shell, or the login screen), under any messages. */
@@ -254,9 +250,7 @@ public class Navigator {
         if (controller instanceof NavigatorAware aware) {
             aware.setNavigator(this);
         }
-        if (controller instanceof Refreshable && loader.getRoot() instanceof Node root) {
-            root.getProperties().put(REFRESH_KEY, controller);
-        }
+        tracker.remember(loader.getRoot(), controller);
         return loader;
     }
 }

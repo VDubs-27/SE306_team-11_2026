@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class ScreenTrackerTests {
 
     private final ScreenTracker tracker = new ScreenTracker();
@@ -69,5 +72,56 @@ class ScreenTrackerTests {
         assertTrue(tracker.isAt(before));
         tracker.moved();
         assertFalse(tracker.isAt(before));
+    }
+
+    @Test
+    void aScreenThatWantsRefreshingIsRefreshed() {
+        List<String> calls = new ArrayList<>();
+        Object screen = new Object();
+        tracker.remember(screen, (Refreshable) () -> calls.add("refreshed"));
+
+        tracker.refresh(screen);
+
+        assertEquals(List.of("refreshed"), calls);
+    }
+
+    @Test
+    void aScreenThatDoesNotWantRefreshingIsLeftAlone() {
+        Object screen = new Object();
+        tracker.remember(screen, new Object());
+
+        tracker.refresh(screen);
+    }
+
+    @Test
+    void aForgottenScreenIsNotRefreshed() {
+        List<String> calls = new ArrayList<>();
+        Object screen = new Object();
+        tracker.remember(screen, (Refreshable) () -> calls.add("refreshed"));
+
+        tracker.forget(screen);
+        tracker.refresh(screen);
+
+        assertEquals(List.of(), calls);
+    }
+
+    @Test
+    void forgettingEverythingStopsEveryRefresh() {
+        List<String> calls = new ArrayList<>();
+        Object first = new Object();
+        Object second = new Object();
+        tracker.remember(first, (Refreshable) () -> calls.add("first"));
+        tracker.remember(second, (Refreshable) () -> calls.add("second"));
+
+        tracker.forgetAll();
+        tracker.refresh(first);
+        tracker.refresh(second);
+
+        assertEquals(List.of(), calls);
+    }
+
+    @Test
+    void refreshingAScreenNeverRememberedDoesNothing() {
+        tracker.refresh(new Object());
     }
 }
