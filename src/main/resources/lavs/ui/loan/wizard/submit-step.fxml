@@ -23,6 +23,6 @@
     </HBox>
     <HBox styleClass="note">
         <Label text="ⓘ" minWidth="-Infinity"/>
-        <Label text="Submitting creates the loan on the mainframe, then adds its co-borrowers and guarantors."/>
+        <Label text="Submitting adds the co-borrowers and guarantors to the loan, then sends it for approval. Its details can't be changed after that."/>
     </HBox>
 </VBox>

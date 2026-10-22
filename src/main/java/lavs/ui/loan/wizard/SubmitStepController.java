@@ -31,7 +31,7 @@ public class SubmitStepController {
     void show(NewLoanDraft draft) {
         Loan.Details details = draft.details();
         LoanPerson applicant = draft.applicant();
-        titleLabel.setText("Loan for " + applicant.customer().fullName());
+        titleLabel.setText("Loan " + draft.loan().loanNumber().value() + " for " + applicant.customer().fullName());
 
         List<Node> items = new ArrayList<>();
         items.add(ReviewRows.checkItem(true, "Loan details",

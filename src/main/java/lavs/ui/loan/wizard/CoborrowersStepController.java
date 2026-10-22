@@ -29,13 +29,13 @@ public class CoborrowersStepController {
         peopleController.use(draft.applicant(), draft.others());
     }
 
-    /** The loan this is for, in the heading: "$450,000 · Fixed · not yet submitted". */
+    /** The loan this is for, in the heading: "01-0001-0000015-002 · $450,000 · Fixed · not yet submitted". */
     void showLoanSummary() {
-        Loan.Details details = draft.details();
-        loanSummary.setText(details == null
+        Loan loan = draft.loan();
+        loanSummary.setText(loan == null
                 ? "New loan · not yet submitted"
-                : DisplayFormat.money(details.principal()) + " · "
-                        + LoanText.rateTypeName(details.rateType())
+                : loan.loanNumber().value() + " · " + DisplayFormat.money(loan.principal()) + " · "
+                        + LoanText.rateTypeName(loan.rateType())
                         + " · not yet submitted");
     }
 
