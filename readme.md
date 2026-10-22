@@ -10,10 +10,10 @@ The project specification is available [on Canvas](https://canvas.auckland.ac.nz
 
 ## Team 11
 
-* Jack Preston - GitHub Login
-* Vikram Varadarajan - GitHub Login
-* Aidan Gleeson - GitHub Login
-* Carson May - GitHub Login
+* Jack Preston - jpreston05
+* Vikram Varadarajan - VDubs-27
+* Aidan Gleeson - agle05 / AidanZEIL
+* Carson May - RiverMeteor6711
 
 ## Running the application
 
