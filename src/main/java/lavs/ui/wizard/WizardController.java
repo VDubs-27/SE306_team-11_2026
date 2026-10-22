@@ -110,6 +110,16 @@ public class WizardController {
         }
     }
 
+    /**
+     * Moves on to the next step without checking the current one again, for a step whose check
+     * finishes in the background, e.g. once the mainframe has accepted what was entered.
+     */
+    public void advance() {
+        if (current < steps.size() - 1) {
+            showStep(current + 1);
+        }
+    }
+
     @FXML
     private void handleBack() {
         if (current == 0) {
