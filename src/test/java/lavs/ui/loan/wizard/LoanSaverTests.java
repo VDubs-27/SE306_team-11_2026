@@ -51,8 +51,67 @@ class LoanSaverTests {
     }
 
     @Test
-    void createsTheLoanAddsEveryoneThenSubmitsIt() {
+    void theFirstSendCreatesTheLoanAndReadsItBack() {
+        Loan asNew = loan(Loan.Status.NEW);
+        when(loans.retrieve(NUMBER)).thenReturn(Result.success(asNew));
+
+        Result<Loan> sent = LoanSaver.send(services, draft);
+
+        assertAll(
+                () -> assertTrue(sent.successful()),
+                () -> assertEquals(asNew, sent.value())
+        );
+        verify(loans).create(APPLICANT, DETAILS);
+    }
+
+    @Test
+    void aLoanThatCantBeCreatedSaysWhy() {
+        when(loans.create(APPLICANT, DETAILS)).thenReturn(Result.failed("Could not reach the mainframe."));
+
+        Result<Loan> sent = LoanSaver.send(services, draft);
+
+        assertAll(
+                () -> assertFalse(sent.successful()),
+                () -> assertEquals("Could not reach the mainframe.", sent.errorMessage())
+        );
+        verify(loans, never()).retrieve(any());
+    }
+
+    @Test
+    void changedDetailsUpdateTheLoanInsteadOfCreatingAnother() {
+        Loan.Details changed = new Loan.Details(new BigDecimal("25000"), DETAILS.rateType(), DETAILS.rateAmount(),
+                DETAILS.rateFrequency(), DETAILS.startDate(), DETAILS.paymentAmount(), DETAILS.paymentFrequency(),
+                DETAILS.renewalDate());
+        Loan asNew = loan(Loan.Status.NEW);
+        Loan updated = new Loan(NUMBER, APPLICANT, Loan.Status.NEW, changed.principal(), changed.rateType(),
+                changed.rateAmount(), changed.rateFrequency(), changed.startDate(), changed.paymentAmount(),
+                changed.paymentFrequency(), changed.renewalDate());
+        draft.setLoan(asNew);
+        draft.setDetails(changed);
+        when(loans.update(asNew, changed)).thenReturn(Result.success(updated));
+
+        Result<Loan> sent = LoanSaver.send(services, draft);
+
+        assertEquals(updated, sent.value());
+        verify(loans, never()).create(any(), any());
+    }
+
+    @Test
+    void unchangedDetailsAreNotSentAgain() {
+        Loan asNew = loan(Loan.Status.NEW);
+        draft.setLoan(asNew);
+
+        Result<Loan> sent = LoanSaver.send(services, draft);
+
+        assertEquals(asNew, sent.value());
+        verify(loans, never()).create(any(), any());
+        verify(loans, never()).update(any(), any());
+    }
+
+    @Test
+    void submittingAddsEveryoneToTheSentLoanThenSubmitsIt() {
         Loan pending = loan(Loan.Status.PENDING);
+        draft.setLoan(loan(Loan.Status.NEW));
         when(loans.submit(NUMBER)).thenReturn(Result.success(pending));
 
         Result<LoanSaver.Saved> saved = LoanSaver.save(services, draft);
@@ -64,10 +123,12 @@ class LoanSaverTests {
                 () -> assertNull(saved.value().notSubmitted())
         );
         verify(coborrowers).add(any(), eq(new Coborrower.Details(Coborrower.Type.GUARANTOR, GUARANTOR)));
+        verify(loans, never()).create(any(), any());
     }
 
     @Test
     void someoneWhoCantBeAddedIsListedAndTheRestStillGoesAhead() {
+        draft.setLoan(loan(Loan.Status.NEW));
         when(coborrowers.add(any(), any())).thenReturn(Result.failed("Rejected"));
         when(loans.submit(NUMBER)).thenReturn(Result.success(loan(Loan.Status.PENDING)));
 
@@ -80,6 +141,7 @@ class LoanSaverTests {
     @Test
     void aLoanThatCantBeSubmittedYetIsKeptAsNewWithTheReason() {
         Loan asNew = loan(Loan.Status.NEW);
+        draft.setLoan(asNew);
         when(loans.submit(NUMBER)).thenReturn(Result.invalid(List.of(new FieldError("mailingAddress",
                 "The customer needs a mailing address before the loan can be submitted."))));
         when(loans.retrieve(NUMBER)).thenReturn(Result.success(asNew));
@@ -92,20 +154,6 @@ class LoanSaverTests {
                 () -> assertEquals("The customer needs a mailing address before the loan can be submitted.",
                         saved.value().notSubmitted())
         );
-    }
-
-    @Test
-    void nothingElseIsSentWhenTheLoanCantBeCreated() {
-        when(loans.create(APPLICANT, DETAILS)).thenReturn(Result.failed("Could not reach the mainframe."));
-
-        Result<LoanSaver.Saved> saved = LoanSaver.save(services, draft);
-
-        assertAll(
-                () -> assertFalse(saved.successful()),
-                () -> assertEquals("Could not reach the mainframe.", saved.errorMessage())
-        );
-        verify(coborrowers, never()).add(any(), any());
-        verify(loans, never()).submit(any());
     }
 
     private static Customer customer(CustomerNumber number, String firstName) {

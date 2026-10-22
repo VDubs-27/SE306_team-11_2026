@@ -51,7 +51,8 @@ public class NewLoanWizardController implements NavigatorAware {
         wizardController.setOnCancel(this::handleCancel);
         wizardController.setOnFinish(this::handleSubmit);
         wizardController.setSteps(List.of(
-                new WizardStep("Loan details", loanDetails, () -> loanDetailsController.check(draft), null),
+                new WizardStep("Loan details", loanDetails,
+                        () -> loanDetailsController.check(draft) && sendLoan(), null),
                 new WizardStep("Upload & review", upload, null, () -> uploadController.showSummary()),
                 new WizardStep("Co-borrowers", coborrowers, coborrowersController::check,
                         () -> coborrowersController.showLoanSummary()),
@@ -73,24 +74,56 @@ public class NewLoanWizardController implements NavigatorAware {
                 () -> navigator.showNewCustomerWizard(coborrowersController::addNewCustomer));
     }
 
-    /** Leaves straight away if nothing has been entered; otherwise asks first. */
+    /**
+     * Leaves straight away if nothing has been entered; otherwise asks first. Once the loan has been
+     * sent it stays on the mainframe as New, so the question says where to find it.
+     */
     private void handleCancel() {
-        if (!loanDetailsController.hasInput() || Dialogs.confirmDiscard(wizard, "Discard this new loan?",
+        if (draft.loan() != null) {
+            if (Dialogs.confirm(wizard, "Leave this new loan?", "Loan " + draft.loan().loanNumber().value()
+                    + " is already saved as New and can be finished from " + draft.applicant().customer().fullName()
+                    + "'s loans. Co-borrowers not added yet will be lost.", "Leave")) {
+                navigator.back();
+            }
+        } else if (!loanDetailsController.hasInput() || Dialogs.confirmDiscard(wizard, "Discard this new loan?",
                 "Nothing has been sent to the mainframe yet, so anything entered will be lost.")) {
             navigator.back();
         }
     }
 
     /**
-     * Sends the loan to the mainframe in the background and submits it for approval, then opens it.
-     * If it couldn't be created, says why and stays, with everything entered still there.
+     * Sends the loan details to the mainframe in the background, creating the loan the first time and
+     * updating it after that, then moves on. If they're turned down, stays and says why. Returns false,
+     * as moving on waits for the mainframe.
+     */
+    private boolean sendLoan() {
+        wizardController.setBusy("Sending to mainframe…");
+        Background.run(() -> LoanSaver.send(navigator.services().loan(), draft), sent -> {
+            wizardController.clearBusy();
+            if (sent.successful()) {
+                draft.setLoan(sent.value());
+                wizardController.advance();
+                return;
+            }
+            String reason = loanDetailsController.showProblems(sent);
+            if (reason != null) {
+                Toasts.show(wizard, Toasts.Kind.ERROR, draft.loan() == null
+                        ? "Couldn't create the loan" : "Couldn't update the loan", reason);
+            }
+        });
+        return false;
+    }
+
+    /**
+     * Adds the people to the loan in the background and submits it for approval, then opens it.
+     * If that couldn't run at all, says why and stays, with everything entered still there.
      */
     private void handleSubmit() {
         wizardController.setBusy("Submitting…");
         Background.run(() -> LoanSaver.save(navigator.services().loan(), draft), saved -> {
             if (!saved.successful()) {
                 wizardController.clearBusy();
-                Toasts.show(wizard, Toasts.Kind.ERROR, "Couldn't create the loan", Fetch.reason(saved));
+                Toasts.show(wizard, Toasts.Kind.ERROR, "Couldn't submit the loan", Fetch.reason(saved));
                 return;
             }
             finish(saved.value());
